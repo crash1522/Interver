@@ -46,7 +46,7 @@ class Record(Base):
     userid = Column(String, ForeignKey("user.userid"))
     create_date = Column(DateTime, nullable=False)
     
-    user = relationship("User", back_populates="user")
+    user = relationship("User", back_populates="records")
     questions = relationship('Question', back_populates = "record")
 
 class User(Base):

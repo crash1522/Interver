@@ -38,7 +38,3 @@ class QuestionUpdate(QuestionCreate):
 
 class QuestionDelete(BaseModel):
     question_id: int
-
-
-class QuestionVote(BaseModel):
-    question_id: int
