@@ -1,10 +1,6 @@
 # 베이스 이미지로 ubuntu:22.04 사용
 FROM ubuntu:22.04
 
-ENV SECRET_KEY=4ab2fce7a6bd79e1c014396315ed322dd6edb1c5d975c6b74a2904135172c03c
-ENV ACCESS_TOKEN_EXPIRE_MINUTES=1440
-ENV SQLALCHEMY_DATABASE_URL=sqlite:///./myapi.db
-ENV SQLALCHEMY_DATABASE_URL_ASYNC=sqlite+aiosqlite:///./test.db
 # 기본 패키지들 설치 및 Python 3 설치
 RUN apt update
 #RUN apt install -y git

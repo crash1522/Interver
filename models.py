@@ -49,6 +49,8 @@ class Record(Base):
     user = relationship("User", back_populates="records")
     questions = relationship('Question', back_populates = "record")
 
+    arbitrary_types_allowed=True
+
 class User(Base):
     __tablename__ = "user"
 
