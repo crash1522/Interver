@@ -22,6 +22,10 @@ class UserCreate(BaseModel):
         return v
 
 
+class UserDelete(BaseModel):
+    userid: str
+
+
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -34,5 +38,6 @@ class User(BaseModel):
     username: str
     field: str
     skills: List[str] = Field(default=[])
+    
     class Config:
         orm_mode = True

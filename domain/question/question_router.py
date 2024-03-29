@@ -11,30 +11,21 @@ router = APIRouter(
     prefix="/api/question",
 )
 
-
-@router.get("/list", response_model=question_schema.QuestionList)
-def question_list(db: Session = Depends(get_db),
-                  page: int = 0, size: int = 10, keyword: str = ''):
-    total, _question_list = question_crud.get_question_list(
-        db, skip=page * size, limit=size, keyword=keyword)
-    return {
-        'total': total,
-        'question_list': _question_list
-    }
-
-
 @router.get("/detail/{question_id}", response_model=question_schema.Question)
 def question_detail(question_id: int, db: Session = Depends(get_db)):
     question = question_crud.get_question(db, question_id=question_id)
+    if not question:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="Question not found.")
     return question
 
 
-@router.post("/create", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/create/{record_id}", response_model=question_schema.Question)
 def question_create(_question_create: question_schema.QuestionCreate,
-                    db: Session = Depends(get_db),
-                    current_user: User = Depends(get_current_user)):
-    question_crud.create_question(db=db, question_create=_question_create,
-                                  user=current_user)
+                    record_id: int,
+                    db: Session = Depends(get_db),):
+    question = question_crud.create_question(db=db, question_create=_question_create, record_id=record_id)
+    return question
 
 
 @router.put("/update", status_code=status.HTTP_204_NO_CONTENT)
@@ -66,13 +57,7 @@ def question_delete(_question_delete: question_schema.QuestionDelete,
     question_crud.delete_question(db=db, db_question=db_question)
 
 
-# async examples
-@router.get("/async_list")
-async def async_question_list(db: Session = Depends(get_async_db)):
-    result = await question_crud.get_async_question_list(db)
-    return result
-
-
+# async examples 
 @router.post("/async_create", status_code=status.HTTP_204_NO_CONTENT)
 async def async_question_create(_question_create: question_schema.QuestionCreate,
                                 db: Session = Depends(get_async_db)):

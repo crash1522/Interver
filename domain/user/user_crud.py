@@ -1,8 +1,9 @@
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
-from domain.user.user_schema import UserCreate
-from models import User, Skill
 from fastapi import HTTPException
+
+from domain.user.user_schema import UserCreate
+from models import User, Skill, Record
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -29,7 +30,7 @@ def create_user(db: Session, user_create: UserCreate):
     
 
 # 주어진 userid에 해당하는 사용자에게 새로운 기술을 추가합니다.
-def add_skill_to_user(db: Session, userid: str, skill_name: str) -> Skill:
+def add_skill_to_user(db: Session, userid: str, skill_name: str):
     # 새로운 Skill 객체 생성
     new_skill = Skill(skill_name=skill_name, userid=userid)
     db.add(new_skill)
@@ -49,19 +50,19 @@ get_skills(db: Session, userid: str) -> list
 get_field(db: Session, userid: str) -> str
  """
 # 회원가입 창에서 사용자가 입력한 id가 이미 존재하는 회원인지 확인합니다.
-def get_existing_user(db: Session, user_create: UserCreate) -> User:
+def get_existing_user(db: Session, user_create: UserCreate):
     return db.query(User).filter(
         (User.userid == user_create.userid)
     ).first()
 
 
 # userid에 해당하는 User 객체를 반환합니다.
-def get_user(db: Session, userid: str) -> User:
+def get_user(db: Session, userid: str):
     return db.query(User).filter(User.userid == userid).first()
 
 
 # userid에 해당하는 id (primary key)를 반환합니다.
-def get_id(db: Session, userid: str) -> int:
+def get_id(db: Session, userid: str):
     user = db.query(User).filter(User.userid == userid).first()
 
     if not user:
@@ -70,7 +71,7 @@ def get_id(db: Session, userid: str) -> int:
 
 
 # 해당 userid의 username을 반환합니다.
-def get_username(db: Session, userid: str) -> str:
+def get_username(db: Session, userid: str):
     user = db.query(User).filter(User.userid == userid).first()
 
     if not user:
@@ -80,7 +81,7 @@ def get_username(db: Session, userid: str) -> str:
 
 
 # 주어진 userid에 해당하는 사용자의 기술 스택을 반환합니다.
-def get_skills(db: Session, userid: str) -> list:
+def get_skills(db: Session, userid: str):
     # 특정 유저의 ID를 사용하여 User 객체를 조회합니다.
     user = db.query(User).filter(User.userid == userid).first()
     
@@ -94,22 +95,31 @@ def get_skills(db: Session, userid: str) -> list:
 
 
 # 주어진 userid에 해당하는 사용자의 분야 정보를 반환합니다.
-def get_field(db: Session, userid: str) -> str:
+def get_field(db: Session, userid: str):
     user = db.query(User).filter(User.userid == userid).first()
 
     if not user:
-        return []
+        return ""
     field = user.field
     return field
+
+
+def get_records_by_userid(db: Session, userid: str):
+    user = db.query(User).filter(User.userid == userid).first()
+    
+    if not user:
+        return []
+    records = db.query(Record).filter(Record.userid == userid).all()
+    return records
 
 
 """
 Update 관련 함수들
 
 set_username(db: Session, userid: str, new_username: str) -> str
-"""
+""" 
 # 주어진 userid에 해당하는 사용자의 username을 설정합니다.
-def set_username(db: Session, userid: str, new_username: str) -> str:
+def set_username(db: Session, userid: str, new_username: str):
     # 주어진 ID를 가진 사용자를 찾습니다.
     user = db.query(User).filter(User.userid == userid).first()
     
@@ -142,7 +152,7 @@ def delete_user(db: Session, userid: str):
     db.commit()
 
 # 주어진 userid에 해당하는 사용자의 특정 기술을 삭제합니다.
-def delete_skill_from_user(db: Session, userid: str, skill_name: str) -> None:
+def delete_skill_from_user(db: Session, userid: str, skill_name: str):
     # 해당 사용자의 특정 기술 스택을 찾습니다.
     skill_to_delete = db.query(Skill).filter(
         Skill.userid == userid, 

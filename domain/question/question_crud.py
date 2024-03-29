@@ -1,29 +1,9 @@
 from datetime import datetime
-
 from sqlalchemy import select
-
-from domain.question.question_schema import QuestionCreate, QuestionUpdate
-from models import Question, User, Answer, Record
 from sqlalchemy.orm import Session
 
-
-def get_question_list(db: Session, skip: int = 0, limit: int = 10, keyword: str = ''):
-    question_list = db.query(Question)
-    if keyword:
-        search = '%%{}%%'.format(keyword)
-        sub_query = db.query(Answer.question_id, Answer.content, User.userid) \
-            .outerjoin(User, Answer.userid == User.userid).subquery()
-        question_list = question_list \
-            .outerjoin(User) \
-            .outerjoin(sub_query, sub_query.c.question_id == Question.id) \
-            .filter(
-                    Question.content.ilike(search) |  # 질문내용
-                    sub_query.c.content.ilike(search)  # 답변내용
-                    )
-    total = question_list.distinct().count()
-    question_list = question_list.order_by(Question.create_date.desc()) \
-        .offset(skip).limit(limit).distinct().all()
-    return total, question_list  # (전체 건수, 페이징 적용된 질문 목록)
+from domain.question.question_schema import QuestionCreate, QuestionUpdate
+from models import Question, User, Answer
 
 
 def get_question(db: Session, question_id: int):
@@ -31,11 +11,13 @@ def get_question(db: Session, question_id: int):
     return question
 
 
-def create_question(db: Session, question_create: QuestionCreate, record: Record):
+def create_question(db: Session, question_create: QuestionCreate, record_id: int):
     db_question = Question(content=question_create.content,
-                           record_id=record.id)
+                           record_id=record_id)
     db.add(db_question)
     db.commit()
+    db.refresh(db_question)  # 생성된 질문 인스턴스를 최신 상태로 업데이트
+    return db_question
 
 
 def update_question(db: Session, db_question: Question,
@@ -51,15 +33,8 @@ def delete_question(db: Session, db_question: Question):
 
 
 # async examples
-async def get_async_question_list(db: Session):
-    data = await db.execute(select(Question)
-                            .order_by(Question.create_date.desc())
-                            .limit(10))
-    return data.all()
-
-
 async def async_create_question(db: Session, question_create: QuestionCreate):
-    db_question = Question(subject=question_create.subject,
+    db_question = Question(
                            content=question_create.content,
                            create_date=datetime.now())
     db.add(db_question)

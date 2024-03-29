@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>CodePen - nice-forms.css</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+
+<link href="{{ url_for('static', path='/css/style_input.css') }}" rel="stylesheet">
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<div class="demo-page">
+  <main class="demo-page-content">
+     <section>
+      <div class="href-target" id="structure"></div>
+      <h1>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers">
+          <polygon points="12 2 2 7 12 12 22 7 12 2" />
+          <polyline points="2 17 12 22 22 17" />
+          <polyline points="2 12 12 17 22 12" />
+        </svg>
+        면접관 질문
+      </h1>
+      <p>
+        우리 회사에 지원하게 된 동기를 말씀해주세요.
+      </p>
+
+      <h1>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers">
+          <polygon points="12 2 2 7 12 12 22 7 12 2" />
+          <polyline points="2 17 12 22 22 17" />
+          <polyline points="2 12 12 17 22 12" />
+        </svg>
+        마이크를 통해 답변해주세요.
+      </h1>
+      <img src="./micro_phone.svg" alt="micro_phone" width="100" height="100" style="display: block; margin-left: auto; margin-right: auto;">
+
+
+      <div class="nice-form-group">
+        <label>사용자 입력</label>
+        <input type="text" placeholder="돈 버고 시퍼서 왔습니다" />
+      </div>
+      
+      <div class="AIcontainer">
+          <label>AI 도우미</label>
+          <small>혹시 다음과 같이 말씀하려고 하셨나요?</small>
+          <input type="text" placeholder="돈 벌고 싶어서 왔습니다." />
+          
+        <button type="button" >네</button>
+      </div>
+    
+      <details>
+        <summary>
+          <button type="button" >입력 완료</button>
+        </summary>
+
+      </details>
+    </section>
+
+    <footer>AI Interview Service, Interver</footer>
+  </main>
+</div>
+<!-- partial -->
+  
+</body>
+</html>

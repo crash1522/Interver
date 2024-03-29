@@ -13,7 +13,7 @@ router = APIRouter(
 )
 
 
-@router.post("/create/{question_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/create/{question_id}", response_model=answer_schema.Answer)
 def answer_create(question_id: int,
                   _answer_create: answer_schema.AnswerCreate,
                   db: Session = Depends(get_db),
@@ -22,15 +22,18 @@ def answer_create(question_id: int,
     # create answer
     question = question_crud.get_question(db, question_id=question_id)
     if not question:
-        raise HTTPException(status_code=404, detail="Question not found")
-    answer_crud.create_answer(db, question=question,
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Question not found.")
+    answer = answer_crud.create_answer(db, question=question,
                               answer_create=_answer_create,
                               user=current_user)
+    return answer
 
 
 @router.get("/detail/{answer_id}", response_model=answer_schema.Answer)
 def answer_detail(answer_id: int, db: Session = Depends(get_db)):
     answer = answer_crud.get_answer(db, answer_id=answer_id)
+    if not answer:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Answer not found.")
     return answer
 
 

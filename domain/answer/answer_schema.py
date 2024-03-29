@@ -1,8 +1,4 @@
-import datetime
-
 from pydantic import BaseModel, validator
-from domain.user.user_schema import User
-
 
 class AnswerCreate(BaseModel):
     content: str
@@ -18,11 +14,10 @@ class Answer(BaseModel):
     id: int
     content: str
     question_id: int
-    userid: str
  
     class Config:
         orm_mode = True
-
+        arbitrary_types_allowed = True
 
 class AnswerUpdate(AnswerCreate):
     answer_id: int

@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from sqlalchemy.orm import Session
 
 from domain.answer.answer_schema import AnswerCreate, AnswerUpdate
@@ -8,17 +7,20 @@ from models import Question, Answer, User
 
 def create_answer(db: Session, question: Question,
                   answer_create: AnswerCreate, user: User):
-    db_answer = Answer(question=question,
+    db_answer = Answer(question_id=question.id,
                        content=answer_create.content,
-                       create_date=datetime.now(),
                        user=user)
     db.add(db_answer)
     db.commit()
+    db.refresh(db_answer)
+    return db_answer
 
 
 def get_answer(db: Session, answer_id: int):
     return db.query(Answer).get(answer_id)
 
+def get_answer_by_question_id(db: Session, question_id: int):
+    return db.query(Answer.question_id==question_id)
 
 def update_answer(db: Session, db_answer: Answer,
                   answer_update: AnswerUpdate):

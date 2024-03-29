@@ -17,6 +17,16 @@ answer_voter = Table(
     Column('answer_id', Integer, ForeignKey('answer.id'), primary_key=True)
 )
 
+
+class Feedback(Base):
+    __tablename__ = "feedback"
+
+    id = Column(Integer, primary_key=True)
+    content = Column(Text)
+    answer_id = Column(Integer, ForeignKey("answer.id"))
+
+    answer = relationship("Answer", back_populates="feedback", uselist=False)
+
     
 class Answer(Base):
     __tablename__ = "answer"
@@ -28,6 +38,7 @@ class Answer(Base):
     
     question = relationship("Question", back_populates="answer", uselist=False)
     user = relationship("User", back_populates="answers")
+    feedback = relationship("Feedback", back_populates="answer", uselist=False)
 
 class Question(Base):
     __tablename__ = "question"
@@ -45,7 +56,8 @@ class Record(Base):
     id = Column(Integer, primary_key=True)
     userid = Column(String, ForeignKey("user.userid"))
     create_date = Column(DateTime, nullable=False)
-    
+    rating = Column(Integer, nullable = True)
+
     user = relationship("User", back_populates="records")
     questions = relationship('Question', back_populates = "record")
 

@@ -23,6 +23,27 @@ router = APIRouter(
 )
 
 
+def get_current_user(token: str = Depends(oauth2_scheme),
+                     db: Session = Depends(get_db)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        userid: str = payload.get("sub")
+        if userid is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    else:
+        user = user_crud.get_user(db, userid=userid)
+        if user is None:
+            raise credentials_exception
+        return user
+
+
 # 유저를 생성합니다. (회원가입)
 @router.post("/create", status_code=status.HTTP_204_NO_CONTENT)
 def user_create(_user_create: user_schema.UserCreate, db: Session = Depends(get_db)):
@@ -61,26 +82,16 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(),
     }
 
 
-def get_current_user(token: str = Depends(oauth2_scheme),
-                     db: Session = Depends(get_db)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        userid: str = payload.get("sub")
-        if userid is None:
-            raise credentials_exception
-    except JWTError:
-        raise credentials_exception
-    else:
-        user = user_crud.get_user(db, userid=userid)
-        if user is None:
-            raise credentials_exception
-        return user
+"""
+# 유저를 삭제합니다. (회원탈퇴)
+@router.post("/withdrawal", status_code=status.HTTP_204_NO_CONTENT)
+def user_delete(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
 
+    records = user_crud.get_records_by_userid(db=db, userid=current_user.userid)
+    for record in records:
+        delete_record(db=db, db_record=record)
+    user_crud.delete_user(db=db, userid=current_user.userid)
+"""
 
 """
 test codes
