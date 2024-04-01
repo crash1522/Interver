@@ -53,6 +53,14 @@ def user_create(_user_create: user_schema.UserCreate, db: Session = Depends(get_
                             detail="이미 존재하는 사용자입니다.")
     user_crud.create_user(db=db, user_create=_user_create)
 
+@router.post("/create/is_duplcate")
+def is_duplcate(request: user_schema.UserIdRequest, db: Session = Depends(get_db)):
+    userid = request.userid
+    user = user_crud.get_user(db, userid=userid)
+    if user:
+        return {"message": "이미 존재하는 아이디입니다."}
+    else:
+        return {"message": "사용 가능한 아이디입니다."}
 
 # 로그인
 @router.post("/login", response_model=user_schema.Token)
@@ -69,11 +77,11 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(),
         )
 
     # make access token
-    data = {
+    payload = {
         "sub": user.userid,
         "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     }
-    access_token = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
+    access_token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
     return {
         "access_token": access_token,

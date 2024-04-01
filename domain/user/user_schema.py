@@ -41,3 +41,6 @@ class User(BaseModel):
     
     class Config:
         orm_mode = True
+
+class UserIdRequest(BaseModel):
+    userid: str
