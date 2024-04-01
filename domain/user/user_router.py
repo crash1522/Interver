@@ -72,7 +72,7 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(),
     if not user or not pwd_context.verify(form_data.password, user.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
+            detail="아이디 또는 비밀번호를 잘못 입력했습니다.\n입력하신 내용을 다시 확인해주세요.",
             headers={"WWW-Authenticate": "Bearer"},
         )
 

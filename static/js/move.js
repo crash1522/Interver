@@ -162,10 +162,10 @@ document.addEventListener('DOMContentLoaded', function () {
         // 'move-interview-btn' 버튼이 클릭된 경우에만 핸들러 실행
         if (event.target.id === 'move-interview-btn') {
             event.preventDefault(); // 기본 이벤트 방지
-            loadPage('interview_prepare.html'); // 모의 면접 준비 페이지 로드
+            loadPage('interview_prepare'); // 모의 면접 준비 페이지 로드
         } else if (event.target.id === 'find-log-btn') {
             event.preventDefault(); // 기본 이벤트 방지
-            loadPage('interview_all_repo.html'); // 면접 기록 페이지 로드
+            loadPage('interview_all_repo'); // 면접 기록 페이지 로드
         }
     });
     // 모의면접 사전입력, 모의 면접 기록 페이지 이동 시작 --------------------------
@@ -184,9 +184,9 @@ function loadPage(page) {
         .then(html => {
             document.querySelector('.main').innerHTML = html;
             initPage();
-            if (page === 'interview/interview_prepare.html') {
+            if (page === 'interview_prepare') {
                 updateToggleStatus();
-            } else if (page === 'interview/interview_all_repo.html') {
+            } else if (page === 'interview_all_repo') {
                 paginatePosts(currentPage);
             }
             // 페이지 로딩 후 필요한 추가적인 스크립트 초기화나 처리가 필요하면 여기에 추가
@@ -194,5 +194,4 @@ function loadPage(page) {
         .catch(error => {
             console.error('Error loading the page: ', error);
         });
-}
-
+    }

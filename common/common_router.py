@@ -26,3 +26,11 @@ async def get_record(request: Request):
 @router.get("/sign_up", response_class=HTMLResponse)
 async def get_sign_up(request: Request):
     return templates.TemplateResponse("sign_up.html", {"request": request})
+
+@router.get("/interview_prepare.html", response_class=HTMLResponse)
+async def get_interview_prepare(request: Request):
+    return templates.TemplateResponse("interview_prepare.html", {"request": request})
+
+@router.get("/interview_all_repo.html", response_class=HTMLResponse)
+async def get_interview_all_repo(request: Request):
+    return templates.TemplateResponse("interview_all_repo.html", {"request": request})

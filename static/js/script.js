@@ -49,16 +49,61 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     if (loginFormButton) {
-        loginFormButton.onclick = function(event) {
-            localStorage.setItem('isLoggedIn', 'true');
-            closeModal();
-            toggleUIBasedOnLoginStatus();
-
-            document.getElementById('user-id').value = '';
-            document.getElementById('user-password').value = '';
-        };
+        loginFormButton.addEventListener('click', function(event) {
+            event.preventDefault(); // 폼의 기본 제출 동작을 방지
+    
+            // 사용자 아이디와 비밀번호 값을 가져옵니다.
+            const userId = document.getElementById('user-id').value;
+            const password = document.getElementById('user-password').value;
+            // 로그인 요청을 위한 URL
+            const url = '/api/user/login';
+    
+            // XMLHttpRequest 객체를 생성합니다.
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', url, true); // 비동기 방식으로 요청을 초기화합니다.
+    
+            // 요청 헤더를 설정합니다.
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    
+            // 요청의 상태 변경을 처리하기 위한 이벤트 핸들러를 설정합니다.
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) { // 요청이 완료되었을 때
+                    if (xhr.status === 200) {
+                        var data = JSON.parse(xhr.responseText);
+                        localStorage.setItem('isLoggedIn', 'true'); // 로그인 상태 저장
+                        localStorage.setItem('accessToken', data.access_token); // 받은 액세스 토큰 저장
+                        
+                        // 사용자 이름(또는 ID)를 페이지에 표시합니다.
+                        document.getElementById('user-name').textContent = data.userid + '님';
+    
+                        closeModal(); // 모달 창 닫기
+                        toggleUIBasedOnLoginStatus(); // UI 상태 업데이트
+                    } else {
+                        var errorMessageDiv = document.getElementById('login-error-message');
+                        var errorResponse = JSON.parse(xhr.responseText);
+                        // 에러 메시지 줄바꿈 처리 및 표시
+                        errorMessageDiv.innerHTML  = errorResponse.detail.replace(/\n/g, '<br>');
+                        errorMessageDiv.style.display = 'block'; // 에러 메시지 보이기
+                        console.error('Login failed:', errorResponse.detail);
+                    }
+                }
+            };
+    
+            // URLSearchParams 객체를 사용하여 요청 본문을 구성합니다.
+            var formData = new URLSearchParams();
+            formData.append('username', userId);
+            formData.append('password', password);
+            console.log('Sending request with body:', formData.toString());
+            // 요청을 전송합니다.
+            xhr.send(formData.toString());
+    
+             // 비밀번호 입력 필드 초기화
+             document.getElementById('user-password').value = '';
+        });
     }
-
+    
+    
+    
     var logoutButton = document.getElementById('logout');
     if (logoutButton) {
         logoutButton.addEventListener('click', function() {
@@ -250,9 +295,9 @@ function loadPage(page) {
         .then(html => {
             document.querySelector('.main').innerHTML = html;
             initPage();
-            if (page === 'interview/interview_prepare.html') {
+            if (page === 'interview_prepare.html') {
                 updateToggleStatus();
-            } else if (page === 'interview/interview_all_repo.html') {
+            } else if (page === 'interview_all_repo.html') {
                 paginatePosts(currentPage);
             }
             // 페이지 로딩 후 필요한 추가적인 스크립트 초기화나 처리가 필요하면 여기에 추가
@@ -302,14 +347,16 @@ function loadPage(page) {
         let confirm_password = document.querySelector('[name="passwordConfirm"]').value;
         let username = document.querySelector('[name="name"]').value;
         let field = document.querySelector('[name="interest"]').value;
-        let skills = JSON.parse(document.getElementById('skillsHiddenInput').value || '[]');
-    
+        let skillsInputValue = document.getElementById('skillsHiddenInput').value;
+        // 값을 배열로 변환합니다.
+        let skills = skillsInputValue ? skillsInputValue.split(',') : [];
+        
         // XMLHttpRequest 객체 생성 및 설정
         var xhr = new XMLHttpRequest();
         var url = "/api/user/create"; // 변경될 수 있음
         xhr.open("POST", url, true);
         xhr.setRequestHeader("Content-Type", "application/json");
-    
+        
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 var errorMessageDiv = document.getElementById('error-message');
@@ -319,7 +366,6 @@ function loadPage(page) {
                     window.location.href = '/'; // 홈 페이지 URL로 변경하세요
                 } else {
                     console.error("Error creating user: ", xhr.responseText);
-                    
                     var message = JSON.parse(xhr.responseText).detail[0].msg.replace("Value error, ", "");
                     errorMessageDiv.textContent = message; // 에러 메시지 표시
                     errorMessageDiv.style.display = 'block'; // 에러 메시지 보이기
