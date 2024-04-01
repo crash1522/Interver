@@ -40,11 +40,7 @@ app.include_router(record_router.router)
 app.include_router(feedback_router.router)
 app.include_router(handler_router.router)
 app.include_router(common_router.router)
-"""
-@app.get("/")
-def index():
-    return FileResponse("frontend/dist/index.html")
-"""
+
 @app.get("/")
 async def home(request: Request):
     return templates.TemplateResponse("home.html",{"request":request})
