@@ -11,6 +11,7 @@ from starlette.config import Config
 from database import get_db
 from domain.user import user_crud, user_schema
 from domain.user.user_crud import pwd_context
+from models import User
 
 config = Config('.env')
 ACCESS_TOKEN_EXPIRE_MINUTES = int(config('ACCESS_TOKEN_EXPIRE_MINUTES'))
@@ -101,9 +102,10 @@ def user_delete(current_user: User = Depends(get_current_user), db: Session = De
     user_crud.delete_user(db=db, userid=current_user.userid)
 """
 
+
+
 """
 test codes
-"""
 @router.get("/users/{userid}/skills")
 def read_user_skills(userid: str, db: Session = Depends(get_db)):
     skills = user_crud.get_skills(db, userid)
@@ -138,3 +140,14 @@ def add_user_skill(userid: str, new_skill_name: str, db: Session = Depends(get_d
 def delete_user_skill(userid: str, to_delete_skill_name: str, db: Session = Depends(get_db)):
     user_crud.delete_skill_from_user(db, userid, to_delete_skill_name)
     
+"""
+
+@router.get("/profile", response_model = user_schema.User)
+def user_profile(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    user_profile = user_schema.User(id=current_user.id,
+                                userid=current_user.userid,
+                                field=current_user.field,
+                                username=current_user.username,
+                                skills=user_crud.get_skills(db=db, userid= current_user.userid)
+                                )
+    return user_profile

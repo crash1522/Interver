@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from fastapi.templating import Jinja2Templates
 from fastapi import Request
 from starlette.middleware.cors import CORSMiddleware
-from starlette.responses import FileResponse
 from starlette.staticfiles import StaticFiles
 
 from domain.answer import answer_router
@@ -10,7 +9,6 @@ from domain.question import question_router
 from domain.user import user_router
 from domain.record import record_router
 from domain.feedback import feedback_router
-from domain.handler import handler_router
 from common import common_router
 
 app = FastAPI()
@@ -38,7 +36,6 @@ app.include_router(answer_router.router)
 app.include_router(user_router.router)
 app.include_router(record_router.router)
 app.include_router(feedback_router.router)
-app.include_router(handler_router.router)
 app.include_router(common_router.router)
 
 @app.get("/")

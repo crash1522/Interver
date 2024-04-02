@@ -4,7 +4,7 @@ from starlette import status
 
 from database import get_db
 from domain.answer import answer_schema, answer_crud
-from domain.question import question_crud
+from domain.question import question_crud, question_schema
 from domain.user.user_router import get_current_user
 from models import User
 
@@ -12,7 +12,23 @@ router = APIRouter(
     prefix="/api/answer",
 )
 
+# answer_content는 임시로 받은 변수, 이후 STT로직이 추가되면 삭제해야함
+@router.post("/user_answer/{question_id}", response_model=answer_schema.Answer)
+async def user_answer(question_id: int, answer_create: answer_schema.AnswerCreate, db: Session = Depends(get_db)):
+    question = question_crud.get_question(db, question_id=question_id)
+    if not question:
+        raise HTTPException(status_code=404,
+                             detail="No unanswered interview question found in the session")
+    """
+    TODO: STT로 사용자가 대답하는 로직
+    """
+    answer = answer_crud.create_answer(db=db,
+                              question=question,
+                              answer_create=answer_create)
+    return answer
 
+
+"""
 @router.post("/create/{question_id}", response_model=answer_schema.Answer)
 def answer_create(question_id: int,
                   _answer_create: answer_schema.AnswerCreate,
@@ -64,3 +80,4 @@ def answer_delete(_answer_delete: answer_schema.AnswerDelete,
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="삭제 권한이 없습니다.")
     answer_crud.delete_answer(db=db, db_answer=db_answer)
+"""

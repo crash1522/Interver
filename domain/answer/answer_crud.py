@@ -2,14 +2,13 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 
 from domain.answer.answer_schema import AnswerCreate, AnswerUpdate
-from models import Question, Answer, User
+from models import Question, Answer
 
 
 def create_answer(db: Session, question: Question,
-                  answer_create: AnswerCreate, user: User):
+                  answer_create: AnswerCreate):
     db_answer = Answer(question_id=question.id,
-                       content=answer_create.content,
-                       user=user)
+                       content=answer_create.content)
     db.add(db_answer)
     db.commit()
     db.refresh(db_answer)
