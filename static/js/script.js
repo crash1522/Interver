@@ -82,8 +82,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         var data = JSON.parse(xhr.responseText);
                         localStorage.setItem('access_token', data.access_token); // 받은 액세스 토큰 저장
                         localStorage.setItem('userid', data.userid);
-                        localStorage.setItem('user_profile', data.user_profile);
-                        console.log(data.user_profile);
+                        // localStorage.setItem('user_profile', data.user_profile);
+                        // user_profile 객체를 올바르게 문자열로 변환하여 저장
+                        localStorage.setItem('user_profile', JSON.stringify(data.user_profile));
+
                         // 사용자 이름(또는 ID)를 페이지에 표시합니다.
                         document.getElementById('user-name').textContent = data.userid + '님';
     
@@ -175,9 +177,8 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
-
-    
 });
+
 
 function initializeSignUpForm() {
     const addSkillButton = document.getElementById('addSkillButton');
@@ -226,76 +227,6 @@ function initializeSignUpForm() {
     skillList.addEventListener('click', removeSkill);
 
 
-// 게시물 목록을 생성하는 함수
-    function renderPosts(paginatedPosts) {
-        const postsList = document.getElementById("postsList");
-        postsList.innerHTML = "";
-        paginatedPosts.forEach((post) => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-            <td>${post.title}</td>
-            <td>${post.company}</td>
-            <td>${post.date}</td>`;
-            row.querySelector('td:first-child').addEventListener('click', () => openModal(post));
-            postsList.appendChild(row);
-        });
-    }
-
-
-
-// 페이지 로드 시 첫 페이지의 게시물을 렌더링
-    document.addEventListener("DOMContentLoaded", () => paginatePosts(currentPage));
-
-
-// 상세 글 보기를 위한 가상의 예시 데이터
-    const postsDetails = {
-        // 게시물 ID를 키로 사용
-        "1": {
-            title: "게시물 제목 1",
-            company: "회사명 1",
-            date: "2023-01-01",
-            content: [
-                { question: "질문 1", answer: "답변 1", feedback: "피드백 1" },
-                { question: "질문 2", answer: "답변 2", feedback: "피드백 2" },
-                // 반복되는 구조...
-            ],
-            finalFeedback: "전체 피드백 내용"
-        },
-        // 추가 게시물 상세 정보...
-    };
-
-// 모달 열기 함수 수정
-    function openModal(post) {
-        const modal = document.getElementById("record-modal");
-        const modalContent = modal.querySelector(".record-modal-content");
-        modalContent.innerHTML = `<p><strong>제목:</strong> ${post.title}</p>
-                              <p><strong>회사명:</strong> ${post.company}</p>
-                              <p><strong>날짜:</strong> ${post.date}</p>`;
-
-        const postDetail = postsDetails[post.id]; // 가정: post 객체에 id 속성이 있다고 가정
-        if (postDetail && postDetail.content) {
-            postDetail.content.forEach((item, index) => {
-                modalContent.innerHTML += `<div>
-                <p><strong>${index + 1}번째 질문:</strong> ${item.question}</p>
-                <p><strong>${index + 1}번째 답변:</strong> ${item.answer}</p>
-                <p><strong>${index + 1}번째 피드백:</strong> ${item.feedback}</p>
-            </div>`;
-            });
-
-            // 전체 피드백 추가
-            modalContent.innerHTML += `<p><strong>전체 피드백:</strong> ${postDetail.finalFeedback}</p>`;
-        }
-
-        modal.style.display = "block";
-    }
-
-// 모달 외부 클릭 시 닫기 이벤트 리스너 설정
-    window.addEventListener('click', function(event) {
-        const modal = document.getElementById("record-modal");
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
-    });
 
     document.getElementById('check-duplicate').addEventListener('click', function() {
         var userId = document.querySelector('[name="userId"]').value; // 사용자가 입력한 아이디 값을 가져옵니다.
@@ -375,8 +306,6 @@ function initializeSignUpForm() {
     
         xhr.send(data);
     });
-    
-    
 }
 
 
