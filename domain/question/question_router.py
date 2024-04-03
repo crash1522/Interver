@@ -27,20 +27,18 @@ async def agent_question(record_id: int,
     if not before_answer:
         raise HTTPException(status_code=404,
                             detail="No unanswered interview question found in the session")
-    # 키-값 쌍들에 접근
-    for key, value in agent_dict.items():
-        print(f"Key: {key}, Value: {value}")
+    user_answer = before_answer.content
     conversational_agent_executor = agent_dict[record_id]
 
     # 챗봇으로부터 다음 면접 질문을 받아옴
     chat_response = await conversational_agent_executor.ainvoke(
-        {"input": before_answer},  # 사용자의 면접 대답 전달
+        {"input": user_answer},  # 사용자의 면접 대답 전달
         {"configurable": {"session_id": record_id}},
     )
     if chat_response and "output" in chat_response:
         new_question_content = chat_response["output"]
         new_question = question_crud.create_question(db=db,
-                                                     question_create=question_schema(content = new_question_content),
+                                                     question_create=question_schema.QuestionCreate(content = new_question_content),
                                                      record_id=record_id)
         return new_question
     else:

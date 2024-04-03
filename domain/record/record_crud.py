@@ -18,8 +18,12 @@ def get_all_data_by_record_id(db: Session, record_id: int):
     for question in questions:
         answer = db.query(Answer).filter(Answer.question_id==question.id).first()
         answers.append(answer)
-        feedback = db.query(Feedback).filter(Feedback.answer_id==answer.id).first()
-        feedbacks.append(feedback)
+        if answer:
+            feedback = db.query(Feedback).filter(Feedback.answer_id==answer.id).first()
+            feedbacks.append(feedback)
+        else:
+            feedbacks.append(None)
+        
     return questions, answers, feedbacks
 
 
