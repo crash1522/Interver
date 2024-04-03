@@ -1,8 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.templating import Jinja2Templates
 from fastapi import Request
 from starlette.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
+from typing import Optional
 
 from domain.answer import answer_router
 from domain.question import question_router
@@ -10,6 +11,7 @@ from domain.user import user_router
 from domain.record import record_router
 from domain.feedback import feedback_router
 from common import common_router
+from models import User
 
 app = FastAPI()
 # docs URL 막는 코드, 나중에 배포 단계에서는 이렇게 해야함
@@ -39,5 +41,5 @@ app.include_router(feedback_router.router)
 app.include_router(common_router.router)
 
 @app.get("/")
-async def home(request: Request):
-    return templates.TemplateResponse("home.html",{"request":request})
+async def home(request: Request, userid: Optional[str] = Depends(user_router.is_loggined)):
+    return templates.TemplateResponse("home.html", {"request": request, "userid": userid})

@@ -136,25 +136,39 @@ document.addEventListener('DOMContentLoaded', function () {
     // 서비스페이지로 이동 끝 --------------------------
 
 // 마이페이지로 이동 시작 --------------------------
-    document.getElementById('go-my-page').addEventListener('click', function(event) {
-        event.preventDefault(); // 기본 이벤트 방지
+    // 마이페이지로 이동 시작 --------------------------
+        document.getElementById('go-my-page').addEventListener('click', function(event) {
+            event.preventDefault(); // 기본 이벤트 방지
 
-        // 'service.html' 내용을 AJAX로 가져와 메인 섹션에 삽입
-        fetch('api/common/mypage') // 경로 확인 필요
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.text();
-            })
-            .then(html => {
-                document.querySelector('.main').innerHTML = html;
-                // 추가적인 스크립트 초기화나 처리가 필요하면 여기에 추가
-            })
-            .catch(error => {
-                console.error('Error loading the page: ', error);
-            });
-    });
+            // 'service.html' 내용을 AJAX로 가져와 메인 섹션에 삽입
+            fetch('api/common/mypage') // 경로 확인 필요
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    document.querySelector('.main').innerHTML = html;
+                    // 마이페이지 로드 후 사용자 프로필 정보를 가져오기 위한 추가적인 요청
+                    return fetch('api/user/profile'); // 사용자 프로필 정보를 가져오기 위한 요청 경로
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Profile information could not be fetched');
+                    }
+                    return response.json(); // 사용자 프로필 정보를 JSON 형태로 파싱
+                })
+                .then(profileData => {
+                    // 여기에서 profileData를 사용하여 사용자 정보를 화면에 표시
+                    console.log(profileData);
+                    // 예를 들어, profileData를 화면의 특정 부분에 삽입하는 로직 추가
+                })
+                .catch(error => {
+                    console.error('Error loading the page or profile information: ', error);
+                });
+        });
+
     // 마이페이지로 이동 끝 --------------------------
 
     // 모의면접 사전입력, 모의면접 기록 페이지 이동 시작 --------------------------
@@ -195,3 +209,43 @@ function loadPage(page) {
             console.error('Error loading the page: ', error);
         });
     }
+
+    function fetchUserProfile() {
+        // 여기서는 예시로 XMLHttpRequest를 사용합니다.
+        // 실제로는 인증 방식에 맞춰 Authorization 헤더 등을 추가해야 합니다.
+        var xhr = new XMLHttpRequest();
+        var url = "/api/user/profile"; // 사용자 정보 API 엔드포인트
+        let token = localStorage.getItem('accessToken');
+        xhr.open("GET", url, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader("Authorization", "Bearer " + token); // "Bearer " 접두사 추가
+    
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                populateUserProfile(response); // HTML에 사용자 정보를 채우는 함수 호출
+            }
+        };
+        xhr.send();
+    
+    }
+    
+    function populateUserProfile(data) {
+        // HTML 요소에 데이터 채우기
+        document.querySelector('[name="userId"]').value = data.userid;
+        document.querySelector('[name="name"]').value = data.username;
+        document.querySelector('[name="interest"]').value = data.field;
+        
+        // 스킬 리스트 처리
+        var skillsContainer = document.getElementById('skillList');
+        data.skills.forEach(skill => {
+            var skillDiv = document.createElement('div');
+            skillDiv.textContent = skill;
+            skillsContainer.appendChild(skillDiv);
+        });
+    }
+    
+    
+    
+    
+    

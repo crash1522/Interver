@@ -7,9 +7,9 @@
 </head>
 <body>
 <header>
-    <!-- 로그인 전 UI -->
     <div class="header-container">
         <span class="logo-name">Interver</span>
+        <!-- 로그인 전 UI -->
         <div class="auth-links">
             <a href="#" id="go-sign-in">로그인</a>
             <a href="#" id="go-sign-up">회원가입</a>
@@ -21,7 +21,7 @@
                 <a href="#" id="go-help">Help</a>
             </div>
             <div class="dropdown">
-                <span id="user-name">[UserName]님</span>
+                <span id="user-name">{{ userid }}님</span>
                 <div class="dropdown-content">
                     <a href="#" id="go-my-page">MyPage</a>
                     <a href="#" id="logout">Logout</a>
@@ -58,8 +58,8 @@
             <form class="login-form" id="login-form">
                 <h2 class="login-logo">인터버</h2>
                 <div class="input-container">
-                    <input type="text" id="user-id" placeholder="아이디" required>
-                    <input type="password" id="user-password" placeholder="비밀번호" required>
+                    <input type="text" id="user-id" placeholder="아이디" name="user-id" required>
+                    <input type="password" id="user-password" placeholder="비밀번호" name="user-password" required>
                 </div>
                 <div id="login-error-message" style="display: none; color: red; font-size: 12px;"></div>
                 <button type="button" class="login-button" id="loginFormButton">로그인</button>

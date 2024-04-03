@@ -4,12 +4,21 @@ document.addEventListener('DOMContentLoaded', function () {
     var loginFormButton = document.querySelector('.login-button'); // 로그인 폼 내의 로그인 버튼
     var authLinks = document.querySelector('.auth-links'); // 로그인/회원가입 링크를 담고 있는 div
     var userInfo = document.querySelector('.user-info'); // 사용자 정보 및 로그아웃 링크를 담고 있는 div
-
-    // 로그인 상태 확인 함수
-    function isLoggedIn() {
-        return localStorage.getItem('isLoggedIn') === 'true';
+    
+    function isTokenExpired(token) {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const now = Date.now() / 1000; // 현재 시간을 초 단위로 변환
+        return now > payload.exp;
     }
-
+    
+    function isLoggedIn() {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            return false;
+        }
+        return !isTokenExpired(token);
+    }
+    
     // 로그인 상태에 따라 UI 변경 함수
     function toggleUIBasedOnLoginStatus() {
         if (isLoggedIn()) { //로그인 상태로 바꿀려면 !표 붙여야함
@@ -23,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 모달 창 열기 함수
     function openModal() {
-        modal.style.display = 'block';
+        modal.style.display = 'block';  
         modal.classList.remove('modal-close-animation');
         modal.classList.add('modal-open-animation');
     }
@@ -53,8 +62,9 @@ document.addEventListener('DOMContentLoaded', function () {
             event.preventDefault(); // 폼의 기본 제출 동작을 방지
     
             // 사용자 아이디와 비밀번호 값을 가져옵니다.
-            const userId = document.getElementById('user-id').value;
-            const password = document.getElementById('user-password').value;
+            var userId = document.getElementsByName('user-id')[0].value;
+            var password = document.getElementsByName('user-password')[0].value;
+
             // 로그인 요청을 위한 URL
             const url = '/api/user/login';
     
@@ -70,9 +80,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (xhr.readyState === 4) { // 요청이 완료되었을 때
                     if (xhr.status === 200) {
                         var data = JSON.parse(xhr.responseText);
-                        localStorage.setItem('isLoggedIn', 'true'); // 로그인 상태 저장
-                        localStorage.setItem('accessToken', data.access_token); // 받은 액세스 토큰 저장
-                        
+                        localStorage.setItem('access_token', data.access_token); // 받은 액세스 토큰 저장
+                        localStorage.setItem('userid', data.userid);
+                        localStorage.setItem('user_profile', data.user_profile);
+                        console.log(data.user_profile);
                         // 사용자 이름(또는 ID)를 페이지에 표시합니다.
                         document.getElementById('user-name').textContent = data.userid + '님';
     
@@ -107,11 +118,15 @@ document.addEventListener('DOMContentLoaded', function () {
     var logoutButton = document.getElementById('logout');
     if (logoutButton) {
         logoutButton.addEventListener('click', function() {
-            localStorage.removeItem('isLoggedIn'); // 로그아웃 상태로 설정
+            localStorage.removeItem('access_token'); // 액세스 토큰 삭제
+            localStorage.removeItem('userid'); // 사용자 ID 삭제
+            // 사용자 정보를 표시하는 UI 초기화
+            document.getElementById('user-id').value = '';
+            document.getElementById('user-password').value = '';
             toggleUIBasedOnLoginStatus(); // UI 업데이트
 
             // 'home.html' 내용을 AJAX로 가져와 메인 섹션에 삽입
-            fetch('/')
+            fetch('/api/user/logout')
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
@@ -126,7 +141,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.error('Error loading the page: ', error);
                 });
         });
-
     }
 
     toggleUIBasedOnLoginStatus();
@@ -282,30 +296,6 @@ function initializeSignUpForm() {
             modal.style.display = "none";
         }
     });
-
-    // 페이지 내용을 AJAX로 가져와 메인 섹션에 삽입하는 함수
-function loadPage(page) {
-    fetch(`api/common/${page}`) // 경로 확인 필요
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.text();
-        })
-        .then(html => {
-            document.querySelector('.main').innerHTML = html;
-            initPage();
-            if (page === 'interview_prepare.html') {
-                updateToggleStatus();
-            } else if (page === 'interview_all_repo.html') {
-                paginatePosts(currentPage);
-            }
-            // 페이지 로딩 후 필요한 추가적인 스크립트 초기화나 처리가 필요하면 여기에 추가
-        })
-        .catch(error => {
-            console.error('Error loading the page: ', error);
-        });
-    }
 
     document.getElementById('check-duplicate').addEventListener('click', function() {
         var userId = document.querySelector('[name="userId"]').value; // 사용자가 입력한 아이디 값을 가져옵니다.
