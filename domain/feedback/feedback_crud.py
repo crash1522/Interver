@@ -1,7 +1,4 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import select
-from datetime import datetime
-from sqlalchemy.orm import Session
 
 from domain.feedback.feedback_schema import FeedbackCreate
 from models import Answer, Feedback

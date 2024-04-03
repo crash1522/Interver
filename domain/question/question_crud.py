@@ -1,9 +1,8 @@
 from datetime import datetime
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from domain.question.question_schema import QuestionCreate, QuestionUpdate
-from models import Question, User, Answer
+from models import Question
 
 
 def get_question(db: Session, question_id: int):
