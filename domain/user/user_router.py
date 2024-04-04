@@ -51,7 +51,7 @@ def get_current_user(token: str = Depends(oauth2_scheme),
 async def is_loggined(request: Request) -> Optional[str]:
     token = request.cookies.get('access_token')  # 예를 들어 쿠키에서 토큰을 가져옵니다.
     if not token:
-        return ""  # 토큰이 없으면 None 반환
+        return ""  # 토큰이 없으면 None 반환    
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         userid: str = payload.get("sub")

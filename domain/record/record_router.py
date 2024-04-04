@@ -36,7 +36,15 @@ def record_detail(record_id: int, db: Session = Depends(get_db), current_user: U
         "feedbacks": feedbacks
         }
 
+"""
+input: @@@@@
 
+when: @@@@
+then: @@@@
+
+when: @@@
+then: @@@@@
+"""
 @router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
 def record_delete(_record_delete: record_schema.RecordDelete,
                     db: Session = Depends(get_db),
