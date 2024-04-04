@@ -154,6 +154,22 @@ header {
     justify-content: center;
 }
 
+@keyframes slideInUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.main.animate-slide-in-up {
+    animation: slideInUp 0.5s ease-out forwards;
+}
+
+
 .content {
     width: 92%; /* 메인 영역과 동일하게 설정 */
     height: 100%;

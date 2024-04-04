@@ -17,6 +17,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.querySelector('.main').innerHTML = newMainContent;
 
                 // 필요한 경우 여기서 추가적인 스크립트 초기화를 수행
+                // 애니메이션 클래스 추가
+                document.querySelector('.main').classList.add('animate-slide-in-up');
+
+                // 애니메이션 종료 후 클래스 제거 (애니메이션을 다시 재생할 수 있도록)
+                document.querySelector('.main').addEventListener('animationend', function() {
+                    document.querySelector('.main').classList.remove('animate-slide-in-up');
+                });
             }
         };
         xhr.send();
