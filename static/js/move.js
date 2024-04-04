@@ -119,14 +119,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.querySelector('input[name="name"]').value = userProfile.username || '';
                 document.querySelector('input[name="interest"]').value = userProfile.field || '';
     
-                // 'skills' 배열을 이용해 스킬 목록을 표시
                 const skillsContainer = document.getElementById('skillList');
-                skillsContainer.innerHTML = ''; // 초기화
-                userProfile.skills.forEach(skill => {
-                    const skillElement = document.createElement('div');
-                    skillElement.textContent = skill;
-                    skillsContainer.appendChild(skillElement);
-                });
+                // 기술 목록을 콤마와 공백으로 구분된 문자열로 조합합니다.
+                const skillsText = userProfile.skills.join(', ');
+                skillsContainer.textContent = skillsText; // 또는 innerHTML, 이 경우 HTML 태그도 사용 가능합니다.
+
+            
+                
             } else {
                 console.error('User profile data is not available in localStorage.');
             }

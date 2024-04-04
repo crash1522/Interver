@@ -101,15 +101,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             };
-    
-            // URLSearchParams 객체를 사용하여 요청 본문을 구성합니다.
-            var formData = new URLSearchParams();
-            formData.append('username', userId);
-            formData.append('password', password);
-            console.log('Sending request with body:', formData.toString());
-            // 요청을 전송합니다.
-            xhr.send(formData.toString());
-    
              // 비밀번호 입력 필드 초기화
              document.getElementById('user-password').value = '';
         });
@@ -122,9 +113,6 @@ document.addEventListener('DOMContentLoaded', function () {
         logoutButton.addEventListener('click', function() {
             localStorage.removeItem('access_token'); // 액세스 토큰 삭제
             localStorage.removeItem('userid'); // 사용자 ID 삭제
-            // 사용자 정보를 표시하는 UI 초기화
-            document.getElementById('user-id').value = '';
-            document.getElementById('user-password').value = '';
             toggleUIBasedOnLoginStatus(); // UI 업데이트
 
             // 'home.html' 내용을 AJAX로 가져와 메인 섹션에 삽입
