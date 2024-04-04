@@ -1,11 +1,16 @@
 from pydantic import BaseModel
 import datetime
+from typing import Optional
 
 class Record(BaseModel):
     id: int
     userid: str               
     create_date: datetime.datetime
-    rating: int
+    rating: Optional[int] = None
+    """
+    Todo
+    nth_round 추가
+    """
 
     class Config:
         orm_mode = True

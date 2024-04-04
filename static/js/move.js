@@ -173,6 +173,7 @@ function loadPage(page) {
             document.querySelector('.main').innerHTML = html;
             initPage();
             if (page === 'interview_prepare') {
+                preloadUserInfo();
                 updateToggleStatus();
             } else if (page === 'interview_all_repo') {
                 paginatePosts(currentPage);
@@ -183,7 +184,23 @@ function loadPage(page) {
             console.error('Error loading the page: ', error);
         });
     }
-
+    // 사용자 정보를 미리 입력하는 함수
+    function preloadUserInfo() {
+        // localStorage에서 user_profile 정보를 가져옴
+        const userProfileString = localStorage.getItem('user_profile');
+        const userProfile = JSON.parse(userProfileString);
+        if (userProfile) {
+            // 이름, 관심분야, 스킬 목록을 입력 필드에 설정
+            document.querySelector('input[name="name"]').value = userProfile.username || '';
+            document.querySelector('input[name="interest"]').value = userProfile.field || '';
+            
+            const skillsContainer = document.getElementById('skillList');
+            const skillsText = userProfile.skills.join(', ');
+            skillsContainer.textContent = skillsText;
+        } else {
+            console.error('User profile data is not available in localStorage.');
+        }
+    }
     function fetchUserProfile() {
         // 여기서는 예시로 XMLHttpRequest를 사용합니다.
         // 실제로는 인증 방식에 맞춰 Authorization 헤더 등을 추가해야 합니다.
