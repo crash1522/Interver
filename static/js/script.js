@@ -61,9 +61,16 @@ document.addEventListener('DOMContentLoaded', function () {
         loginFormButton.addEventListener('click', function(event) {
             event.preventDefault(); // 폼의 기본 제출 동작을 방지
     
-            // 사용자 아이디와 비밀번호 값을 가져옵니다.
-            var userId = document.getElementsByName('user-id')[0].value;
-            var password = document.getElementsByName('user-password')[0].value;
+            var userIdElement = document.getElementsByName('user-id')[0];
+            var passwordElement = document.getElementsByName('user-password')[0];
+            if (userIdElement && passwordElement) {
+                var userId = userIdElement.value;
+                var password = passwordElement.value;
+                // 이후 로직 처리
+            } else {
+                // 요소가 없는 경우의 처리 로직
+                console.error('Form elements not found');
+            }
 
             // 로그인 요청을 위한 URL
             const url = '/api/user/login';
@@ -101,6 +108,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             };
+            // URLSearchParams 객체를 사용하여 요청 본문을 구성합니다.
+            var formData = new URLSearchParams();
+            formData.append('username', userId);
+            formData.append('password', password);
+            console.log('Sending request with body:', formData.toString());
+            // 요청을 전송합니다.
+            xhr.send(formData.toString());
              // 비밀번호 입력 필드 초기화
              document.getElementById('user-password').value = '';
         });
