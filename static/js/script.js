@@ -178,6 +178,39 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Error loading the page: ', error);
             });
     }
+    
+    // 면접 시작 버튼 클릭시 interview_chat 페이지 이동
+    // 면접 시작 버튼 클릭 이벤트
+    document.body.addEventListener('click', function(event) {
+        // 이벤트가 발생한 요소가 "시작하기" 버튼인지 확인
+         if (event.target.classList.contains('sign-up-btn')) {
+            if (!isLoggedIn()) {  //로그인 상태로 바꿀려면 !표 빼야함
+                openModal(); // 비로그인 상태에서 모달 창 열기
+            } else {
+                ChatPage(); // 로그인 상태일 때 interview_chat.html 내용 가져오기
+            }
+        }
+
+    });
+
+        // interview_chat.html 내용을 가져와서 페이지에 삽입하는 함수
+        function ChatPage() {
+            fetch('api/common/interview_chat')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    document.querySelector('.main').innerHTML = html;
+                    // chat.html 로딩 후 필요한 추가적인 초기화 로직이 있다면 여기에 구현
+                })
+                .catch(error => {
+                    console.error('Error loading the page: ', error);
+                });
+        }
+
 
 });
 
@@ -308,6 +341,41 @@ function initializeSignUpForm() {
     
         xhr.send(data);
     });
+
+
+
+    // //interview_chat page관련
+    document.getElementById('mic-icon-container').addEventListener('click', function() {
+        var micIcon = document.querySelector('.mic-icon');
+        var recordingOutlines = document.querySelectorAll('.user_recording_outline');
+
+        // 'recording' 클래스가 이미 있는지 확인하고, 상태를 전환
+        if (micIcon.classList.contains('recording')) {
+            micIcon.classList.remove('recording'); // 녹음 중지, 색상을 기본으로 전환
+            recordingOutlines.forEach(function(outline) {
+                outline.style.animation = 'none'; // 애니메이션 비활성화
+            });
+        } else {
+            micIcon.classList.add('recording'); // 녹음 시작, 색상을 붉은색으로 전환
+            recordingOutlines.forEach(function(outline) {
+                outline.style.animation = ''; // CSS에서 정의된 애니메이션으로 재활성화
+            });
+        }
+    });
+    document.getElementById('mic-icon-container').addEventListener('click', function() {
+        var micIcon = document.querySelector('.mic-icon');
+        // 'recording' 클래스가 이미 있는지 확인하고, 상태를 전환
+        if (micIcon.classList.contains('recording')) {
+            micIcon.classList.remove('recording'); // 녹음 중지, 색상을 기본으로 전환
+        } else {
+            micIcon.classList.add('recording'); // 녹음 시작, 색상을 붉은색으로 전환
+        }
+    });
+    
+
+
+
+
 }
 
 

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -7,6 +7,8 @@ from domain.answer import answer_schema, answer_crud
 from domain.question import question_crud, question_schema
 from domain.user.user_router import get_current_user
 from models import User
+from common.agent import llm
+
 
 router = APIRouter(
     prefix="/api/answer",
@@ -14,17 +16,29 @@ router = APIRouter(
 
 # answer_content는 임시로 받은 변수, 이후 STT로직이 추가되면 삭제해야함
 @router.post("/user_answer/{question_id}", response_model=answer_schema.Answer)
-async def user_answer(question_id: int, answer_create: answer_schema.AnswerCreate, db: Session = Depends(get_db)):
+async def user_answer(question_id: int, db: Session = Depends(get_db), file: UploadFile = File(...)): # mp3 파일을 인자로 받음
     question = question_crud.get_question(db, question_id=question_id)
     if not question:
         raise HTTPException(status_code=404,
                              detail="No unanswered interview question found in the session")
-    """
-    TODO: STT로 사용자가 대답하는 로직
-    """
+    user_voice_answer = await file.read()
+
+    # STT
+    user_text_answer = llm.audio.transcriptions.create(
+    model="whisper-1", # 모델 유형 설정
+    file=user_voice_answer, # text로 전환할 음성 데이터
+    response_format="json" # 응답 타입 설정(json, text, srt, verbose_json, vtt)
+    )
+
+    # transcription 객체를 JSON 문자열로 변환
+    user_text_answer_json = user_text_answer.json
+    converted_text = user_text_answer_json['text']
+    user_text_answer_json['content'] = converted_text
+    del user_text_answer_json['text']
     answer = answer_crud.create_answer(db=db,
                               question=question,
-                              answer_create=answer_create)
+                              answer_create=answer_schema.AnswerCreate(content = converted_text)
+                              )
     return answer
 
 
