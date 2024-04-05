@@ -74,6 +74,7 @@
     border: 1px solid #ddd; /* 테두리 적용 */
     font-size: 16px; /* 글꼴 크기 재설정 */
     display: inline-block; /* inline-block으로 설정하여 중앙 정렬 가능 */
+    cursor: pointer;
 }
 
 /* 인접한 버튼 사이의 테두리 제거 */
