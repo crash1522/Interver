@@ -176,7 +176,8 @@ function loadPage(page) {
                 preloadUserInfo();
                 updateToggleStatus();
             } else if (page === 'interview_all_repo') {
-                paginatePosts(currentPage);
+                displayRecords(currentPage);
+                setupPagination(records.length, recordsPerPage);
             }
             // 페이지 로딩 후 필요한 추가적인 스크립트 초기화나 처리가 필요하면 여기에 추가
         })
