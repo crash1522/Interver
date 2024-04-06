@@ -1,5 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
     var modal = document.getElementById('login-modal');
+
+    // 추가된 user-answer-modal 참조
+
+
     var loginBtn = document.getElementById('go-sign-in'); // 로그인 버튼
     var loginFormButton = document.querySelector('.login-button'); // 로그인 폼 내의 로그인 버튼
     var authLinks = document.querySelector('.auth-links'); // 로그인/회원가입 링크를 담고 있는 div
@@ -30,31 +34,32 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // 모달 창 열기 함수
-    function openModal() {
+// 모달 열기 함수 (범용)
+function openModal(modal) {
+    if (modal) {
         modal.style.display = 'block';  
-        modal.classList.remove('modal-close-animation');
         modal.classList.add('modal-open-animation');
+        modal.classList.remove('modal-close-animation');
     }
-
-    // 모달 창 닫기 함수
-    function closeModal() {
+}
+function closeModal(modal) {
+    if (modal) {
         modal.classList.remove('modal-open-animation');
         modal.classList.add('modal-close-animation');
         setTimeout(() => {
             modal.style.display = 'none';
         }, 500);
     }
-
+}
     // 모달 외부 클릭 시 모달 창 닫기
     window.onclick = function(event) {
         if (event.target === modal) {
-            closeModal();
+            closeModal(modal);
         }
     };
 
     loginBtn.onclick = function() {
-        openModal();
+        openModal(modal);
     };
 
     if (loginFormButton) {
@@ -96,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         // 사용자 이름(또는 ID)를 페이지에 표시합니다.
                         document.getElementById('user-name').textContent = data.userid + '님';
     
-                        closeModal(); // 모달 창 닫기
+                        closeModal(modal); // 모달 창 닫기
                         toggleUIBasedOnLoginStatus(); // UI 상태 업데이트
                     } else {
                         var errorMessageDiv = document.getElementById('login-error-message');
@@ -154,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // 이벤트가 발생한 요소가 "시작하기" 버튼인지 확인
         if (event.target.classList.contains('start-btn')) {
             if (!isLoggedIn()) {  //로그인 상태로 바꿀려면 !표 빼야함
-                openModal(); // 비로그인 상태에서 모달 창 열기
+                openModal(modal); // 비로그인 상태에서 모달 창 열기
             } else {
                 loadServicePage(); // 로그인 상태일 때 service.html 내용 가져오기
             }
@@ -185,13 +190,89 @@ document.addEventListener('DOMContentLoaded', function () {
         // 이벤트가 발생한 요소가 "시작하기" 버튼인지 확인
          if (event.target.classList.contains('sign-up-btn')) {
             if (!isLoggedIn()) {  //로그인 상태로 바꿀려면 !표 빼야함
-                openModal(); // 비로그인 상태에서 모달 창 열기
+                openModal(modal); // 비로그인 상태에서 모달 창 열기
             } else {
                 ChatPage(); // 로그인 상태일 때 interview_chat.html 내용 가져오기
             }
         }
 
     });
+
+
+    // AI 질문 모달에서 MP3 재생 시작 및 이벤트 핸들링
+    function playAIQuestion() {
+        var aiQuestionModal = document.getElementById('ai-question-modal'); // AI 질문 모달 요소 선택
+        var userAnswerModal = document.getElementById('user-answer-modal'); // 사용자 답변 모달 요소 선택
+        const aiQuestionAudio = document.getElementById('aiQuestionAudio');
+        // Answer모달 창 열기 함수
+        function openAnswerModal() {
+            if (userAnswerModal) {
+                userAnswerModal.style.display = 'flex';  
+                userAnswerModal.classList.add('modal-open-animation');
+                userAnswerModal.classList.remove('modal-close-animation');
+            }
+        }
+        // Answer모달 창 닫기 함수
+        function closeAnswerModal() {
+            if (userAnswerModal) {
+            userAnswerModal.classList.remove('modal-open-animation');
+            userAnswerModal.classList.add('modal-close-animation');
+            setTimeout(() => {
+                userAnswerModal.style.display = 'none';
+            }, 500);
+        }
+        }
+        // Question 창 열기 함수
+        function openQuestionModal() {
+            if (aiQuestionModal) {
+
+            aiQuestionModal.style.display = 'flex';  
+            aiQuestionModal.classList.remove('modal-close-animation');
+            aiQuestionModal.classList.add('modal-open-animation');
+            }
+        }
+        // Question 창 닫기 함수
+        function closeQuestionModal() {
+            if (aiQuestionModal) {
+            aiQuestionModal.classList.remove('modal-open-animation');
+            aiQuestionModal.classList.add('modal-close-animation');
+            setTimeout(() => {
+                aiQuestionModal.style.display = 'none';
+            }, 500);
+        }
+        }
+        // AI 질문 모달 열기
+        openQuestionModal();
+
+        // MP3 재생 시작
+        aiQuestionAudio.play();
+
+        // MP3 재생 완료 이벤트 핸들러
+        aiQuestionAudio.onended = function() {
+        // AI 질문 모달 닫기
+        closeModal(aiQuestionModal);
+        // 사용자 답변 모달 열기
+        openAnswerModal();
+        };
+    }
+
+    function getUserAnswer() {
+        function closeAnswerModal() {
+            var userAnswerModal = document.getElementById('user-answer-modal'); // 사용자 답변 모달 요소 선택
+            if (userAnswerModal) {
+            userAnswerModal.classList.remove('modal-open-animation');
+            userAnswerModal.classList.add('modal-close-animation');
+            setTimeout(() => {
+                userAnswerModal.style.display = 'none';
+            }, 500);
+        }
+        }
+        closeAnswerModal(); // 사용자 답변 모달 닫기
+        playAIQuestion(); // 다음 질문을 위한 AI 질문 함수 호출
+    }
+    
+
+
 
         // interview_chat.html 내용을 가져와서 페이지에 삽입하는 함수
         function ChatPage() {
@@ -204,13 +285,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .then(html => {
                     document.querySelector('.main').innerHTML = html;
-                    // chat.html 로딩 후 필요한 추가적인 초기화 로직이 있다면 여기에 구현
+                    // interview_chat.html 로딩 후 필요한 추가적인 초기화 로직이 여기에 구현됩니다.
+                    // 여기에 playAIQuestion() 함수를 호출하여 AI 질문 모달을 활성화하고 오디오를 재생합니다.
+                    playAIQuestion();
+                    const micIcon = document.getElementById('user_recording_circlein');
+                    micIcon.addEventListener('click', getUserAnswer);
                 })
                 .catch(error => {
                     console.error('Error loading the page: ', error);
                 });
         }
-
+        
 
 });
 
@@ -341,39 +426,6 @@ function initializeSignUpForm() {
     
         xhr.send(data);
     });
-
-
-
-    // //interview_chat page관련
-    document.getElementById('mic-icon-container').addEventListener('click', function() {
-        var micIcon = document.querySelector('.mic-icon');
-        var recordingOutlines = document.querySelectorAll('.user_recording_outline');
-
-        // 'recording' 클래스가 이미 있는지 확인하고, 상태를 전환
-        if (micIcon.classList.contains('recording')) {
-            micIcon.classList.remove('recording'); // 녹음 중지, 색상을 기본으로 전환
-            recordingOutlines.forEach(function(outline) {
-                outline.style.animation = 'none'; // 애니메이션 비활성화
-            });
-        } else {
-            micIcon.classList.add('recording'); // 녹음 시작, 색상을 붉은색으로 전환
-            recordingOutlines.forEach(function(outline) {
-                outline.style.animation = ''; // CSS에서 정의된 애니메이션으로 재활성화
-            });
-        }
-    });
-    document.getElementById('mic-icon-container').addEventListener('click', function() {
-        var micIcon = document.querySelector('.mic-icon');
-        // 'recording' 클래스가 이미 있는지 확인하고, 상태를 전환
-        if (micIcon.classList.contains('recording')) {
-            micIcon.classList.remove('recording'); // 녹음 중지, 색상을 기본으로 전환
-        } else {
-            micIcon.classList.add('recording'); // 녹음 시작, 색상을 붉은색으로 전환
-        }
-    });
-    
-
-
 
 
 }

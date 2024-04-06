@@ -699,92 +699,6 @@ input[type="password"] {
 
 /*서비스 끝*/
 
-/*게시판 시작*/
-
-.repo-content {
-    width: 100%; /* 메인 영역과 동일하게 설정 */
-    height: 100%;
-    padding: 0 40px;
-}
-
-.board-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-.board-table th, .board-table td {
-    padding: 12px;
-    border-top: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
-    text-align: center;
-    border-left: none; /* 좌측 테두리 제거 */
-    border-right: none; /* 우측 테두리 제거 */
-}
-
-.board-table th {
-    background-color: #f9fafe;
-    border-top: 1.5px solid black; /* 상단 테두리를 검은색으로 두껍게 설정 */
-    color: black;
-    font-weight: bold;
-}
-
-/* 페이지네이션 스타일 */
-.pagination {
-    margin-top: 20px;
-    text-align: center;
-}
-
-.pagination a {
-    margin: 0 5px;
-    padding: 5px 10px;
-    border: 1px solid #ddd;
-    color: #333;
-    text-decoration: none;
-}
-
-.pagination a.active {
-    background-color: #4c80ef;
-    color: white;
-}
-
-.pagination a:hover:not(.active) {
-    background-color: #ddd;
-}
-
-/* 모달 스타일 */
-.record-modal {
-    display: none;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.4);
-}
-
-.record-modal-content {
-    background-color: #fefefe;
-    margin: 10% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 60%;
-    max-height: 70vh; /* 최대 높이 설정 */
-    overflow-y: auto; /* 내용이 최대 높이를 초과할 경우 스크롤바 표시 */
-}
-
-/* 추가적인 모달 내용 스타일링 */
-.record-modal-content p {
-    margin: 10px 0;
-}
-
-.record-modal-content strong {
-    color: #333;
-}
-
-/*게시판 끝*/
 
 /*인터뷰 사전정보입력 시작*/
 
@@ -935,7 +849,31 @@ input:checked + .slider:before {
 
 
 /*chat.html관련 코드 시작*/
-/*유저 녹음 이미지 user_recording*/
+/*유저 녹음 모달*/
+.user-answer-modal {
+    display: none;
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+    animation: modalOpenAnimation 0.5s forwards; /* 애니메이션 적용 */
+
+}
+
+.user-answer-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 60%;
+    max-height: 70vh;
+    overflow-y: auto; /* 내용이 최대 높이를 초과할 경우 스크롤바 표시 */
+}
+
 .user_recording_box {
 	position: absolute;
 	top: 50%;
@@ -944,7 +882,9 @@ input:checked + .slider:before {
 }
 
 .user_recording_object {
+  position: relative; /* 중앙 정렬을 위해 필요 */
   display: flex;
+  flex-direction: column; /* 세로 방향 배치 */
   justify-content: center;
   align-items: center;
   align-content: stretch;
@@ -955,7 +895,7 @@ input:checked + .slider:before {
 	height: 60px;
 	border-radius: 50%;
 	border: 8px solid #B5A4A4;
-  animation: pulse 3s;
+    animation: pulse 3s;
 	animation-timing-function: ease-out;
 	animation-iteration-count: infinite;
 	position: absolute;
@@ -998,6 +938,7 @@ input:checked + .slider:before {
 }
 
 #user_recording_circlein {
+    
 	width: 100px;
 	height: 100px;
 	border-radius: 50%;
@@ -1006,29 +947,100 @@ input:checked + .slider:before {
 	position: absolute;
 }
 
-/* 녹음 중 마이크 상태 */
-.mic-icon.recording {
-    fill: #1E2D70; /* 초기 색상은 진한 파란색 */
+/* 추가적인 모달 내용 스타일링 */
+.user-answer-content p {
+    margin: 10px 0;
 }
 
-/* 비 녹음 상태를 나타내는 마이크 색상 */
-.mic-icon.not-recording {
-    fill: #808080; /* 회색 */
+.user-answer-content strong {
+    color: #333;
 }
-/* 비 녹음 상태일 때 사선 추가 */
-.mic-icon.not-recording::after {
-    content: '';
+
+.outline, .button {
+    /* 기본 스타일 */
+    opacity: 0; /* 초기 상태에서는 보이지 않음 */
+    transition: opacity 0.5s ease-in-out;
+}
+
+/* 지연된 요소에 대한 애니메이션 */
+#delayed {
+    animation: fadeInAnimation 1s ease-in-out 0.5s forwards;
+}
+
+/* 버튼 내부 원형 효과 애니메이션 */
+#circlein {
+    animation: scaleUpAnimation 0.5s ease-in-out infinite;
+}
+
+.mic-icon {
+    position: relative; /* 또는 absolute, fixed */
+    z-index: 1; /* 원하는 z-index 값 */
+    transition: transform 0.3s ease; /* 크기 변경 애니메이션 효과 */
+    cursor: pointer; /* 마우스 오버 시 커서 변경 */
+}
+.mic-icon:hover {
+    transform: scale(1.1); /* 마우스 오버 시 아이콘 크기 증가 */
+}
+@keyframes fadeInAnimation {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes scaleUpAnimation {
+    0%, 100% {transform: scale(1);}
+    50% {transform: scale(1.1);} /* 중간에 약간 확대 */
+}
+
+/*유저 녹음 모달 끝*/
+
+/*ai 재생 모달*/
+/* 모달 스타일 */
+.ai-question-modal {
+    display: flex;
     position: absolute;
+    z-index: 1;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.5) 50%);
-    background-size: 4px 4px; /* 사선의 크기 조절 */
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+    animation: modalOpenAnimation 0.5s forwards; /* 애니메이션 적용 */
 }
-/*유저 녹음 이미지 끝*/
 
-/*ai 재생 이미지*/
+.ai-question-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 60%;
+    max-height: 70vh; /* 최대 높이 설정 */
+    overflow-y: auto; /* 내용이 최대 높이를 초과할 경우 스크롤바 표시 */
+    /* 아래는 추가된 레이아웃 관련 스타일 */
+    position: relative;
+    display: flex;
+    flex-direction: column; /* 자식 요소들을 세로로 정렬 */
+    align-items: center; /* 중앙 정렬 */
+    text-align: center;
+}
+
+.ai_speaking {
+    max-width: 80%;
+    max-height: 50vh;
+    margin-bottom: 20px; /* 사진 아래에 공간 추가 */
+    /* 사진을 중앙에서 약간 위로 올리기 */
+    position: relative;
+    bottom: 20px; /* 위치 조정을 위해 bottom 속성 사용 */
+}
+.boxContainer {
+    display: flex;
+    justify-content: space-between;
+    height: 64px;
+    --boxSize: 8px;
+    --gutter: 4px;
+    width: calc((var(--boxSize) + var(--gutter)) * 5);
+    margin-top: 20px; /* 사진과 사운드 박스 사이의 여백 조정 */
+}
 @keyframes quiet {
     25%{
       transform: scaleY(.6);
@@ -1040,7 +1052,7 @@ input:checked + .slider:before {
       transform: scaleY(.8);
     }
   }
-
+  
   @keyframes normal {
     25%{
       transform: scaleY(1);
@@ -1064,18 +1076,7 @@ input:checked + .slider:before {
     }
   }
 
-  .sound_Container{
-    display: none;
-    justify-content: space-between;
-    height: 64px;
-    --boxSize: 8px;
-    --gutter: 4px;
-    width: calc((var(--boxSize) + var(--gutter)) * 5);
-  }
-
-  .sound_box{
-    position: relative; /* 사운드 박스에 position 속성을 지정 */
-    z-index: 1; /* 사운드 박스가 사진보다 아래에 위치하도록 z-index 값을 낮게 설정 */
+  .box{
     transform: scaleY(.4);
     height: 100%;
     width: var(--boxSize);
@@ -1085,36 +1086,29 @@ input:checked + .slider:before {
     animation-iteration-count: infinite;
     border-radius: 8px;
   }
-
-  .sound_box1{
+  
+  .box1{
     animation-name: quiet;
   }
-
-  .sound_box2{
+  
+  .box2{
     animation-name: normal;
   }
-
-  .sound_box3{
+  
+  .box3{
     animation-name: quiet;
   }
-
-  .sound_box4{
+  
+  .box4{
     animation-name: loud;
   }
-
-  .sound_box5{
+  
+  .box5{
     animation-name: quiet;
   }
-
 /*ai 재생 이미지 끝*/
 
-.ai_speaking {
-    position: relative; /* 사진에 position 속성을 지정 */
-    z-index: 2; /* 사운드 박스 위로 오도록 z-index 값을 높게 설정 */
-    width: 700px; /* 원하는 사진의 너비 */
-    height: auto; /* 비율을 유지하면서 높이 조정 */
-    display: block; /* 블록 레벨 요소로 만들어 주변 요소와의 관계를 명확히 함 */
-    margin: 0 auto; /* 가운데 정렬 */
-}
+
+
 
   /*chat.html관련 코드 끝*/

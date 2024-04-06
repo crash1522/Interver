@@ -1,18 +1,48 @@
 <main class="main">
-    <div class="user_recording_box">
-        <div class="user_recording_button" id="mic-icon-container">
-            <svg class="mic-icon" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 1000 1000" enable-background="new 0 0 1000 1000" xml:space="preserve">
-                <g><path d="M500,683.8c84.6,0,153.1-68.6,153.1-153.1V163.1C653.1,78.6,584.6,10,500,10c-84.6,0-153.1,68.6-153.1,153.1v367.5C346.9,615.2,415.4,683.8,500,683.8z M714.4,438.8v91.9C714.4,649,618.4,745,500,745c-118.4,0-214.4-96-214.4-214.4v-91.9h-61.3v91.9c0,141.9,107.2,258.7,245,273.9v124.2H346.9V990h306.3v-61.3H530.6V804.5c137.8-15.2,245-132.1,245-273.9v-91.9H714.4z"/></g>
-            </svg>
+<!-- 모달 창 -->
+<div id="ai-question-modal" class="ai-question-modal">
+    <div class="ai-question-content">
+        <div class="user_recording_box">
+            <div class="user_recording_object">
+                <!-- 추가적인 모달 내용 -->
+                <img alt="" src="static/images/ai_speaking.jpg" class="ai_speaking">
+                <!-- 사운드 박스 추가 -->
+                <div class="boxContainer">
+                    <div class="box box1"></div>
+                    <div class="box box2"></div>
+                    <div class="box box3"></div>
+                    <div class="box box4"></div>
+                    <div class="box box5"></div>
+                </div>
+            </div>
         </div>
+        <p>ai 질문이 재생 중-재생 완료시 유저 모달 창 전환</p>
     </div>
+</div>
+
+
+<div id="user-answer-modal" class="user-answer-modal">
+    <div class="user-answer-content">
+        <!-- 마이크 애니메이션 요소 추가 -->
+        <div class="user_recording_box">
+            <div class="user_recording_object">
+                <div class="user_recording_outline"></div>
+                <div class="user_recording_outline" id="user_recording_delayed"></div>
+                <div class="user_recording_button"></div>
+                <div class="user_recording_button" id="user_recording_circlein">
+                    <!-- SVG 마이크 아이콘 -->
+                    <svg class="mic-icon" id="mic-icon" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 1000 1000" enable-background="new 0 0 1000 1000" xml:space="preserve" style="fill:#1E2D70">
+                        <g><path d="M500,683.8c84.6,0,153.1-68.6,153.1-153.1V163.1C653.1,78.6,584.6,10,500,10c-84.6,0-153.1,68.6-153.1,153.1v367.5C346.9,615.2,415.4,683.8,500,683.8z M714.4,438.8v91.9C714.4,649,618.4,745,500,745c-118.4,0-214.4-96-214.4-214.4v-91.9h-61.3v91.9c0,141.9,107.2,258.7,245,273.9v124.2H346.9V990h306.3v-61.3H530.6V804.5c137.8-15.2,245-132.1,245-273.9v-91.9H714.4z"></path></g>
+                    </svg>
+                </div>
+            </div>
         </div>
-        <div class="sound_Container">
-            <img alt="ai_speaking" src="static/images/ai_speaking.jpg" class="ai_speaking">
-            <div class="sound_box sound_box1"></div>
-            <div class="sound_box sound_box2"></div>
-            <div class="sound_box sound_box3"></div>
-            <div class="sound_box sound_box4"></div>
-            <div class="sound_box sound_box5"></div>
-        </div>
+        <!-- 추가적인 모달 내용 -->
+        <p>면접 질문=지원동기가 무엇인가요?-마이크 클릭하면 녹음 종료 후 ai 모달창 전환</p>
+    </div>
+</div>
+
+<audio id="aiQuestionAudio" src="static/sounds/sample_question.mp3"></audio>
+
+
 </main>
