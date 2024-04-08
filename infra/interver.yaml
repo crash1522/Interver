@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: 900478210705.dkr.ecr.ap-northeast-2.amazonaws.com/interver:429e4fcb9070159b1ef5471ff8f476d6399d28dd
+          image: 900478210705.dkr.ecr.ap-northeast-2.amazonaws.com/interver:0eb2bc76986c22369ce7a33b44ed31be9a67fd68
           imagePullPolicy: Always
 
 ---
