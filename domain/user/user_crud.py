@@ -2,7 +2,7 @@ from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 
-from domain.user.user_schema import UserCreate
+from domain.user import user_schema
 from models import User, Skill, Record
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -14,7 +14,7 @@ create_user(db: Session, user_create: UserCreate)
 add_skill_to_user(db: Session, userid: str, skill_name: str) -> Skill
 """
 # 새로운 user를 생성합니다. (회원가입)
-def create_user(db: Session, user_create: UserCreate):
+def create_user(db: Session, user_create: user_schema.UserCreate):
     db_user = User(
                    userid=user_create.userid,
                    username=user_create.username,
@@ -50,7 +50,7 @@ get_skills(db: Session, userid: str) -> list
 get_field(db: Session, userid: str) -> str
  """
 # 회원가입 창에서 사용자가 입력한 id가 이미 존재하는 회원인지 확인합니다.
-def get_existing_user(db: Session, user_create: UserCreate):
+def get_existing_user(db: Session, user_create: user_schema.UserCreate):
     return db.query(User).filter(
         (User.userid == user_create.userid)
     ).first()
@@ -134,7 +134,13 @@ def set_username(db: Session, userid: str, new_username: str):
     # 업데이트된 사용자 정보를 반환합니다. 실제 반환 타입이나 내용은 요구 사항에 따라 달라질 수 있습니다.
     return user.username
 
-
+def get_user_profile(user: User, db:Session):
+    user_profile = user_schema.User(id=user.id,
+                        userid=user.userid,
+                        field=user.field,
+                        username=user.username,
+                        skills=get_skills(db=db, userid= user.userid))
+    return user_profile
 """
 Delete 관련 함수들
 

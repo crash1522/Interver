@@ -26,12 +26,6 @@ class UserDelete(BaseModel):
     userid: str
 
 
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-    userid: str
-
-
 class User(BaseModel):
     id: int
     userid: str
@@ -41,6 +35,14 @@ class User(BaseModel):
     
     class Config:
         orm_mode = True
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+    userid: str
+    user_profile: User
+
 
 class UserIdRequest(BaseModel):
     userid: str

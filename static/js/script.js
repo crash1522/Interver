@@ -4,12 +4,21 @@ document.addEventListener('DOMContentLoaded', function () {
     var loginFormButton = document.querySelector('.login-button'); // 로그인 폼 내의 로그인 버튼
     var authLinks = document.querySelector('.auth-links'); // 로그인/회원가입 링크를 담고 있는 div
     var userInfo = document.querySelector('.user-info'); // 사용자 정보 및 로그아웃 링크를 담고 있는 div
-
-    // 로그인 상태 확인 함수
-    function isLoggedIn() {
-        return localStorage.getItem('isLoggedIn') === 'true';
+    
+    function isTokenExpired(token) {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const now = Date.now() / 1000; // 현재 시간을 초 단위로 변환
+        return now > payload.exp;
     }
-
+    
+    function isLoggedIn() {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            return false;
+        }
+        return !isTokenExpired(token);
+    }
+    
     // 로그인 상태에 따라 UI 변경 함수
     function toggleUIBasedOnLoginStatus() {
         if (isLoggedIn()) { //로그인 상태로 바꿀려면 !표 붙여야함
@@ -23,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 모달 창 열기 함수
     function openModal() {
-        modal.style.display = 'block';
+        modal.style.display = 'block';  
         modal.classList.remove('modal-close-animation');
         modal.classList.add('modal-open-animation');
     }
@@ -52,9 +61,17 @@ document.addEventListener('DOMContentLoaded', function () {
         loginFormButton.addEventListener('click', function(event) {
             event.preventDefault(); // 폼의 기본 제출 동작을 방지
     
-            // 사용자 아이디와 비밀번호 값을 가져옵니다.
-            const userId = document.getElementById('user-id').value;
-            const password = document.getElementById('user-password').value;
+            var userIdElement = document.getElementsByName('user-id')[0];
+            var passwordElement = document.getElementsByName('user-password')[0];
+            if (userIdElement && passwordElement) {
+                var userId = userIdElement.value;
+                var password = passwordElement.value;
+                // 이후 로직 처리
+            } else {
+                // 요소가 없는 경우의 처리 로직
+                console.error('Form elements not found');
+            }
+
             // 로그인 요청을 위한 URL
             const url = '/api/user/login';
     
@@ -70,14 +87,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (xhr.readyState === 4) { // 요청이 완료되었을 때
                     if (xhr.status === 200) {
                         var data = JSON.parse(xhr.responseText);
-                        localStorage.setItem('isLoggedIn', 'true'); // 로그인 상태 저장
-                        localStorage.setItem('accessToken', data.access_token); // 받은 액세스 토큰 저장
-                        
+                        localStorage.setItem('access_token', data.access_token); // 받은 액세스 토큰 저장
+                        localStorage.setItem('userid', data.userid);
+                        // localStorage.setItem('user_profile', data.user_profile);
+                        // user_profile 객체를 올바르게 문자열로 변환하여 저장
+                        localStorage.setItem('user_profile', JSON.stringify(data.user_profile));
+
                         // 사용자 이름(또는 ID)를 페이지에 표시합니다.
                         document.getElementById('user-name').textContent = data.userid + '님';
-    
+                        
                         closeModal(); // 모달 창 닫기
                         toggleUIBasedOnLoginStatus(); // UI 상태 업데이트
+                        
+                        setTimeout(function() {
+                            window.location.href = '/'; // 홈 페이지 URL로 변경
+                        }, 500); // 모달 닫힘 애니메이션의 지속 시간에 맞춰 조절하세요.
                     } else {
                         var errorMessageDiv = document.getElementById('login-error-message');
                         var errorResponse = JSON.parse(xhr.responseText);
@@ -88,7 +112,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             };
-    
             // URLSearchParams 객체를 사용하여 요청 본문을 구성합니다.
             var formData = new URLSearchParams();
             formData.append('username', userId);
@@ -96,7 +119,6 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log('Sending request with body:', formData.toString());
             // 요청을 전송합니다.
             xhr.send(formData.toString());
-    
              // 비밀번호 입력 필드 초기화
              document.getElementById('user-password').value = '';
         });
@@ -107,11 +129,12 @@ document.addEventListener('DOMContentLoaded', function () {
     var logoutButton = document.getElementById('logout');
     if (logoutButton) {
         logoutButton.addEventListener('click', function() {
-            localStorage.removeItem('isLoggedIn'); // 로그아웃 상태로 설정
+            localStorage.removeItem('access_token'); // 액세스 토큰 삭제
+            localStorage.removeItem('userid'); // 사용자 ID 삭제
             toggleUIBasedOnLoginStatus(); // UI 업데이트
 
             // 'home.html' 내용을 AJAX로 가져와 메인 섹션에 삽입
-            fetch('/')
+            fetch('/api/user/logout')
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
@@ -119,14 +142,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     return response.text();
                 })
                 .then(html => {
-                    document.querySelector('.main').innerHTML = html;
+                    window.location.href = '/';
+                    // document.querySelector('.main').innerHTML = html;
                     // home.html 로딩 후 필요한 추가적인 초기화 로직이 있다면 여기에 구현
                 })
                 .catch(error => {
                     console.error('Error loading the page: ', error);
                 });
         });
-
     }
 
     toggleUIBasedOnLoginStatus();
@@ -161,9 +184,8 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
-
-    
 });
+
 
 function initializeSignUpForm() {
     const addSkillButton = document.getElementById('addSkillButton');
@@ -212,100 +234,6 @@ function initializeSignUpForm() {
     skillList.addEventListener('click', removeSkill);
 
 
-// 게시물 목록을 생성하는 함수
-    function renderPosts(paginatedPosts) {
-        const postsList = document.getElementById("postsList");
-        postsList.innerHTML = "";
-        paginatedPosts.forEach((post) => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-            <td>${post.title}</td>
-            <td>${post.company}</td>
-            <td>${post.date}</td>`;
-            row.querySelector('td:first-child').addEventListener('click', () => openModal(post));
-            postsList.appendChild(row);
-        });
-    }
-
-
-
-// 페이지 로드 시 첫 페이지의 게시물을 렌더링
-    document.addEventListener("DOMContentLoaded", () => paginatePosts(currentPage));
-
-
-// 상세 글 보기를 위한 가상의 예시 데이터
-    const postsDetails = {
-        // 게시물 ID를 키로 사용
-        "1": {
-            title: "게시물 제목 1",
-            company: "회사명 1",
-            date: "2023-01-01",
-            content: [
-                { question: "질문 1", answer: "답변 1", feedback: "피드백 1" },
-                { question: "질문 2", answer: "답변 2", feedback: "피드백 2" },
-                // 반복되는 구조...
-            ],
-            finalFeedback: "전체 피드백 내용"
-        },
-        // 추가 게시물 상세 정보...
-    };
-
-// 모달 열기 함수 수정
-    function openModal(post) {
-        const modal = document.getElementById("record-modal");
-        const modalContent = modal.querySelector(".record-modal-content");
-        modalContent.innerHTML = `<p><strong>제목:</strong> ${post.title}</p>
-                              <p><strong>회사명:</strong> ${post.company}</p>
-                              <p><strong>날짜:</strong> ${post.date}</p>`;
-
-        const postDetail = postsDetails[post.id]; // 가정: post 객체에 id 속성이 있다고 가정
-        if (postDetail && postDetail.content) {
-            postDetail.content.forEach((item, index) => {
-                modalContent.innerHTML += `<div>
-                <p><strong>${index + 1}번째 질문:</strong> ${item.question}</p>
-                <p><strong>${index + 1}번째 답변:</strong> ${item.answer}</p>
-                <p><strong>${index + 1}번째 피드백:</strong> ${item.feedback}</p>
-            </div>`;
-            });
-
-            // 전체 피드백 추가
-            modalContent.innerHTML += `<p><strong>전체 피드백:</strong> ${postDetail.finalFeedback}</p>`;
-        }
-
-        modal.style.display = "block";
-    }
-
-// 모달 외부 클릭 시 닫기 이벤트 리스너 설정
-    window.addEventListener('click', function(event) {
-        const modal = document.getElementById("record-modal");
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
-    });
-
-    // 페이지 내용을 AJAX로 가져와 메인 섹션에 삽입하는 함수
-function loadPage(page) {
-    fetch(`api/common/${page}`) // 경로 확인 필요
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.text();
-        })
-        .then(html => {
-            document.querySelector('.main').innerHTML = html;
-            initPage();
-            if (page === 'interview_prepare.html') {
-                updateToggleStatus();
-            } else if (page === 'interview_all_repo.html') {
-                paginatePosts(currentPage);
-            }
-            // 페이지 로딩 후 필요한 추가적인 스크립트 초기화나 처리가 필요하면 여기에 추가
-        })
-        .catch(error => {
-            console.error('Error loading the page: ', error);
-        });
-    }
 
     document.getElementById('check-duplicate').addEventListener('click', function() {
         var userId = document.querySelector('[name="userId"]').value; // 사용자가 입력한 아이디 값을 가져옵니다.
@@ -385,8 +313,6 @@ function loadPage(page) {
     
         xhr.send(data);
     });
-    
-    
 }
 
 

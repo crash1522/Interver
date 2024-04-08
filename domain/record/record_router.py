@@ -1,15 +1,19 @@
 from fastapi import APIRouter, HTTPException
 from fastapi import Depends
+from fastapi_pagination.ext.sqlalchemy import paginate
+from fastapi_pagination import Page, add_pagination, paginate
 from sqlalchemy.orm import Session
+from sqlalchemy import select
 from starlette import status
 
 from database import get_db
 from domain.record import record_crud, record_schema
+from domain.user import user_crud
 from domain.user.user_router import get_current_user
 from domain.question.question_crud import delete_question
 from domain.answer.answer_crud import delete_answer
 from domain.feedback.feedback_crud import delete_feedback
-from models import User
+from models import User, Record
 
 router = APIRouter(
     prefix="/api/record",
@@ -37,6 +41,22 @@ def record_detail(record_id: int, db: Session = Depends(get_db), current_user: U
         }
 
 
+# record 저장소에 페이지네이션 적용
+@router.get('/get_records')
+def get_records(user: User = Depends(get_current_user), 
+                db: Session = Depends(get_db)) -> Page[record_schema.Record]:
+    records = user_crud.get_records_by_userid(db=db, userid=user.userid)
+    return paginate(records)
+
+"""
+input: @@@@@
+
+when: @@@@
+then: @@@@
+
+when: @@@
+then: @@@@@
+"""
 @router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
 def record_delete(_record_delete: record_schema.RecordDelete,
                     db: Session = Depends(get_db),
@@ -61,3 +81,5 @@ def record_delete(_record_delete: record_schema.RecordDelete,
 
     # 레코드를 삭제합니다 
     record_crud.delete_record(db=db, db_record=db_record)
+    
+add_pagination(router)

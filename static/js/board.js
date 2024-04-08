@@ -1,60 +1,78 @@
-const posts = [
-    { id: "1", title: "게시물 제목 1", company: "회사명 1", date: "2023-01-01" },
-    { id: "2", title: "게시물 제목 2", company: "회사명 2", date: "2023-01-02" },
-    { id: "3", title: "게시물 제목 3", company: "회사명 3", date: "2023-01-03" },
-    { id: "4", title: "게시물 제목 4", company: "회사명 4", date: "2023-01-03" },
-    { id: "5", title: "게시물 제목 5", company: "회사명 5", date: "2023-01-03" },
-    { id: "6", title: "게시물 제목 6", company: "회사명 6", date: "2023-01-03" },
-    { id: "7", title: "게시물 제목 7", company: "회사명 7", date: "2023-01-03" },
-    { id: "8", title: "게시물 제목 8", company: "회사명 8", date: "2023-01-03" },
-    // 추가 게시물 데이터...
+// 가상의 데이터
+const records = [
+    { create_date: '2024-01-10', company_name: 'ABC Corporation' },
+    { create_date: '2024-01-15' },
+    { create_date: '2024-01-20', company_name: 'XYZ Inc.' },
+    { create_date: '2024-01-25', company_name: 'Tech Innovations' },
+    { create_date: '2024-02-01' }, // 회사명이 없는 경우
+    { create_date: '2024-02-10', company_name: 'New Horizons Ltd' },
+    { create_date: '2024-02-15', company_name: 'Future Tech' },
+    { create_date: '2024-02-20' },
+    { create_date: '2024-02-25', company_name: 'Creative Solutions' },
+    { create_date: '2024-03-01' }, // 회사명이 없는 경우
+    { create_date: '2024-03-05', company_name: 'Alpha Enterprises' },
+    { create_date: '2024-03-10' },
+    { create_date: '2024-03-15', company_name: 'Innovative Designs' },
+    { create_date: '2024-03-20', company_name: 'Market Leaders Inc.' },
+    { create_date: '2024-03-25' } // 회사명이 없는 경우
 ];
 
-const postsPerPage = 5;
+const recordsPerPage = 5;
 let currentPage = 1;
 
-function paginatePosts(page) {
-    const startIndex = (page - 1) * postsPerPage;
-    const endIndex = startIndex + postsPerPage;
-    const paginatedPosts = posts.slice(startIndex, endIndex);
+function displayRecords(page) {
+    const startIndex = (page - 1) * recordsPerPage;
+    const endIndex = startIndex + recordsPerPage;
+    const recordsToShow = records.slice(startIndex, endIndex);
 
-    renderPosts(paginatedPosts);
-    renderPaginationButtons();
-}
-
-function renderPosts(paginatedPosts) {
-    const postsList = document.getElementById("postsList");
-    postsList.innerHTML = "";
-    paginatedPosts.forEach((post) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${post.title}</td>
-            <td>${post.company}</td>
-            <td>${post.date}</td>`;
-        // row.querySelector('td:first-child').addEventListener('click', () => openModal(post));
-        postsList.appendChild(row);
+    const listElement = document.querySelector('.records-list');
+    listElement.innerHTML = ''; // 기록 목록을 초기화
+    recordsToShow.forEach(record => {
+        const date = new Date(record.create_date);
+        const formattedDate = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+    
+        const companyName = record.company_name || ''; // 회사명이 없으면 '회사명 없음'을 표시
+        const recordElement = document.createElement('div');
+        recordElement.classList.add('record');
+        
+        // innerHTML 대신 textContent를 사용해 회사명이 정확히 텍스트로 처리되도록 함
+        recordElement.textContent = `${formattedDate} ${companyName} 모의면접`;
+        
+        listElement.appendChild(recordElement);
     });
+    
+    
 }
 
-function renderPaginationButtons() {
-    const totalPages = Math.ceil(posts.length / postsPerPage);
-    const pagination = document.getElementById("pagination");
-    pagination.innerHTML = "";
 
-    for (let i = 1; i <= totalPages; i++) {
-        const button = document.createElement("a");
-        button.innerText = i;
-        button.href = "#";
-        button.addEventListener("click", (e) => {
-            e.preventDefault();
-            currentPage = i;
-            paginatePosts(currentPage);
-        });
+function setupPagination(totalRecords, recordsPerPage) {
+    const pageCount = Math.ceil(totalRecords / recordsPerPage);
+    const paginationContainer = document.querySelector('.pagination');
+    paginationContainer.innerHTML = ''; // 페이지네이션 버튼 초기화
 
-        if (i === currentPage) {
-            button.classList.add("active");
+    for (let i = 1; i <= pageCount; i++) {
+        const button = document.createElement('button');
+        button.textContent = i;
+
+        // 현재 페이지 버튼에 'active' 클래스 추가
+        if (currentPage === i) {
+            button.classList.add('active');
         }
 
-        pagination.appendChild(button);
+        button.addEventListener('click', function() {
+            // 모든 버튼에서 'active' 클래스 제거
+            document.querySelectorAll('.pagination button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            // 클릭된 버튼에 'active' 클래스 추가
+            this.classList.add('active');
+
+            currentPage = i;
+            displayRecords(currentPage);
+        });
+        
+        paginationContainer.appendChild(button);
     }
 }
+
+

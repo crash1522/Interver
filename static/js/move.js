@@ -17,6 +17,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.querySelector('.main').innerHTML = newMainContent;
 
                 // 필요한 경우 여기서 추가적인 스크립트 초기화를 수행
+                // 애니메이션 클래스 추가
+                document.querySelector('.main').classList.add('animate-slide-in-up');
+
+                // 애니메이션 종료 후 클래스 제거 (애니메이션을 다시 재생할 수 있도록)
+                document.querySelector('.main').addEventListener('animationend', function() {
+                    document.querySelector('.main').classList.remove('animate-slide-in-up');
+                });
             }
         };
         xhr.send();
@@ -68,48 +75,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 // 로그인 모달에서 회원가입 이동 끝 ----------------------
 
-// 회원가입 폼 제출 후 홈으로 시작 ----------------------
-//     document.getElementById('signupForm').addEventListener('submit', function (e) {
-//         e.preventDefault(); // 폼의 기본 제출 동작 차단
-//
-//         // FormData 객체를 사용해 폼 데이터를 쉽게 수집
-//         var formData = new FormData(this);
-//
-//         // DB로 데이터를 제출하는 부분 (현재는 주석 처리)
-//         /*
-//         fetch('/submit-form-url', {
-//             method: 'POST',
-//             body: formData
-//         })
-//         .then(response => response.json())
-//         .then(data => {
-//             console.log('Success:', data);
-//             // 데이터 제출 성공 시 home.html로 내용을 교체
-//             return fetch('home.html');
-//         })
-//         .then(response => response.text())
-//         .then(html => {
-//             document.querySelector('.main').innerHTML = html;
-//             // 추가적인 초기화 작업이 필요하면 여기서 실행
-//         })
-//         .catch((error) => {
-//             console.error('Error:', error);
-//         });
-//         */
-//
-//         // DB 제출 부분을 건너뛰고 바로 home.html 로드 (예시)
-//         fetch('../html/home.html')
-//             .then(response => response.text())
-//             .then(html => {
-//                 document.querySelector('.main').innerHTML = html;
-//
-//                 // home.html 로드 후 필요한 초기화 작업을 여기서 실행
-//             })
-//             .catch((error) => {
-//                 console.error('Error:', error);
-//             });
-//     });
-// 회원가입 폼 제출 후 홈으로 끝 ----------------------
 
 // 서비스페이지로 이동 시작 --------------------------
     // 'go-service' 링크 클릭 이벤트 처리
@@ -135,26 +100,49 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 서비스페이지로 이동 끝 --------------------------
 
-// 마이페이지로 이동 시작 --------------------------
     document.getElementById('go-my-page').addEventListener('click', function(event) {
         event.preventDefault(); // 기본 이벤트 방지
+    
+        // 'api/common/mypage'로부터 마이페이지 내용을 AJAX로 가져옴
+        fetch('api/common/mypage')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(html => {
+            // 마이페이지 HTML 내용을 .main에 삽입
+            document.querySelector('.main').innerHTML = html;
+            
+            // localStorage에서 user_profile 정보를 가져옴
+            const userProfileString = localStorage.getItem('user_profile');
+            // 문자열을 객체로 변환
+            const userProfile = JSON.parse(userProfileString);
+            if (userProfile) {
+                // 여기서 페이지가 이미 로드되었으므로, 직접 DOM 요소에 접근하여 값을 업데이트할 수 있음
+                // 'input[name="userId"]' 등의 선택자는 실제 요소의 name 속성과 일치해야 함
+                document.querySelector('input[name="userId"]').value = userProfile.userid || '';
+                document.querySelector('input[name="name"]').value = userProfile.username || '';
+                document.querySelector('input[name="interest"]').value = userProfile.field || '';
+    
+                const skillsContainer = document.getElementById('skillList');
+                // 기술 목록을 콤마와 공백으로 구분된 문자열로 조합합니다.
+                const skillsText = userProfile.skills.join(', ');
+                skillsContainer.textContent = skillsText; // 또는 innerHTML, 이 경우 HTML 태그도 사용 가능합니다.
 
-        // 'service.html' 내용을 AJAX로 가져와 메인 섹션에 삽입
-        fetch('api/common/mypage') // 경로 확인 필요
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.text();
-            })
-            .then(html => {
-                document.querySelector('.main').innerHTML = html;
-                // 추가적인 스크립트 초기화나 처리가 필요하면 여기에 추가
-            })
-            .catch(error => {
-                console.error('Error loading the page: ', error);
-            });
+            
+                
+            } else {
+                console.error('User profile data is not available in localStorage.');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading the page: ', error);
+        });
     });
+    
+
     // 마이페이지로 이동 끝 --------------------------
 
     // 모의면접 사전입력, 모의면접 기록 페이지 이동 시작 --------------------------
@@ -185,9 +173,11 @@ function loadPage(page) {
             document.querySelector('.main').innerHTML = html;
             initPage();
             if (page === 'interview_prepare') {
+                preloadUserInfo();
                 updateToggleStatus();
             } else if (page === 'interview_all_repo') {
-                paginatePosts(currentPage);
+                displayRecords(currentPage);
+                setupPagination(records.length, recordsPerPage);
             }
             // 페이지 로딩 후 필요한 추가적인 스크립트 초기화나 처리가 필요하면 여기에 추가
         })
@@ -195,3 +185,59 @@ function loadPage(page) {
             console.error('Error loading the page: ', error);
         });
     }
+    // 사용자 정보를 미리 입력하는 함수
+    function preloadUserInfo() {
+        // localStorage에서 user_profile 정보를 가져옴
+        const userProfileString = localStorage.getItem('user_profile');
+        const userProfile = JSON.parse(userProfileString);
+        if (userProfile) {
+            // 이름, 관심분야, 스킬 목록을 입력 필드에 설정
+            document.querySelector('input[name="name"]').value = userProfile.username || '';
+            document.querySelector('input[name="interest"]').value = userProfile.field || '';
+            
+            const skillsContainer = document.getElementById('skillList');
+            const skillsText = userProfile.skills.join(', ');
+            skillsContainer.textContent = skillsText;
+        } else {
+            console.error('User profile data is not available in localStorage.');
+        }
+    }
+    function fetchUserProfile() {
+        // 여기서는 예시로 XMLHttpRequest를 사용합니다.
+        // 실제로는 인증 방식에 맞춰 Authorization 헤더 등을 추가해야 합니다.
+        var xhr = new XMLHttpRequest();
+        var url = "/api/user/profile"; // 사용자 정보 API 엔드포인트
+        let token = localStorage.getItem('accessToken');
+        xhr.open("GET", url, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader("Authorization", "Bearer " + token); // "Bearer " 접두사 추가
+    
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                populateUserProfile(response); // HTML에 사용자 정보를 채우는 함수 호출
+            }
+        };
+        xhr.send();
+    
+    }
+    
+    function populateUserProfile(data) {
+        // HTML 요소에 데이터 채우기
+        document.querySelector('[name="userId"]').value = data.userid;
+        document.querySelector('[name="name"]').value = data.username;
+        document.querySelector('[name="interest"]').value = data.field;
+        
+        // 스킬 리스트 처리
+        var skillsContainer = document.getElementById('skillList');
+        data.skills.forEach(skill => {
+            var skillDiv = document.createElement('div');
+            skillDiv.textContent = skill;
+            skillsContainer.appendChild(skillDiv);
+        });
+    }
+    
+    
+    
+    
+    
