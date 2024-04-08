@@ -16,6 +16,7 @@ from langchain.agents import AgentExecutor, create_openai_tools_agent
 
 from common.handler import handler, handler_schema
 from models import User
+from openai import OpenAI
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
@@ -25,6 +26,7 @@ load_dotenv()
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 LANGCHAIN_API_KEY = os.getenv('LANGCHAIN_API_KEY')
 llm = ChatOpenAI(api_key=OPENAI_API_KEY)
+stt_llm = OpenAI(api_key=OPENAI_API_KEY)
 
 ask_output_parser = StrOutputParser() #출력을 문자열로
 ask_llm = ChatOpenAI(temperature=0,               # 창의성 (0.0 ~ 2.0) 
