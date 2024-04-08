@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from starlette import status
 from typing import Dict
 from langchain_core.runnables.history import RunnableWithMessageHistory
 
