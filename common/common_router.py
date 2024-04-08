@@ -34,3 +34,8 @@ async def get_interview_prepare(request: Request):
 @router.get("/interview_all_repo", response_class=HTMLResponse)
 async def get_interview_all_repo(request: Request):
     return templates.TemplateResponse("interview_all_repo.html", {"request": request})
+
+
+@router.get("/test")
+async def test():
+    return {"test_string": "alright"}
