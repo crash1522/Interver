@@ -1,4 +1,5 @@
 from pydantic import BaseModel, validator
+from typing import List
 
 class Question(BaseModel):
     id: int
@@ -22,7 +23,7 @@ class QuestionCreate(BaseModel):
 
 class QuestionList(BaseModel):
     total: int = 0
-    question_list: list[Question] = []
+    question_list: List[Question] = []
 
 
 class QuestionUpdate(QuestionCreate):
