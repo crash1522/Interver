@@ -16,7 +16,6 @@ jobs:
         run: |
           echo "Main branch"
           echo "DESTINATION=infra/" >> $GITHUB_ENV     
-      
  
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -54,11 +53,12 @@ jobs:
           echo "COMMIT_MSG=Push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
           echo $COMMIT_MSG  
 
-      #- name: Check out main/prod repo
-      #  uses: actions/checkout@master
-      #  with:
-      #    repository: your/gitops-repository
-      #    token: ${{ secrets.GIT_ACCESS_TOKEN }}
+      - name: Check out main repo
+        uses: actions/checkout@v3
+        with:
+          #repository: your/gitops-repository
+          #ref: interver-argocd-monitoring
+          token: ${{ secrets.GIT_ACCESS_TOKEN }}
           
       - name: chmod repo destination
         run: |
