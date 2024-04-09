@@ -6,13 +6,13 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 from starlette import status
 
-from database import get_db
 from domain.record import record_crud, record_schema
 from domain.user import user_crud
 from domain.user.user_router import get_current_user
 from domain.question.question_crud import delete_question
 from domain.answer.answer_crud import delete_answer
 from domain.feedback.feedback_crud import delete_feedback
+from database import get_db
 from models import User
 
 router = APIRouter(
@@ -35,6 +35,9 @@ then: @@@@
 when: @@@
 then: @@@@@
 """
+
+
+"""
 @router.get("/detail/{record_id}")
 def record_detail(record_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     record = record_crud.get_record(db, record_id=record_id)
@@ -48,7 +51,7 @@ def record_detail(record_id: int, db: Session = Depends(get_db), current_user: U
         "answers": answers,
         "feedbacks": feedbacks
         }
-
+"""
 
 # record 저장소에 페이지네이션 적용
 @router.get('/get_records')

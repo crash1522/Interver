@@ -3,6 +3,7 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 
 from domain.record.record_schema import Record
+from domain.user import user_crud 
 from models import User, Record, Question, Answer, Feedback
 
 
@@ -30,7 +31,8 @@ def get_all_data_by_record_id(db: Session, record_id: int):
 def create_record(db: Session, user: User):
     db_record = Record(
         userid=user.userid,
-        create_date=datetime.now())
+        create_date=datetime.now(),
+        nth_round= user_crud.get_record_num(db=db, userid=user.userid) + 1)
     db.add(db_record)
     db.commit()
     db.refresh(db_record)  # 생성된 질문 인스턴스를 최신 상태로 업데이트
