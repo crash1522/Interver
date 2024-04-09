@@ -19,22 +19,13 @@ router = APIRouter(
     prefix="/api/record",
 )
 
-"""
-@router.post("/create", response_model=record_schema.Record)
-def record_create(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+
+@router.get("/create")
+def record_create(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)) -> int:
     record = record_crud.create_record(db=db, user=current_user)
-    return record
-"""
+    return record.id
 
-"""
-input: @@@@@
 
-when: @@@@
-then: @@@@
-
-when: @@@
-then: @@@@@
-"""
 @router.get("/detail/{record_id}")
 def record_detail(record_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     record = record_crud.get_record(db, record_id=record_id)

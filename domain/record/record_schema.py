@@ -7,10 +7,6 @@ class Record(BaseModel):
     userid: str               
     create_date: datetime.datetime
     rating: Optional[int] = None
-    """
-    Todo
-    nth_round 추가
-    """
 
     class Config:
         orm_mode = True
@@ -22,4 +18,3 @@ class RecordList(BaseModel):
 
 class RecordDelete(BaseModel):
     record_id: int
-
