@@ -48,6 +48,7 @@ def get_records(user: User = Depends(get_current_user),
     records = user_crud.get_records_by_userid(db=db, userid=user.userid)
     return paginate(records)
 
+
 @router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
 def record_delete(_record_delete: record_schema.RecordDelete,
                     db: Session = Depends(get_db),
