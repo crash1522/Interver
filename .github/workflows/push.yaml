@@ -65,7 +65,7 @@ jobs:
           chmod +x $DESTINATION
           ls
                   
-      - name: git push image tag to main/prod branch 
+      - name: git push image tag to prod/argocd-monitoring branch 
         env:
           GITHUB_REPO: ${{ github.repository.name }}
           GITHUB_SHA: ${{ github.sha }}
@@ -73,4 +73,4 @@ jobs:
           sed -i -e 's@${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:.*@${{ steps.build-image.outputs.image }}@g' $DESTINATION/interver.yaml
           git add .
           git commit -m "$COMMIT_MSG"
-          git push -f --set-upstream origin main/prod
+          git push -f --set-upstream origin prod/argocd-monitoring
