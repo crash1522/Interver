@@ -13,18 +13,18 @@ from domain.user.user_router import get_current_user
 from domain.question.question_crud import delete_question
 from domain.answer.answer_crud import delete_answer
 from domain.feedback.feedback_crud import delete_feedback
-from models import User, Record
+from models import User
 
 router = APIRouter(
     prefix="/api/record",
 )
 
-"""
-@router.post("/create", response_model=record_schema.Record)
-def record_create(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+
+@router.get("/create")
+def record_create(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)) -> int:
     record = record_crud.create_record(db=db, user=current_user)
-    return record
-"""
+    return record.id
+
 
 @router.get("/detail/{record_id}")
 def record_detail(record_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
@@ -48,15 +48,6 @@ def get_records(user: User = Depends(get_current_user),
     records = user_crud.get_records_by_userid(db=db, userid=user.userid)
     return paginate(records)
 
-"""
-input: @@@@@
-
-when: @@@@
-then: @@@@
-
-when: @@@
-then: @@@@@
-"""
 @router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
 def record_delete(_record_delete: record_schema.RecordDelete,
                     db: Session = Depends(get_db),

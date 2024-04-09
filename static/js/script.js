@@ -100,9 +100,13 @@ function closeModal(modal) {
 
                         // 사용자 이름(또는 ID)를 페이지에 표시합니다.
                         document.getElementById('user-name').textContent = data.userid + '님';
-    
-                        closeModal(modal); // 모달 창 닫기
+                        
+                        closeModal(); // 모달 창 닫기
                         toggleUIBasedOnLoginStatus(); // UI 상태 업데이트
+                        
+                        setTimeout(function() {
+                            window.location.href = '/'; // 홈 페이지 URL로 변경
+                        }, 500); // 모달 닫힘 애니메이션의 지속 시간에 맞춰 조절하세요.
                     } else {
                         var errorMessageDiv = document.getElementById('login-error-message');
                         var errorResponse = JSON.parse(xhr.responseText);
@@ -143,7 +147,8 @@ function closeModal(modal) {
                     return response.text();
                 })
                 .then(html => {
-                    document.querySelector('.main').innerHTML = html;
+                    window.location.href = '/';
+                    // document.querySelector('.main').innerHTML = html;
                     // home.html 로딩 후 필요한 추가적인 초기화 로직이 있다면 여기에 구현
                 })
                 .catch(error => {
@@ -177,6 +182,13 @@ function closeModal(modal) {
             })
             .then(html => {
                 document.querySelector('.main').innerHTML = html;
+                // 애니메이션 클래스 추가
+                document.querySelector('.main').classList.add('animate-fade-in');
+
+                // 애니메이션 종료 후 클래스 제거 (옵션)
+                document.querySelector('.main').addEventListener('animationend', function() {
+                    this.classList.remove('animate-fade-in');
+                });
                 // service.html 로딩 후 필요한 추가적인 초기화 로직이 있다면 여기에 구현
             })
             .catch(error => {

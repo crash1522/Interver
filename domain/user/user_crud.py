@@ -109,9 +109,12 @@ def get_records_by_userid(db: Session, userid: str):
     
     if not user:
         return []
-    records = db.query(Record).filter(Record.userid == userid).all()
+    records = db.query(Record).filter(Record.userid == userid).order_by(Record.create_date).all()
     return records
 
+
+def get_record_num(db: Session, userid: str):
+    return len(get_records_by_userid(db=db, userid=userid))
 
 """
 Update 관련 함수들

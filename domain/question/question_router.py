@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from starlette import status
 from typing import Dict
 from langchain_core.runnables.history import RunnableWithMessageHistory
 
@@ -11,7 +10,7 @@ from domain.record import record_crud
 from common import agent
 from common.handler import handler, handler_schema
 from models import User
-from database import get_db, get_async_db
+from database import get_db
 
 router = APIRouter(
     prefix="/api/question",

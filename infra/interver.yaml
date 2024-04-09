@@ -5,10 +5,15 @@ metadata:
   labels:
     app: app
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: app
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
   template:
     metadata:
       labels:
@@ -16,7 +21,8 @@ spec:
     spec:
       containers:
         - name: app
-          image: 900478210705.dkr.ecr.ap-northeast-2.amazonaws.com/interver:latest
+          image: 900478210705.dkr.ecr.ap-northeast-2.amazonaws.com/interver:c6394d79278bae99afd1bc006bd1bd26c8564a3c
+          imagePullPolicy: Always
 
 ---
 
