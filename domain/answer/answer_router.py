@@ -24,14 +24,14 @@ async def user_answer(question_id: int, db: Session = Depends(get_db), file: Upl
     user_voice_answer = await file.read()
 
     # STT
-    user_text_answer = llm.audio.transcriptions.create(
+    user_text_answer = await stt_llm.audio.transcriptions.create(
     model="whisper-1", # 모델 유형 설정
     file=user_voice_answer, # text로 전환할 음성 데이터
     response_format="json" # 응답 타입 설정(json, text, srt, verbose_json, vtt)
     )
 
     # transcription 객체를 JSON 문자열로 변환
-    user_text_answer_json = user_text_answer.json
+    user_text_answer_json = user_text_answer.model_dump_json
     converted_text = user_text_answer_json['text']
     user_text_answer_json['content'] = converted_text
     del user_text_answer_json['text']
