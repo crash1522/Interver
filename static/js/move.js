@@ -72,6 +72,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 // 현재 문서의 main 섹션 내용 교체
                 document.querySelector('.main').innerHTML = newMainContent;
+                // 애니메이션 클래스 추가
+                document.querySelector('.main').classList.add('animate-fade-in');
+
+                // 애니메이션 종료 후 클래스 제거 (옵션)
+                document.querySelector('.main').addEventListener('animationend', function() {
+                    this.classList.remove('animate-fade-in');
+                });
                 // 로그인 모달 창 숨김
                 document.getElementById('login-modal').style.display = 'none';
                 // 필요한 경우 여기서 추가적인 스크립트 초기화를 수행
