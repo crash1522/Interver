@@ -309,9 +309,9 @@ function closeModal(modal) {
             if (userAnswerModal) {
                 userAnswerModal.classList.remove('chat-modal-open-animation2');
                 userAnswerModal.classList.add('chat-modal-close-animation2');
+                if (callback) callback();
                 setTimeout(() => {
                     userAnswerModal.style.display = 'none';
-                    if (callback) callback(); // 콜백 함수 실행
                 }, 500);
             }
         }
@@ -319,7 +319,7 @@ function closeModal(modal) {
         closeAnswerModal(playAIQuestion);
         };
     }
-    
+
     // 실제로 쓸땐 아래처럼fetch안에서 playAIQuestion 콜백 함수 실행
     // function getUserAnswer() {
     //     // 녹음 중지
