@@ -319,6 +319,7 @@ function closeModal(modal) {
         closeAnswerModal(playAIQuestion);
         };
     }
+    
     // 실제로 쓸땐 아래처럼fetch안에서 playAIQuestion 콜백 함수 실행
     // function getUserAnswer() {
     //     // 녹음 중지
@@ -389,32 +390,6 @@ function closeModal(modal) {
             });
     }
     
-
-
-        // // interview_chat.html 내용을 가져와서 페이지에 삽입하는 함수
-        // function ChatPage() {
-        //     fetch('api/common/interview_chat')
-        //         .then(response => {
-        //             if (!response.ok) {
-        //                 throw new Error('Network response was not ok');
-        //             }
-        //             return response.text();
-        //         })
-        //         .then(html => {
-        //             document.querySelector('.main').innerHTML = html;
-        //             // interview_chat.html 로딩 후 필요한 추가적인 초기화 로직이 여기에 구현됩니다.
-        //             // 여기에 playAIQuestion() 함수를 호출하여 AI 질문 모달을 활성화하고 오디오를 재생합니다.
-                    
-        //             playAIQuestion();
-        //             const micIcon = document.getElementById('user_recording_circlein');
-        //             micIcon.addEventListener('click', getUserAnswer);
-        //         })
-        //         .catch(error => {
-        //             console.error('Error loading the page: ', error);
-        //         });
-        // }
-        
-
 });
 
 
