@@ -53,11 +53,11 @@ jobs:
           echo "COMMIT_MSG=Push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
           echo $COMMIT_MSG  
 
-      - name: Check out main repo
+      - name: Get Access Permission
         uses: actions/checkout@v3
         with:
           #repository: your/gitops-repository
-          #ref: interver-argocd-monitoring
+          ref: prod/argocd-monitoring
           token: ${{ secrets.GIT_ACCESS_TOKEN }}
           
       - name: chmod repo destination
