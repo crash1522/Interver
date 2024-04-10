@@ -1,15 +1,19 @@
   ## 가상 환경 생성:
 
-- __Windows:__ python -m venv myapi
-- __Mac/Linux:__ python3 -m venv myapi
+- __Windows:__ <br>
+ python -m venv myapi <br>
+- __Mac/Linux:__ <br>
+python3 -m venv myapi <br>
   
 myapi는 생성할 가상 환경의 이름입니다. 이름은 자유롭게 지정할 수 있습니다.
-## 가상 환경 활성화:
-- __Windows:__ cd C:\venvs\myapi\Scripts
-- activate
+## 가상 환경 활성화: 
+- __Windows:__ <br>
+  cd C:\venvs\myapi\Scripts <br>
+  activate
 <br>
 
-- __Mac/Linux:__ source myapi/bin/activate
+- __Mac/Linux:__ <br>
+source myapi/bin/activate <br>
   
 활성화하면 커맨드 라인 프롬프트에 가상 환경의 이름이 표시됩니다.
 ## 가상 환경 비활성화:
