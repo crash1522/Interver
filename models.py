@@ -38,7 +38,7 @@ class Record(Base):
     __tablename__ = "record"
 
     id = Column(Integer, primary_key=True)
-    userid = Column(String, ForeignKey("user.userid"))
+    user_id = Column(Integer, ForeignKey("user.id"))
     create_date = Column(DateTime, nullable=False)
     rating = Column(Integer, nullable = True)
 

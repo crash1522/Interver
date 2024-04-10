@@ -29,7 +29,7 @@ def get_all_data_by_record_id(db: Session, record_id: int):
 
 def create_record(db: Session, user: User):
     db_record= Record(
-        userid=user.userid,
+        user_id=user_crud.get_id(db=db,userid=user.userid),
         create_date=datetime.now())
     db.add(db_record)
     db.commit()

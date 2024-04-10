@@ -4,7 +4,7 @@ from typing import Optional, List
 
 class Record(BaseModel):
     id: int
-    userid: str               
+    user_id: int               
     create_date: datetime.datetime
     rating: Optional[int] = None
 
