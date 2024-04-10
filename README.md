@@ -7,9 +7,7 @@ myapi는 생성할 가상 환경의 이름입니다. 이름은 자유롭게 지�
 ## 가상 환경 활성화:
 - Windows: cd C:\venvs\myapi\Scripts
 - activate
-
-
-      
+<br>
 
 - Mac/Linux:
 - source myapi/bin/activate
