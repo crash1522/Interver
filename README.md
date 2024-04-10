@@ -9,8 +9,7 @@ myapi는 생성할 가상 환경의 이름입니다. 이름은 자유롭게 지�
 - activate
 <br>
 
-- __Mac/Linux:__
-- source myapi/bin/activate
+- __Mac/Linux:__ source myapi/bin/activate
   
 활성화하면 커맨드 라인 프롬프트에 가상 환경의 이름이 표시됩니다.
 ## 가상 환경 비활성화:
