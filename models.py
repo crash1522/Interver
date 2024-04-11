@@ -41,6 +41,7 @@ class Record(Base):
     user_id = Column(Integer, ForeignKey("user.id"))
     create_date = Column(DateTime, nullable=False)
     rating = Column(Integer, nullable = True)
+    nth_round = Column(Integer)
 
     user = relationship("User", back_populates="records")
     questions = relationship('Question', back_populates = "record")

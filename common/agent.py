@@ -16,7 +16,7 @@ from langchain.agents import AgentExecutor, create_openai_tools_agent
 
 from common.handler import handler, handler_schema
 from models import User
-
+from typing import Dict
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -38,6 +38,8 @@ memory = ConversationSummaryBufferMemory(
     memory_key="chat_history",
     return_messages=True,
 )
+
+agent_dict: Dict[int, RunnableWithMessageHistory] = {}
 
 
 def create_agent(new_input: handler_schema.Input):
