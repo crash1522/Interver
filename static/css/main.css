@@ -924,7 +924,7 @@ input:checked + .slider:before {
 
 .user_recording_box {
 	position: absolute;
-	top: 70%; /* 마이크 중앙보다 약간 아래 */
+	top: 85%; /* 마이크 중앙보다 약간 아래 */
 	left: 50%;
 	transform: translate(-50%, -50%);
 }
@@ -938,8 +938,36 @@ input:checked + .slider:before {
   align-content: stretch;
 }
 
+.user_recording_button {
+	width: 90px; /* 기존: 120px */
+	height: 90px; /* 기존: 120px */
+	border-radius: 50%;
+	background: #50CDDD;
+	box-shadow: 0px 0px 80px #0084F9;
+	position: absolute;
+}
 
 .user_recording_outline {
+	width: 45px; /* 기존: 60px */
+	height: 45px; /* 기존: 60px */
+	border-radius: 50%;
+	border: 6px solid #B5A4A4; /* 기존: 8px */
+    animation: pulse 3s;
+	animation-timing-function: ease-out;
+	animation-iteration-count: infinite;
+	position: absolute;
+}
+
+#user_recording_circlein {
+	width: 75px; /* 기존: 100px */
+	height: 75px; /* 기존: 100px */
+	border-radius: 50%;
+	background: #6BD6E1;
+	box-shadow: 0px -2px 15px #E0FF94;
+	position: absolute;
+}
+
+/* .user_recording_outline {
 	width: 60px;
 	height: 60px;
 	border-radius: 50%;
@@ -948,16 +976,16 @@ input:checked + .slider:before {
 	animation-timing-function: ease-out;
 	animation-iteration-count: infinite;
 	position: absolute;
-}
+} */
 
-.user_recording_button {
+/* .user_recording_button {
 	width: 120px;
 	height: 120px;
 	border-radius: 50%;
 	background: #50CDDD;
 	box-shadow: 0px 0px 80px #0084F9;
 	position: absolute;
-}
+} */
 
 @keyframes pulse {
   0% {
@@ -986,7 +1014,7 @@ input:checked + .slider:before {
 	animation-delay: 1.5s;
 }
 
-#user_recording_circlein {
+/* #user_recording_circlein {
     
 	width: 100px;
 	height: 100px;
@@ -994,7 +1022,7 @@ input:checked + .slider:before {
 	background: #6BD6E1;
 	box-shadow: 0px -2px 15px #E0FF94;
 	position: absolute;
-}
+} */
 
 /* 추가적인 모달 내용 스타일링 */
 .user-answer-content p {
@@ -1026,7 +1054,9 @@ input:checked + .slider:before {
     z-index: 1; /* 원하는 z-index 값 */
     transition: transform 0.3s ease; /* 크기 변경 애니메이션 효과 */
     cursor: pointer; /* 마우스 오버 시 커서 변경 */
+    transform: scale(0.75); /* 아이콘 크기를 75%로 조정 */
 }
+
 .mic-icon:hover {
     transform: scale(1.1); /* 마우스 오버 시 아이콘 크기 증가 */
 }
@@ -1254,29 +1284,58 @@ input:checked + .slider:before {
     animation: chatModalCloseAnimation2 0.5s forwards;
 }
 
-.ai-question-textbox {
-    position: relative;
-    background-color: #f0f9ff; /* 연한 청색 배경 */
-    border-radius: 20px; /* 둥근 모서리 */
-    padding: 20px;
-    margin: 20px;
-    max-width: 80%;
-    color: #333; /* 글자 색상 */
-    font-family: 'Arial', sans-serif; /* 폰트 */
+
+
+.user-answer-textbox:before, .ai-question-textbox:before {
+    content: '';
+    display: block;
+    width: 50px; /* 아이콘의 너비를 조정 */
+    height: 50px; /* 아이콘의 높이를 조정 */
+    background-image: url('../images/user_answer_icon.png'); /* 사용자 대화 아이콘 */
+    background-size: cover; /* 배경 이미지 크기를 조정하여 박스에 맞춤 */
+    position: absolute;
+    top: 10px;
+    right: 10px; /* 위치 조정 */
+  }
+  .user-answer-textbox:before {
+    right: -60px; /* 아이콘을 오른쪽 바깥으로 50픽셀 이동 */
   }
   
-  .ai-question-textbox:after {
-    content: '';
-    position: absolute;
-    border-style: solid;
-    border-width: 15px 20px 15px 0; /* 삼각형 모양 */
-    border-color: transparent #f0f9ff transparent transparent;
-    display: block;
-    width: 0;
-    z-index: 1;
-    left: -20px; /* 버블 꼬리 위치 조정 */
-    top: 20px; /* 버블 꼬리 높이 조정 */
+  .ai-question-textbox:before {
+    background-image: url('../images/ai_question_icon.jpg'); /* AI 대화 아이콘 */
+    left: -60px; /* 아이콘을 왼쪽 바깥으로 50픽셀 이동 */
+
+    /* 나머지 스타일 설정은 .user-answer-textbox:before와 동일 */
   }
+  
+.ai-question-textbox {
+    position: relative;
+    background-color: #f5f5f5;
+    border-radius: 20px;
+    padding: 40px;
+    padding-left: 60px; /* 아이콘 공간 확보 */
+    margin: 60px;
+    max-width: 80%;
+    color: #333;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  
+  .user-answer-textbox {
+    position: relative;
+    background-color: #e4efff;
+    border-radius: 20px;
+    padding: 40px;
+    padding-right: 60px; /* 아이콘 공간 확보 */
+    margin: 60px;
+    max-width: 80%;
+    color: #333;
+    font-family: 'Arial', sans-serif;
+    /* text-align: center; */
+  }
+  
+
+  
   
   .ai-question-textbox2 {
     background-color: #ffffff; /* 백색 배경 */
