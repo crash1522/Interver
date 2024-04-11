@@ -9,13 +9,13 @@ from domain.user import user_router, user_schema
 from domain.record import record_crud
 from common import agent
 from common.handler import handler, handler_schema
+from common.agent import agent_dict
 from models import User
 from database import get_db
 
 router = APIRouter(
     prefix="/api/question",
 )
-agent_dict: Dict[int, RunnableWithMessageHistory] = {}
 
 @router.post("agent_question/{record_id}", response_model = question_schema.Question)
 async def agent_question(record_id: int,
@@ -45,11 +45,11 @@ async def agent_question(record_id: int,
 
 # 인자로 입력값들 받아야함 (입력 페이지)
 @router.post("/first-question", response_model = question_schema.Question)
-async def first_question(company_info: handler_schema.CompanyInfo,
-                          cover_letter: handler_schema.CoverLetter,
-                          db: Session = Depends(get_db), 
-                          current_user: user_schema.User = Depends(user_router.get_current_user)
-                          ):
+async def first_question(
+        company_info: handler_schema.CompanyInfo,
+        cover_letter: handler_schema.CoverLetter,
+        db: Session = Depends(get_db), 
+        current_user: user_schema.User = Depends(user_router.get_current_user)):
     new_record = record_crud.create_record(db, current_user)
     greeting = f"안녕하세요, AI개발에 지원한 {current_user.username}입니다."
     

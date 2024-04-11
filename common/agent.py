@@ -16,6 +16,7 @@ from langchain.agents import AgentExecutor, create_openai_tools_agent
 
 from common.handler import handler, handler_schema
 from models import User
+from typing import Dict
 from openai import OpenAI
 
 # 로깅 설정
@@ -24,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+print(OPENAI_API_KEY)
 LANGCHAIN_API_KEY = os.getenv('LANGCHAIN_API_KEY')
 llm = ChatOpenAI(api_key=OPENAI_API_KEY)
 stt_llm = OpenAI(api_key=OPENAI_API_KEY)
@@ -39,6 +41,8 @@ memory = ConversationSummaryBufferMemory(
     memory_key="chat_history",
     return_messages=True,
 )
+
+agent_dict: Dict[int, RunnableWithMessageHistory] = {}
 
 
 def create_agent(new_input: handler_schema.Input):
