@@ -311,9 +311,15 @@ function closeModal(modal) {
                 return response.json(); // 서버로부터의 응답을 JSON 형태로 처리
             }).then(data => {
                 console.log(data); // 성공 시 로그 출력
+                // content의 내용을 <div class="user-answer-textbox">에 적용
+                const userAnswerTextbox = document.querySelector('.user-answer-textbox');
+                if (userAnswerTextbox) {
+                    userAnswerTextbox.textContent = data.content; // content 값을 div에 설정
+                }
             }).catch(error => {
                 console.error('Error uploading the audio: ', error); // 에러 처리
             });
+            
             audioChunks = [];
 
             function closeAnswerModal(callback) {
@@ -328,7 +334,9 @@ function closeModal(modal) {
             }
         }
         // closeAnswerModal 함수가 완전히 완료된 후 playAIQuestion 함수를 호출
-        closeAnswerModal(playAIQuestion);
+        setTimeout(() => {
+            closeAnswerModal(playAIQuestion);
+        }, 5000);
         };
     }
 

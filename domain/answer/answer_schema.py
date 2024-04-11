@@ -1,4 +1,5 @@
 from pydantic import BaseModel, validator
+from typing import Optional
 
 class AnswerCreate(BaseModel):
     content: str
@@ -11,9 +12,9 @@ class AnswerCreate(BaseModel):
 
 
 class Answer(BaseModel):
-    id: int
+    id: Optional[int] = None
     content: str
-    question_id: int
+    question_id: Optional[int] = None
  
     class Config:
         orm_mode = True

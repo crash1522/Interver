@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic&family=Nanum+Pen+Script&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Nanum+Gothic:wght@400;700;800&family=Nanum+Myeongjo:wght@400;700;800&display=swap');
 
 body, html {
     margin: 0;
@@ -1294,16 +1295,15 @@ input:checked + .slider:before {
     background-size: cover; /* 배경 이미지 크기를 조정하여 박스에 맞춤 */
     position: absolute;
     top: 10px;
-    /* right: 10px; */
   }
   .user-answer-textbox:before {
     background-image: url('../images/user_answer_icon.png'); /* 사용자 대화 아이콘 */
-    right: -60px; /* 아이콘을 오른쪽 바깥으로 50픽셀 이동 */
+    right: -60px; /* 아이콘을 오른쪽 바깥으로 60픽셀 이동 */
   }
   
   .ai-question-textbox:before {
     background-image: url('../images/ai_question_icon.jpg'); /* AI 대화 아이콘 */
-    left: -60px; /* 아이콘을 왼쪽 바깥으로 50픽셀 이동 */
+    left: -60px; /* 아이콘을 왼쪽 바깥으로 60픽셀 이동 */
   }
   
   .ai-question-textbox {
@@ -1311,10 +1311,10 @@ input:checked + .slider:before {
     background-color: #f5f5f5;
     border-radius: 20px;
     padding: 40px;
-    margin: 30px 80px 30px 50px; /* 상하 마진을 30px, 좌측 마진을 40px, 우측 마진을 80px로 조정 */
+    margin: 30px 100px 30px 50px; /* 상하 마진을 30px, 좌측 마진을 50px, 우측 마진을 100px로 조정 */
     max-width: 80%;
     color: #333;
-    font-family: 나눔고딕, sans-serif;
+    font-family: 'Noto Sans KR', sans-serif;
     font-size: 20px;
 }
   
@@ -1323,10 +1323,10 @@ input:checked + .slider:before {
     background-color: #e4efff;
     border-radius: 20px;
     padding: 40px;
-    margin: 30px 30px 30px 80px; /* 상하 마진을 30px, 좌측 마진을 80px, 우측 마진을 40px로 조정 */
+    margin: 30px 50px 30px 100px; /* 상하 마진을 30px, 좌측 마진을 100px, 우측 마진을 50px로 조정 */
     max-width: 80%;
     color: #333;
-    font-family: 나눔고딕, sans-serif;
+    font-family: 'Noto Sans KR', sans-serif;
     font-size: 20px;
 }
 
