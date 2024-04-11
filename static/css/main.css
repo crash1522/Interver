@@ -1254,5 +1254,68 @@ input:checked + .slider:before {
     animation: chatModalCloseAnimation2 0.5s forwards;
 }
 
-
+.ai-question-textbox {
+    position: relative;
+    background-color: #f0f9ff; /* 연한 청색 배경 */
+    border-radius: 20px; /* 둥근 모서리 */
+    padding: 20px;
+    margin: 20px;
+    max-width: 80%;
+    color: #333; /* 글자 색상 */
+    font-family: 'Arial', sans-serif; /* 폰트 */
+  }
+  
+  .ai-question-textbox:after {
+    content: '';
+    position: absolute;
+    border-style: solid;
+    border-width: 15px 20px 15px 0; /* 삼각형 모양 */
+    border-color: transparent #f0f9ff transparent transparent;
+    display: block;
+    width: 0;
+    z-index: 1;
+    left: -20px; /* 버블 꼬리 위치 조정 */
+    top: 20px; /* 버블 꼬리 높이 조정 */
+  }
+  
+  .ai-question-textbox2 {
+    background-color: #ffffff; /* 백색 배경 */
+    border: 2px solid #1E2D70; /* 짙은 테두리 */
+    border-radius: 8px; /* 약간 둥근 모서리 */
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+    font-family: 'Arial', sans-serif;
+    color: #333; /* 글자 색상 */
+  }
+  
+  .ai-question-textbox2 p {
+    margin: 0;
+    padding: 0;
+  }
+  
+  .ai-question-textbox3 {
+    background-color: #f5f5f5;
+    padding: 15px 20px;
+    border: 1px solid #d5d5d5;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    font-family: 나눔고딕, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+  }
+  
+  .ai-question-textbox3 .title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .ai-question-textbox3 .info {
+    font-size: 12px;
+    color: #777;
+    margin-top: 10px;
+  }
+  
   /*chat.html관련 코드 끝*/
