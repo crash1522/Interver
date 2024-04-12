@@ -8,7 +8,6 @@ from database import get_db
 from domain.answer import answer_schema, answer_crud
 from domain.question import question_crud
 from domain.user.user_router import get_current_user
-from models import User
 from common.agent import stt_llm
 
 router = APIRouter(
