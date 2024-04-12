@@ -287,14 +287,14 @@ function closeModal(modal) {
         // 녹음이 중지되면 호출되는 이벤트 핸들러
         mediaRecorder.onstop = () => {
         // 녹음이 완료되면 audioChunks 배열에 저장된 오디오 데이터를 하나의 Blob 객체로 결합
-        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+        const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
 
             // FormData 객체를 생성하고, 오디오 파일을 추가
             const formData = new FormData();
-            formData.append('file', audioBlob, 'recorded_audio.wav');
+            formData.append('file', audioBlob, 'recorded_audio.mp3');
 
             // question_id 값을 동적으로 설정
-            const questionId = 1; // 예시 값
+            const questionId = 1;
 
             // Fetch API를 사용하여 서버에 파일을 업로드
             fetch(`/api/answer/user_answer/${questionId}`, {
@@ -340,47 +340,6 @@ function closeModal(modal) {
         };
     }
 
-    // 실제로 쓸땐 아래처럼fetch안에서 playAIQuestion 콜백 함수 실행
-    // function getUserAnswer() {
-    //     // 녹음 중지
-    //     mediaRecorder.stop();
-    
-    //     // 녹음이 중지되면 호출되는 이벤트 핸들러
-    //     mediaRecorder.onstop = () => {
-    //         const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-    //         const formData = new FormData();
-    //         formData.append('file', audioBlob, 'recorded_audio.wav');
-    //         const questionId = 1; // 예시 값
-    
-    //         fetch(`/api/answer/user_answer/${questionId}`, {
-    //             method: 'POST',
-    //             body: formData,
-    //         })
-    //         .then(response => {
-    //             if (!response.ok) {
-    //                 throw new Error('Network response was not ok');
-    //             }
-    //             return response.json();
-    //         })
-    //         .then(data => {
-    //             console.log(data); // 성공 시 로그 출력
-    //             // 응답 처리 후 모달 닫기 및 필요한 후속 조치
-    //             var userAnswerModal = document.getElementById('user-answer-modal'); // 사용자 답변 모달 요소 선택
-    //             if (userAnswerModal) {
-    //                 userAnswerModal.classList.add('modal-close-animation');
-    //                 setTimeout(() => {
-    //                     userAnswerModal.style.display = 'none';
-    //                     playAIQuestion(); // 콜백 함수 실행 위치
-    //                 }, 500);
-    //             }
-    //         })
-    //         .catch(error => {
-    //             console.error('Error uploading the audio: ', error);
-    //         });
-    
-    //         audioChunks = []; // 초기화
-    //     };
-    // }
     
     function ChatPage() {
         fetch('api/common/interview_chat')

@@ -12,9 +12,9 @@ class AnswerCreate(BaseModel):
 
 
 class Answer(BaseModel):
-    id: Optional[int] = None
+    id: int
     content: str
-    question_id: Optional[int] = None
+    question_id: int
  
     class Config:
         orm_mode = True

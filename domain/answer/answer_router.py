@@ -19,14 +19,12 @@ router = APIRouter(
 )
 
 # answer_content는 임시로 받은 변수, 이후 STT로직이 추가되면 삭제해야함
-# @router.post("/user_answer/{question_id}", response_model=answer_schema.Answer)
-@router.post("/user_answer/1", response_model=answer_schema.Answer)
-async def user_answer(file: UploadFile = File(...)): # mp3 파일을 인자로 받음
-# async def user_answer(question_id: int, db: Session = Depends(get_db), file: UploadFile = File(...)): # mp3 파일을 인자로 받음
-#     question = question_crud.get_question(db, question_id=question_id)
-#     if not question:
-#         raise HTTPException(status_code=404,
-#                              detail="No unanswered interview question found in the session")
+@router.post("/user_answer/{question_id}", response_model=answer_schema.Answer)
+async def user_answer(question_id: int, db: Session = Depends(get_db), file: UploadFile = File(...)): # mp3 파일을 인자로 받음
+    question = question_crud.get_question(db, question_id=question_id)
+    if not question:
+        raise HTTPException(status_code=404,
+                             detail="No unanswered interview question found in the session")
     
     user_voice_answer = io.BytesIO(await file.read())
     user_voice_answer.name = "file.mp3"  # this is the important line
@@ -41,15 +39,10 @@ async def user_answer(file: UploadFile = File(...)): # mp3 파일을 인자로 �
     # transcription 객체를 JSON 문자열로 변환
     user_text_answer_json = json.loads(user_text_answer.model_dump_json())
     converted_text = user_text_answer_json['text']
-    # user_text_answer_json['content'] = converted_text
-    # del user_text_answer_json['text']
-    # answer = answer_crud.create_answer(db=db, #db,question 임시값
-    #                           question=question,
-    #                           answer_create=answer_schema.AnswerCreate(content = converted_text)
-    #                           )
-    answer = Answer(question_id=1,
-                       content=converted_text)
-    print(answer)
+    answer = answer_crud.create_answer(db=db, #db,question 임시값
+                              question=question,
+                              answer_create=answer_schema.AnswerCreate(content = converted_text)
+                              )
     return answer
 
 
