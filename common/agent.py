@@ -14,8 +14,7 @@ from langchain.agents import AgentExecutor
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain.agents import AgentExecutor, create_openai_tools_agent
 
-from common.handler import handler, handler_schema
-from models import User
+from common.handler import handler_schema
 from typing import Dict
 from openai import OpenAI
 
@@ -25,7 +24,6 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-print(OPENAI_API_KEY)
 LANGCHAIN_API_KEY = os.getenv('LANGCHAIN_API_KEY')
 llm = ChatOpenAI(api_key=OPENAI_API_KEY)
 stt_llm = OpenAI(api_key=OPENAI_API_KEY)
@@ -62,9 +60,6 @@ def create_agent(new_input: handler_schema.Input):
             MessagesPlaceholder(variable_name="agent_scratchpad"),
         ]
     )
-
-    ask_chain = ask_prompt | ask_llm | ask_output_parser
-
 
     # 1. Load Retriever
     loader = WebBaseLoader("https://www.ttimes.co.kr/")

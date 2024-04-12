@@ -2,6 +2,7 @@ from pydantic import BaseModel
 import datetime
 from typing import Optional, List
 
+
 class Record(BaseModel):
     id: int
     user_id: int               

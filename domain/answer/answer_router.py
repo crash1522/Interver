@@ -1,26 +1,23 @@
 from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
 from sqlalchemy.orm import Session
 from starlette import status
-
-from database import get_db
-from domain.answer import answer_schema, answer_crud
-from domain.question import question_crud, question_schema
-from domain.user.user_router import get_current_user
-from models import User
-from common.agent import llm, stt_llm
-from pydub import AudioSegment
 import io
 import json
 
-from models import Question, Answer
+from database import get_db
+from domain.answer import answer_schema, answer_crud
+from domain.question import question_crud
+from domain.user.user_router import get_current_user
+from models import User
+from common.agent import stt_llm
 
 router = APIRouter(
     prefix="/api/answer",
 )
 
 # answer_content는 임시로 받은 변수, 이후 STT로직이 추가되면 삭제해야함
-@router.post("/user_answer/{question_id}", response_model=answer_schema.Answer)
-async def user_answer(question_id: int, db: Session = Depends(get_db), file: UploadFile = File(...)): # mp3 파일을 인자로 받음
+@router.post("/user_answer_create/{question_id}", response_model=answer_schema.AnswerReponse)
+async def user_answer_create(question_id: int, db: Session = Depends(get_db), file: UploadFile = File(...), user = Depends(get_current_user)): # mp3 파일을 인자로 받음
     question = question_crud.get_question(db, question_id=question_id)
     if not question:
         raise HTTPException(status_code=404,
@@ -43,10 +40,30 @@ async def user_answer(question_id: int, db: Session = Depends(get_db), file: Upl
                               question=question,
                               answer_create=answer_schema.AnswerCreate(content = converted_text)
                               )
-    return answer
+    answer_response = answer_schema.AnswerReponse(
+         id = answer.id,
+         content = answer.content,
+         question_id = answer.question_id,
+         record_id = answer.question.record.id
+    )
+    return answer_response
 
 
 """
+@router.post("/create/{question_id}", response_model=answer_schema.Answer)
+def answer_create(question_id: int,
+                  _answer_create: answer_schema.AnswerCreate,
+                  db: Session = Depends(get_db),
+                  current_user: User = Depends(get_current_user)):
+
+    # create answer
+    question = question_crud.get_question(db, question_id=question_id)
+    if not question:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Question not found.")
+    answer = answer_crud.create_answer(db, question=question,
+                              answer_create=_answer_create)
+    return answer
+
 @router.post("/create/{question_id}", response_model=answer_schema.Answer)
 def answer_create(question_id: int,
                   _answer_create: answer_schema.AnswerCreate,

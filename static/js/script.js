@@ -196,23 +196,9 @@ function closeModal(modal) {
             });
     }
     
-    // 면접 시작 버튼 클릭시 interview_chat 페이지 이동
-    // 면접 시작 버튼 클릭 이벤트
-    document.body.addEventListener('click', function(event) {
-        // 이벤트가 발생한 요소가 "시작하기" 버튼인지 확인
-         if (event.target.classList.contains('sign-up-btn')) {
-            if (!isLoggedIn()) {  //로그인 상태로 바꿀려면 !표 빼야함
-                openModal(modal); // 비로그인 상태에서 모달 창 열기
-            } else {
-                ChatPage(); // 로그인 상태일 때 interview_chat.html 내용 가져오기
-            }
-        }
-
-    });
-
-
     let mediaRecorder; // 오디오 스트림을 녹음하기 위한 객체
     let audioChunks = []; // 녹음된 오디오 데이터를 담을 배열
+    let globalStream = null;
 
     // AI 질문 모달에서 MP3 재생 시작 및 이벤트 핸들링
     function playAIQuestion() {
@@ -252,6 +238,34 @@ function closeModal(modal) {
         };
     }
 
+    function ChatPage() {
+        fetch('api/common/interview_chat')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(html => {
+                document.querySelector('.main').innerHTML = html;
+                // 사용자의 오디오 입력 장치에 접근 권한을 요청
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(stream => {
+                        // 권한이 수락되면 AI 질문 모달을 활성화하고 오디오를 재생
+                        playAIQuestion();
+                        // 권한 요청이 수락되면 녹음 준비 완료, `getUserAnswer`에서 녹음 시작
+                        const micIcon = document.getElementById('user_recording_circlein');
+                        micIcon.addEventListener('click', getUserAnswer);
+                    })
+                    .catch(error => {
+                        console.error("Microphone access was denied: ", error);
+                    });
+            })
+            .catch(error => {
+                console.error('Error loading the page: ', error);
+            });
+    }
+    
     function recordUserAnswer() {
         // 답변 모달 열기
         var userAnswerModal = document.getElementById('user-answer-modal'); // 사용자 답변 모달 요소 선택
@@ -288,7 +302,11 @@ function closeModal(modal) {
         mediaRecorder.onstop = () => {
         // 녹음이 완료되면 audioChunks 배열에 저장된 오디오 데이터를 하나의 Blob 객체로 결합
         const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
-
+        // 마이크 사용 중지
+        mediaRecorder.stream.getTracks().forEach(track => track.stop());
+        if (globalStream) {
+            globalStream.getTracks().forEach(track => track.stop()); // 스트림 중지
+        }
             // FormData 객체를 생성하고, 오디오 파일을 추가
             const formData = new FormData();
             formData.append('file', audioBlob, 'recorded_audio.mp3');
@@ -338,35 +356,6 @@ function closeModal(modal) {
             closeAnswerModal(playAIQuestion);
         }, 5000);
         };
-    }
-
-    
-    function ChatPage() {
-        fetch('api/common/interview_chat')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.text();
-            })
-            .then(html => {
-                document.querySelector('.main').innerHTML = html;
-                // 사용자의 오디오 입력 장치에 접근 권한을 요청
-                navigator.mediaDevices.getUserMedia({ audio: true })
-                    .then(stream => {
-                        // 권한이 수락되면 AI 질문 모달을 활성화하고 오디오를 재생
-                        playAIQuestion();
-                        // 권한 요청이 수락되면 녹음 준비 완료, `getUserAnswer`에서 녹음 시작
-                        const micIcon = document.getElementById('user_recording_circlein');
-                        micIcon.addEventListener('click', getUserAnswer);
-                    })
-                    .catch(error => {
-                        console.error("Microphone access was denied: ", error);
-                    });
-            })
-            .catch(error => {
-                console.error('Error loading the page: ', error);
-            });
     }
     
 });

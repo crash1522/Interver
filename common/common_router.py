@@ -35,7 +35,6 @@ async def get_interview_prepare(request: Request):
 async def get_interview_all_repo(request: Request):
     return templates.TemplateResponse("interview_all_repo.html", {"request": request})
 
-
 #chat페이지 이동
 @router.get("/interview_chat", response_class=HTMLResponse)
 async def get_interview_chat(request: Request):

@@ -13,6 +13,8 @@ def get_record(db: Session, record_id: int):
 
 def get_all_data_by_record_id(db: Session, record_id: int):
     questions = db.query(Question).filter(Question.record_id == record_id).all()
+    if not questions:
+        return None
     answers = []
     feedbacks = []
     for question in questions:
@@ -23,7 +25,7 @@ def get_all_data_by_record_id(db: Session, record_id: int):
             feedbacks.append(feedback)
         else:
             feedbacks.append(None)
-
+    
     return questions, answers, feedbacks
 
 # nth_round 검증하기
@@ -31,7 +33,7 @@ def create_record(db: Session, user: User):
     db_record= Record(
         user_id=user_crud.get_id(db=db,userid=user.userid),
         create_date=datetime.now(),
-        nth_round=len(db.query(Record.user_id==User.id).all())) + 1
+        nth_round=len(db.query(Record.user_id==User.id).all()) + 1)
     db.add(db_record)
     db.commit()
     db.refresh(db_record)  # 생성된 질문 인스턴스를 최신 상태로 업데이트

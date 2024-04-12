@@ -1,14 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import Dict
 from langchain_core.runnables.history import RunnableWithMessageHistory
+from typing import Optional
 
 from domain.question import question_schema, question_crud
 from domain.answer import answer_crud
 from domain.user import user_router, user_schema
 from domain.record import record_crud
-from common import agent
-from common.handler import handler, handler_schema
+from common.handler.handler_router import input_dict
 from common.agent import agent_dict
 from models import User
 from database import get_db
@@ -17,23 +16,32 @@ router = APIRouter(
     prefix="/api/question",
 )
 
-@router.post("agent_question/{record_id}", response_model = question_schema.Question)
-async def agent_question(record_id: int,
-                         before_answer_id: int,
+@router.post("/question_create/{record_id}", response_model = question_schema.Question)
+async def question_create(record_id: int,
+                         before_answer_id: Optional[int]=None,
                          db: Session = Depends(get_db),
                          current_user: User = Depends(user_router.get_current_user)):
-    before_answer = answer_crud.get_answer(db=db, answer_id=before_answer_id)
-    if not before_answer:
-        raise HTTPException(status_code=404,
-                            detail="No unanswered interview question found in the session")
-    user_answer = before_answer.content
     conversational_agent_executor = agent_dict[record_id]
-
-    # 챗봇으로부터 다음 면접 질문을 받아옴
-    chat_response = await conversational_agent_executor.ainvoke(
-        {"input": user_answer},  # 사용자의 면접 대답 전달
+    
+    if not before_answer_id:
+        # 초기 프롬프트 설정, 추후 소령님 작업물로 변환
+        # input_dict 이용
+        # 초기 프롬프트 설정 이후 해당 키값 삭제
+        greeting = f"안녕하세요, AI개발에 지원한 {current_user.username}입니다."
+        chat_response  = await conversational_agent_executor.ainvoke(
+        {"input": greeting},
         {"configurable": {"session_id": record_id}},
     )
+    else:
+        before_answer = answer_crud.get_answer(db=db, answer_id=before_answer_id)
+        user_answer = before_answer.content
+    
+        # 챗봇으로부터 다음 면접 질문을 받아옴
+        chat_response = await conversational_agent_executor.ainvoke(
+            {"input": user_answer},  # 사용자의 면접 대답 전달
+            {"configurable": {"session_id": record_id}},
+        )
+        
     if chat_response and "output" in chat_response:
         new_question_content = chat_response["output"]
         new_question = question_crud.create_question(db=db,
@@ -43,6 +51,9 @@ async def agent_question(record_id: int,
     else:
         raise HTTPException(status_code=500, detail="Failed to receive a new question from the chatbot")
 
+
+
+"""
 # 인자로 입력값들 받아야함 (입력 페이지)
 @router.post("/first-question", response_model = question_schema.Question)
 async def first_question(
@@ -78,7 +89,6 @@ async def first_question(
                                                  record_id=new_record.id)
     return new_question
 
-"""
 @router.get("/detail/{question_id}", response_model=question_schema.Question)
 def question_detail(question_id: int, db: Session = Depends(get_db)):
     question = question_crud.get_question(db, question_id=question_id)

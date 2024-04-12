@@ -3,7 +3,6 @@ from fastapi import Depends
 from fastapi_pagination.ext.sqlalchemy import paginate
 from fastapi_pagination import Page, add_pagination, paginate
 from sqlalchemy.orm import Session
-from sqlalchemy import select
 from starlette import status
 
 from database import get_db
@@ -13,8 +12,9 @@ from domain.user.user_router import get_current_user
 from domain.question import question_crud, question_schema
 from domain.answer.answer_crud import delete_answer
 from domain.feedback.feedback_crud import delete_feedback
-from common.handler import handler_schema, handler
+from common.handler import handler_router, handler_schema
 from common import agent
+from common.agent import agent_dict
 from models import User
 
 router = APIRouter(
@@ -54,7 +54,6 @@ def get_records(user: User = Depends(get_current_user),
     return paginate(records)
 
 
-
 @router.post("/start_record", response_model = question_schema.Question)
 async def start_record(company_info: handler_schema.CompanyInfo,
         cover_letter: handler_schema.CoverLetter,
@@ -64,7 +63,7 @@ async def start_record(company_info: handler_schema.CompanyInfo,
     greeting = f"안녕하세요, AI개발에 지원한 {current_user.username}입니다."
     
     # 회사 정보, 자기소개서도 입력받아야함, 현재는 default값들어가고 있음
-    new_input = handler.input_create(db=db, user=current_user, company_info=company_info, cover_letter=cover_letter)
+    new_input = handler_router.input_create(db=db, user=current_user, company_info=company_info, cover_letter=cover_letter)
 
     # 새로운 agent 생성 후, 메모리에 저장
     new_agent = agent.create_agent(new_input)
@@ -87,6 +86,7 @@ async def start_record(company_info: handler_schema.CompanyInfo,
                                                  question_create=question_schema.QuestionCreate(content = first_question),
                                                  record_id=new_record.id)
     return new_question
+
 
 
 
