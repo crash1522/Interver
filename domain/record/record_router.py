@@ -54,6 +54,7 @@ def get_records(user: User = Depends(get_current_user),
     return paginate(records)
 
 
+
 @router.post("/start_record", response_model = question_schema.Question)
 async def start_record(company_info: handler_schema.CompanyInfo,
         cover_letter: handler_schema.CoverLetter,
@@ -86,7 +87,6 @@ async def start_record(company_info: handler_schema.CompanyInfo,
                                                  question_create=question_schema.QuestionCreate(content = first_question),
                                                  record_id=new_record.id)
     return new_question
-
 
 
 
