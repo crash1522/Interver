@@ -1,4 +1,5 @@
 from pydantic import BaseModel, validator
+from typing import Optional
 
 class AnswerCreate(BaseModel):
     content: str

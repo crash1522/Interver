@@ -1,5 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
     var modal = document.getElementById('login-modal');
+
+    // 추가된 user-answer-modal 참조
+
+
     var loginBtn = document.getElementById('go-sign-in'); // 로그인 버튼
     var loginFormButton = document.querySelector('.login-button'); // 로그인 폼 내의 로그인 버튼
     var authLinks = document.querySelector('.auth-links'); // 로그인/회원가입 링크를 담고 있는 div
@@ -30,31 +34,32 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // 모달 창 열기 함수
-    function openModal() {
+// 모달 열기 함수 (범용)
+function openModal(modal) {
+    if (modal) {
         modal.style.display = 'block';  
-        modal.classList.remove('modal-close-animation');
         modal.classList.add('modal-open-animation');
+        modal.classList.remove('modal-close-animation');
     }
-
-    // 모달 창 닫기 함수
-    function closeModal() {
+}
+function closeModal(modal) {
+    if (modal) {
         modal.classList.remove('modal-open-animation');
         modal.classList.add('modal-close-animation');
         setTimeout(() => {
             modal.style.display = 'none';
         }, 500);
     }
-
+}
     // 모달 외부 클릭 시 모달 창 닫기
     window.onclick = function(event) {
         if (event.target === modal) {
-            closeModal();
+            closeModal(modal);
         }
     };
 
     loginBtn.onclick = function() {
-        openModal();
+        openModal(modal);
     };
 
     if (loginFormButton) {
@@ -159,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // 이벤트가 발생한 요소가 "시작하기" 버튼인지 확인
         if (event.target.classList.contains('start-btn')) {
             if (!isLoggedIn()) {  //로그인 상태로 바꿀려면 !표 빼야함
-                openModal(); // 비로그인 상태에서 모달 창 열기
+                openModal(modal); // 비로그인 상태에서 모달 창 열기
             } else {
                 loadServicePage(); // 로그인 상태일 때 service.html 내용 가져오기
             }
@@ -190,7 +195,180 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Error loading the page: ', error);
             });
     }
+    
+    // 면접 시작 버튼 클릭시 interview_chat 페이지 이동
+    // 면접 시작 버튼 클릭 이벤트
+    document.body.addEventListener('click', function(event) {
+        // 이벤트가 발생한 요소가 "시작하기" 버튼인지 확인
+         if (event.target.classList.contains('sign-up-btn')) {
+            if (!isLoggedIn()) {  //로그인 상태로 바꿀려면 !표 빼야함
+                openModal(modal); // 비로그인 상태에서 모달 창 열기
+            } else {
+                ChatPage(); // 로그인 상태일 때 interview_chat.html 내용 가져오기
+            }
+        }
 
+    });
+
+
+    let mediaRecorder; // 오디오 스트림을 녹음하기 위한 객체
+    let audioChunks = []; // 녹음된 오디오 데이터를 담을 배열
+
+    // AI 질문 모달에서 MP3 재생 시작 및 이벤트 핸들링
+    function playAIQuestion() {
+        var aiQuestionModal = document.getElementById('ai-question-modal'); // AI 질문 모달 요소 선택
+        const aiQuestionAudio = document.getElementById('aiQuestionAudio');
+
+        // Question 창 열기 함수
+        function openQuestionModal() {
+            if (aiQuestionModal) {
+            aiQuestionModal.style.display = 'flex';  
+            aiQuestionModal.classList.remove('chat-modal-close-animation');
+            aiQuestionModal.classList.add('chat-modal-open-animation');
+            }
+        }
+
+        function closeQuestionModal(modal) {
+            if (modal) {
+                modal.classList.remove('chat-modal-open-animation');
+                modal.classList.add('chat-modal-close-animation');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 500);
+            }
+        }
+        // AI 질문 모달 열기
+        openQuestionModal();
+
+        // MP3 재생 시작
+        aiQuestionAudio.play();
+
+        // MP3 재생 완료 이벤트 핸들러
+        aiQuestionAudio.onended = function() {
+        // AI 질문 모달 닫기
+        closeQuestionModal(aiQuestionModal);
+        // 사용자 답변 모달 열기
+        recordUserAnswer();
+        };
+    }
+
+    function recordUserAnswer() {
+        // 답변 모달 열기
+        var userAnswerModal = document.getElementById('user-answer-modal'); // 사용자 답변 모달 요소 선택
+        function openAnswerModal() {
+            if (userAnswerModal) {
+                userAnswerModal.style.display = 'flex';  
+                userAnswerModal.classList.add('chat-modal-open-animation2');
+                userAnswerModal.classList.remove('chat-modal-close-animation2');
+            }
+        }
+        openAnswerModal();
+        // 사용자의 오디오 입력 장치에 접근 권한을 요청
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(stream => {
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.start();
+            })
+            .catch(error => {
+                console.error("Microphone access was denied: ", error);
+            });
+    }
+
+    function getUserAnswer() {
+        // 녹음 중지
+        mediaRecorder.stop();
+    
+        // 녹음이 중지되면 호출되는 이벤트 핸들러
+        mediaRecorder.onstop = () => {
+        // 녹음이 완료되면 audioChunks 배열에 저장된 오디오 데이터를 하나의 Blob 객체로 결합
+        const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+
+            // FormData 객체를 생성하고, 오디오 파일을 추가
+            const formData = new FormData();
+            formData.append('file', audioBlob, 'recorded_audio.mp3');
+
+            // question_id 값을 동적으로 설정
+            const questionId = 1;
+
+            // Fetch API를 사용하여 서버에 파일을 업로드
+            fetch(`/api/answer/user_answer/${questionId}`, {
+                method: 'POST',
+                body: formData, // FormData 인스턴스, 파일과 필요한 데이터를 포함
+                headers: {
+                    // 필요한 경우 추가 헤더를 설정할 수 있습니다.
+                    // 예: 'Authorization': `Bearer ${token}`
+                },
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json(); // 서버로부터의 응답을 JSON 형태로 처리
+            }).then(data => {
+                console.log(data); // 성공 시 로그 출력
+                // content의 내용을 <div class="user-answer-textbox">에 적용
+                const userAnswerTextbox = document.querySelector('.user-answer-textbox');
+                if (userAnswerTextbox) {
+                    userAnswerTextbox.textContent = data.content; // content 값을 div에 설정
+                }
+            }).catch(error => {
+                console.error('Error uploading the audio: ', error); // 에러 처리
+            });
+            
+            audioChunks = [];
+
+            function closeAnswerModal(callback) {
+            var userAnswerModal = document.getElementById('user-answer-modal'); // 사용자 답변 모달 요소 선택
+            if (userAnswerModal) {
+                userAnswerModal.classList.remove('chat-modal-open-animation2');
+                userAnswerModal.classList.add('chat-modal-close-animation2');
+                if (callback) callback();
+                setTimeout(() => {
+                    userAnswerModal.style.display = 'none';
+                }, 500);
+            }
+        }
+        // closeAnswerModal 함수가 완전히 완료된 후 playAIQuestion 함수를 호출
+        setTimeout(() => {
+            closeAnswerModal(playAIQuestion);
+        }, 5000);
+        };
+    }
+
+    
+    function ChatPage() {
+        fetch('api/common/interview_chat')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(html => {
+                document.querySelector('.main').innerHTML = html;
+                // 사용자의 오디오 입력 장치에 접근 권한을 요청
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(stream => {
+                        // 권한이 수락되면 AI 질문 모달을 활성화하고 오디오를 재생
+                        playAIQuestion();
+                        // 권한 요청이 수락되면 녹음 준비 완료, `getUserAnswer`에서 녹음 시작
+                        const micIcon = document.getElementById('user_recording_circlein');
+                        micIcon.addEventListener('click', getUserAnswer);
+                    })
+                    .catch(error => {
+                        console.error("Microphone access was denied: ", error);
+                    });
+            })
+            .catch(error => {
+                console.error('Error loading the page: ', error);
+            });
+    }
+    
 });
 
 
@@ -320,6 +498,8 @@ function initializeSignUpForm() {
     
         xhr.send(data);
     });
+
+
 }
 
 
