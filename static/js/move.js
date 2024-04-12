@@ -18,11 +18,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 // 필요한 경우 여기서 추가적인 스크립트 초기화를 수행
                 // 애니메이션 클래스 추가
-                document.querySelector('.main').classList.add('animate-slide-in-up');
+                document.querySelector('.main').classList.add('animate-fade-in');
 
-                // 애니메이션 종료 후 클래스 제거 (애니메이션을 다시 재생할 수 있도록)
+                // 애니메이션 종료 후 클래스 제거 (옵션)
                 document.querySelector('.main').addEventListener('animationend', function() {
-                    document.querySelector('.main').classList.remove('animate-slide-in-up');
+                    this.classList.remove('animate-fade-in');
                 });
             }
         };
@@ -42,6 +42,13 @@ document.addEventListener('DOMContentLoaded', function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 // main 섹션의 내용을 응답으로 받은 HTML로 교체
                 document.querySelector('.main').innerHTML = xhr.responseText;
+                // 애니메이션 클래스 추가
+                document.querySelector('.main').classList.add('animate-fade-in');
+
+                // 애니메이션 종료 후 클래스 제거 (옵션)
+                document.querySelector('.main').addEventListener('animationend', function() {
+                    this.classList.remove('animate-fade-in');
+                });
                 initializeSignUpForm();
             }
         };
@@ -65,6 +72,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 // 현재 문서의 main 섹션 내용 교체
                 document.querySelector('.main').innerHTML = newMainContent;
+                // 애니메이션 클래스 추가
+                document.querySelector('.main').classList.add('animate-fade-in');
+
+                // 애니메이션 종료 후 클래스 제거 (옵션)
+                document.querySelector('.main').addEventListener('animationend', function() {
+                    this.classList.remove('animate-fade-in');
+                });
                 // 로그인 모달 창 숨김
                 document.getElementById('login-modal').style.display = 'none';
                 // 필요한 경우 여기서 추가적인 스크립트 초기화를 수행
@@ -91,6 +105,13 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(html => {
                 document.querySelector('.main').innerHTML = html;
+                // 애니메이션 클래스 추가
+                document.querySelector('.main').classList.add('animate-fade-in');
+
+                // 애니메이션 종료 후 클래스 제거 (옵션)
+                document.querySelector('.main').addEventListener('animationend', function() {
+                    this.classList.remove('animate-fade-in');
+                });
                 // 추가적인 스크립트 초기화나 처리가 필요하면 여기에 추가
             })
             .catch(error => {
@@ -114,6 +135,13 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(html => {
             // 마이페이지 HTML 내용을 .main에 삽입
             document.querySelector('.main').innerHTML = html;
+            // 애니메이션 클래스 추가
+            document.querySelector('.main').classList.add('animate-fade-in');
+
+            // 애니메이션 종료 후 클래스 제거 (옵션)
+            document.querySelector('.main').addEventListener('animationend', function() {
+                this.classList.remove('animate-fade-in');
+            });
             
             // localStorage에서 user_profile 정보를 가져옴
             const userProfileString = localStorage.getItem('user_profile');
@@ -171,6 +199,13 @@ function loadPage(page) {
         })
         .then(html => {
             document.querySelector('.main').innerHTML = html;
+            // 애니메이션 클래스 추가
+            document.querySelector('.main').classList.add('animate-fade-in');
+
+            // 애니메이션 종료 후 클래스 제거 (옵션)
+            document.querySelector('.main').addEventListener('animationend', function() {
+                this.classList.remove('animate-fade-in');
+            });
             initPage();
             if (page === 'interview_prepare') {
                 preloadUserInfo();

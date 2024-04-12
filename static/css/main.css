@@ -51,7 +51,7 @@ header {
 .auth-links a {
     text-decoration: none;
     color: #8f8f8f;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: normal;
     margin-left: 20px;
     cursor: pointer;
@@ -69,7 +69,7 @@ header {
 .header-links a {
     text-decoration: none;
     color: #8f8f8f;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: bold;
     margin-right: 30px;
     margin-left: auto;
@@ -164,19 +164,20 @@ header {
     font-family: "Nanum Gothic", sans-serif;
 }
 
-@keyframes slideInUp {
+/* 애니메이션 정의 */
+/* 애니메이션 정의 */
+@keyframes animate-fade-in {
     from {
-        transform: translateY(100%);
-        opacity: 0;
+        opacity: 0; /* 처음에는 완전히 투명 */
     }
     to {
-        transform: translateY(0);
-        opacity: 1;
+        opacity: 1; /* 점차 불투명해지며 나타남 */
     }
 }
 
-.main.animate-slide-in-up {
-    animation: slideInUp 0.5s ease-out forwards;
+/* 애니메이션 적용 */
+.animate-fade-in {
+    animation: animate-fade-in 2s ease-out forwards; /* 애니메이션 실행 */
 }
 
 
@@ -323,7 +324,8 @@ input[type="password"] {
 
 .login-button {
     width: 100%;
-    padding: 9px;
+    height: 40px;
+    font-size: 18px;
     margin-bottom: 15px;
     background-color: #4c80f0;
     color: #fff;
@@ -382,13 +384,13 @@ input[type="password"] {
 
 .sign-up-big-label {
     display: block;
-    font-size: 18px; /* 또는 원하는 크기로 설정 */
+    font-size: 28px; /* 또는 원하는 크기로 설정 */
     margin-bottom: 40px; /* 로그인 정보와 이메일 사이의 간격 */
 }
 
 .sign-up-small-label {
-    font-size: 14px; /* 또는 원하는 크기로 설정 */
-    padding-left: 8px;
+    font-size: 20px; /* 또는 원하는 크기로 설정 */
+    padding-left: 4px;
     margin-bottom: 8px; /* 레이블과 입력 필드 사이 간격 */
     display: block; /* 레이블을 블록 요소로 만들어 아래 요소와 분리 */
 }
@@ -405,6 +407,7 @@ input[type="password"] {
 .sign-up-container .sign-up-input-normal {
     flex-grow: 1;
     margin-right: 8px; /* 버튼과의 간격 */
+    font-size: 18px;
     width: 48%;
     height: 50px;
     border-color: lightgray;
@@ -448,6 +451,7 @@ input[type="password"] {
     border: none;
     border-radius: 8px;
     cursor: pointer;
+    transition: background-color 0.8s ease, color 0.8s ease; /* 여기에 추가 */
 }
 
 .sign-up-confirm-button:hover {
@@ -566,6 +570,7 @@ input[type="password"] {
     border-radius: 8px;
     margin-bottom: 50px;
     cursor: pointer;
+    transition: background-color 0.8s ease, color 0.8s ease; /* 여기에 추가 */
 }
 
 .mypage-withdraw-button:hover {

@@ -177,6 +177,13 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(html => {
                 document.querySelector('.main').innerHTML = html;
+                // 애니메이션 클래스 추가
+                document.querySelector('.main').classList.add('animate-fade-in');
+
+                // 애니메이션 종료 후 클래스 제거 (옵션)
+                document.querySelector('.main').addEventListener('animationend', function() {
+                    this.classList.remove('animate-fade-in');
+                });
                 // service.html 로딩 후 필요한 추가적인 초기화 로직이 있다면 여기에 구현
             })
             .catch(error => {
