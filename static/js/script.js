@@ -248,7 +248,6 @@ function closeQuestionModal(aiQuestionModal) {
     let globalStream = null;
     let mediaRecorder; // 오디오 스트림을 녹음하기 위한 객체
     let audioChunks = []; // 녹음된 오디오 데이터를 담을 배열
-    let globalStream = null;
 
     // AI 질문 모달에서 MP3 재생 시작 및 이벤트 핸들링
     function playAIQuestion() {

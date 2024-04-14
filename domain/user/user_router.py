@@ -59,7 +59,7 @@ async def is_loggined(request: Request) -> Optional[str]:
             return ""
         return userid
     except JWTError:
-        return "JWTError"
+        return ""
 
 
 # 유저를 생성합니다. (회원가입) 
