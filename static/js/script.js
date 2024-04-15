@@ -182,6 +182,7 @@ function closeQuestionModal(aiQuestionModal) {
                     return response.text();
                 })
                 .then(html => {
+                    localStorage.clear();
                     window.location.href = '/';
                     // document.querySelector('.main').innerHTML = html;
                     // home.html 로딩 후 필요한 추가적인 초기화 로직이 있다면 여기에 구현
