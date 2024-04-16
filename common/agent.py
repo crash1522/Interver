@@ -56,12 +56,6 @@ def create_agent(new_input: handler_schema.Input):
         # JSON으로 직접 직렬화할 수 없는 복잡한 개체
     ask_prompt = ChatPromptTemplate.from_messages(
         [
-<<<<<<< HEAD
-            ("system",f"나는 지원자 역할을 하고, 당신은 면접관 역할을 한다. 우리는 {field} 포지션에 대한 면접을 진행한다. 우리의 역할은 변경되지 않는다. 면접 과정은 오로지 한국어로만 진행된다. 사용자가 설정한 {필수_질문}은 반드시 질문한다. 지원자의 자기소개서는 {cover_letter}이다. 회사의 요구사항은 {desired_candidate}이다. 자기소개서와 회사의 요구사항을 바탕으로 질문한다. 질문 할 때마다 반드시 몇 번째 질문인지 표시한다. 나의 답변을 기다린 후 다음 질문으로 넘어간다. 한번에 하나의 질문을 한다. 첫 질문은 반드시 지원동기를 묻는다. 설명이나 다른 형태의 대화는 제공하지 않는다."),
-            MessagesPlaceholder(variable_name="chat_history"),
-            ("human", "{input}"),
-            MessagesPlaceholder(variable_name="agent_scratchpad"),
-=======
             # 조건 요구
             ("system",f""" 너는 채용 면접관으로써 오직 질문만 한다. 나는 지원자이고 너의 질문에 대답을 할 것이다. 너는 {user_info.field} 직무에 관련한 질문을 할 것이다.
                             대화의 방식은 실제 면접과 동일하다. 너의 질문에 내가 대답을 하면 다음 질문으로 넘어간다.
@@ -70,7 +64,6 @@ def create_agent(new_input: handler_schema.Input):
                             모든 질문은 자기소개서와 회사의 요구사항을 바탕으로 질문한다. 설명이나 다른 형태의 대화는 제공하지 않는다"""),
             MessagesPlaceholder(variable_name="history"),
             ("human","{input}"),
->>>>>>> feature/prompt_engineering
         ]
     )
     ## llm 객체 생성
