@@ -186,6 +186,7 @@ document.addEventListener('DOMContentLoaded', function () {
         else if (event.target.id === 'start-interview-btn') {
             event.preventDefault(); // 기본 이벤트 방지
             moveFirstQuestionPage();
+            document.getElementById("loadingModal").style.display = "block";
         }
     });
     // 모의면접 사전입력, 모의 면접 기록 페이지 이동 끝 --------------------------
@@ -200,28 +201,37 @@ document.addEventListener('DOMContentLoaded', function () {
         const preferredQualifications = document.getElementById('preferred-qualifications').value;
         const candidateIdeal = document.getElementById('candidate_ideal').value;
     
+        // 로컬 스토리지에서 user_profile 정보를 가져옴
+        const userProfileString = localStorage.getItem('user_profile');
+        const userProfile = JSON.parse(userProfileString);
+    
         // 자기소개서 내용
         const coverLetterContent = document.querySelector('.cover-letter').value;
     
-       
         // 모든 데이터를 하나의 객체로 구성
         const formData = {
             company_info: {
                 name: companyName,
-                works: work,
-                prefered_qualification: preferredQualifications,
+                work: work,
+                preferred_qualifications: preferredQualifications,
                 desired_candidate: candidateIdeal
             },
             cover_letter: {
                 content: [coverLetterContent]
             },
+            user: {
+                id: userProfile.id,  
+                userid: userProfile.userid,  
+                username: userProfile.username,  
+                field: userProfile.field,  
+                skills: userProfile.skills  
+            }
         };
     
         // 액세스 토큰 가져오기
         const accessToken = localStorage.getItem('access_token');
     
         // FastAPI 엔드포인트로 데이터 전송
-        
         fetch('/api/handler/interview_start', {
             method: 'POST',
             headers: {
@@ -233,27 +243,42 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(response => response.json())
         .then(data => {
             console.log('Success:', data);
-            loadPage('interview_chat', data); 
-            sendTextToSpeech(questionText);
+            //첫 질문 생성(텍스트)
+            return fetch(`/api/question/question_create/${data}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}` // 인증 토큰 헤더에 추가
+                },
+                body: JSON.stringify({ before_answer_id: null })  // 필요한 경우 수정
+            });
+        })
+        .then(questionResponse => {
+            if (!questionResponse.ok) {
+                throw new Error('Failed to create question');
+            }
+            return questionResponse.json();
+        })
+        .then(questionData => {
+            console.log('New question received:', questionData);
+
+            loadPage('interview_chat', questionData);
         })
         .catch((error) => {
             console.error('Error:', error);
-        });  
-    };
+        });
+    }
     
-    
-    // 면접시작 버튼 누르면 인터뷰 페이지 이동 끝 --------------------------
-
 });
 
 // TTS start
-async function sendTextToSpeech(text) {
-    const response = await fetch('/api/handler/text_to_speech/', {
+async function sendTextToSpeech(questionText) {
+    const response = await fetch('/api/handler/text_to_speech', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ data: "안녕하세요" }) //data: text
+        body: JSON.stringify({ data: questionText }) //data: text
     });
 
     if (response.ok) {
@@ -273,7 +298,7 @@ function playAudio(blob) {
 
 // 페이지 내용을 AJAX로 가져와 메인 섹션에 삽입하는 함수
 function loadPage(page, data=null) {
-    fetch(`api/common/${page}`) // 경로 확인 필요
+    fetch(`api/common/${page}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -289,6 +314,7 @@ function loadPage(page, data=null) {
             document.querySelector('.main').addEventListener('animationend', function() {
                 this.classList.remove('animate-fade-in');
             });
+
             initPage();
             if (page === 'interview_prepare') {
                 preloadUserInfo();
@@ -298,18 +324,19 @@ function loadPage(page, data=null) {
                 setupPagination(records.length, recordsPerPage);
             } else if (page === 'interview_chat') {
                 const aiQuestionTextBox = document.getElementById('ai-question-textbox');
-                // 기술 목록을 콤마와 공백으로 구분된 문자열로 조합합니다.
                 const questionText = data.content;
                 const record_id = data.record_id;
                 const question_id = data.id;
-                aiQuestionTextBox.textContent = questionText; // 또는 innerHTML, 이 경우 HTML 태그도 사용 가능합니다.
+                aiQuestionTextBox.textContent = questionText;
+                document.dispatchEvent(new CustomEvent('pageLoaded', {
+                    detail: { page, data } // data includes questionData
+                }));
             }
-            // 페이지 로딩 후 필요한 추가적인 스크립트 초기화나 처리가 필요하면 여기에 추가
         })
         .catch(error => {
             console.error('Error loading the page: ', error);
         });
-    }
+}
 
 
     // 사용자 정보를 미리 입력하는 함수

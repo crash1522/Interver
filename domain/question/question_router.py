@@ -16,42 +16,44 @@ router = APIRouter(
     prefix="/api/question",
 )
 
-@router.post("/question_create/{record_id}", response_model = question_schema.Question)
+@router.post("/question_create/{record_id}", response_model=question_schema.Question)
 async def question_create(record_id: int,
-                         before_answer_id: Optional[int]=None,
-                         db: Session = Depends(get_db),
-                         current_user: User = Depends(user_router.get_current_user)):
-    conversational_agent_executor = agent_dict[record_id]
+                          before_answer_id: Optional[int] = None,
+                          db: Session = Depends(get_db),
+                          current_user: User = Depends(user_router.get_current_user)):
+    conversational_agent_executor = agent_dict.get(record_id)
     
+    if not conversational_agent_executor:
+        raise HTTPException(status_code=404, detail="Record not found")
+
     if not before_answer_id:
-        # 초기 프롬프트 설정, 추후 소령님 작업물로 변환
-        # input_dict 이용
-        # 초기 프롬프트 설정 이후 해당 키값 삭제
+        # 초기 프롬프트 설정
         greeting = f"안녕하세요, AI개발에 지원한 {current_user.username}입니다."
-        chat_response  = await conversational_agent_executor.ainvoke(
-        {"input": greeting},
-        {"configurable": {"session_id": record_id}},
-    )
-    else:
-        before_answer = answer_crud.get_answer(db=db, answer_id=before_answer_id)
-        user_answer = before_answer.content
-    
-        # 챗봇으로부터 다음 면접 질문을 받아옴
         chat_response = await conversational_agent_executor.ainvoke(
-            {"input": user_answer},  # 사용자의 면접 대답 전달
+            {"input": greeting},
             {"configurable": {"session_id": record_id}},
         )
-        
+    else:
+        before_answer = answer_crud.get_answer(db=db, answer_id=before_answer_id)
+        user_answer = before_answer.content if before_answer else None
+    
+
+        # 챗봇으로부터 다음 면접 질문을 받아옴
+        chat_response = await conversational_agent_executor.ainvoke(
+            {"input": user_answer},
+            {"configurable": {"session_id": record_id}},
+        )
+    
     if chat_response and "output" in chat_response:
         new_question_content = chat_response["output"]
-        new_question = question_crud.create_question(db=db,
-                                                     question_create=question_schema.QuestionCreate(content = new_question_content),
-                                                     record_id=record_id)
+        new_question = question_crud.create_question(
+            db=db,
+            question_create=question_schema.QuestionCreate(content=new_question_content),
+            record_id=record_id
+        )
         return new_question
     else:
         raise HTTPException(status_code=500, detail="Failed to receive a new question from the chatbot")
-
-
 
 """
 # 인자로 입력값들 받아야함 (입력 페이지)

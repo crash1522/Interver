@@ -58,18 +58,16 @@ function openAnswerModal(userAnswerModal) {
     }
 }
 
-function closeAnswerModal(callback) {
-    var userAnswerModal = document.getElementById('user-answer-modal');
+
+function closeAnswerModal(userAnswerModal) {
     if (userAnswerModal) {
-        userAnswerModal.classList.remove('chat-modal-open-animation2');
-        userAnswerModal.classList.add('chat-modal-close-animation2');
-        if (callback) callback();
+        userAnswerModal.classList.remove('chat-modal-open-animation');
+        userAnswerModal.classList.add('chat-modal-close-animation');
         setTimeout(() => {
             userAnswerModal.style.display = 'none';
         }, 500);
     }
 }
-
 function openQuestionModal(aiQuestionModal) {
             if (aiQuestionModal) {
             aiQuestionModal.style.display = 'flex';  
@@ -231,148 +229,128 @@ function closeQuestionModal(aiQuestionModal) {
             });
     }
     
-    // 면접 시작 버튼 클릭시 interview_chat 페이지 이동
-    // 면접 시작 버튼 클릭 이벤트
-    document.body.addEventListener('click', function(event) {
-        // 이벤트가 발생한 요소가 "시작하기" 버튼인지 확인
-         if (event.target.classList.contains('sign-up-btn')) {
-            if (!isLoggedIn()) {  //로그인 상태로 바꿀려면 !표 빼야함
-                openModal(modal); // 비로그인 상태에서 모달 창 열기
-            } else {
-                ChatPage(); // 로그인 상태일 때 interview_chat.html 내용 가져오기
-            }
+    // move.js 와 script.js 연결
+    document.addEventListener('pageLoaded', function(event) {
+        if (event.detail.page === 'interview_chat') {
+            const questionData = event.detail.data; // Here you access the passed questionData
+            console.log('Received question data:', questionData);
+            ChatPage(questionData); // Pass the questionData to ChatPage
         }
-
     });
+    
 
-    let globalStream = null;
-    let mediaRecorder; // 오디오 스트림을 녹음하기 위한 객체
-    let audioChunks = []; // 녹음된 오디오 데이터를 담을 배열
+
 
     // AI 질문 모달에서 MP3 재생 시작 및 이벤트 핸들링
-    function playAIQuestion() {
+    async function playAIQuestion(questionData) {
+        document.getElementById("loadingModal").style.display = "block";
         var aiQuestionModal = document.getElementById('ai-question-modal'); // AI 질문 모달 요소 선택
+        const response = await fetch('/api/handler/text_to_speech', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ content: questionData.content }) //content: text
+        });
+        document.getElementById("loadingModal").style.display = "none";
         // AI 질문 모달 열기
         openQuestionModal(aiQuestionModal);
-
-        // MP3 재생 시작
-        aiQuestionAudio.play();
-
-        // MP3 재생 완료 이벤트 핸들러
-        aiQuestionAudio.onended = function() {
-
-        // AI 질문 모달 닫기
-        closeQuestionModal(aiQuestionModal);
-
-        // 사용자 답변 모달 열기
-        recordUserAnswer();
-        };
-    }
-
-    function ChatPage() {
-        fetch('api/common/interview_chat')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.text();
-            })
-            .then(html => {
-                document.querySelector('.main').innerHTML = html;
-                // 사용자의 오디오 입력 장치에 접근 권한을 요청
-                navigator.mediaDevices.getUserMedia({ audio: true })
-                    .then(stream => {
-                        // 권한이 수락되면 AI 질문 모달을 활성화하고 오디오를 재생
-                        playAIQuestion();
-                        // 권한 요청이 수락되면 녹음 준비 완료, `getUserAnswer`에서 녹음 시작
-                        const micIcon = document.getElementById('user_recording_circlein');
-                        micIcon.addEventListener('click', getUserAnswer);
-                    })
-                    .catch(error => {
-                        console.error("Microphone access was denied: ", error);
-                    });
-            })
-            .catch(error => {
-                console.error('Error loading the page: ', error);
-            });
+    
+        if (response.ok) {
+            const blob = await response.blob(); // 음성 데이터를 blob으로 받기
+            const url = URL.createObjectURL(blob); // Blob 객체로부터 URL 생성
+            const audio = new Audio(url);
+            audio.play(); // 오디오 재생
+            audio.onended = function() {
+                // AI 질문 모달 닫기
+                closeQuestionModal(aiQuestionModal);
+                // 사용자 답변 모달 열기
+                handleUserAnswer(questionData);
+            };
+        } else {
+            console.error('Failed to convert text to speech');
+        }
     }
     
-    function recordUserAnswer() {
+
+    function handleUserAnswer(questionData) {
         var userAnswerModal = document.getElementById('user-answer-modal'); // 사용자 답변 모달 요소 선택
+        document.getElementById('ai-question-textbox').textContent = questionData.content;
         openAnswerModal(userAnswerModal);
+        
         // 사용자의 오디오 입력 장치에 접근 권한을 요청
         navigator.mediaDevices.getUserMedia({ audio: true })
             .then(stream => {
-                mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
-
+                let mediaRecorder = new MediaRecorder(stream);
+                let audioChunks = [];
+        
                 mediaRecorder.ondataavailable = event => {
                     audioChunks.push(event.data);
                 };
-
+        
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+                    mediaRecorder.stream.getTracks().forEach(track => track.stop()); // 마이크 사용 중지
+        
+                    const formData = new FormData();
+                    formData.append('file', audioBlob, 'recorded_audio.mp3');
+                    const accessToken = localStorage.getItem('access_token');
+        
+                    fetch(`/api/answer/user_answer_create/${questionData.id}`, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}` // 인증 토큰 헤더에 추가
+                        },
+                    }).then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    }).then(data => {
+                        console.log(data);
+                        const userAnswerTextbox = document.querySelector('.user-answer-textbox');
+                        if (userAnswerTextbox) {
+                            userAnswerTextbox.textContent = data.content;
+                        }
+                    
+                        // answer_id를 사용하여 새 질문을 요청
+                        fetch(`/api/question/question_create/${data.record_id}`, { 
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${localStorage.getItem('access_token')}`  
+                            },
+                            body: JSON.stringify({ before_answer_id: data.id })  // data.id는 answer_id
+                        })
+                        .then(response => response.json())
+                        .then(questionData => {
+                            console.log('New question received:', questionData);
+                            closeAnswerModal(userAnswerModal);
+                            playAIQuestion(questionData);
+                        })
+        
+                    audioChunks = [];
+                })};
+        
+                // 녹음 시작
                 mediaRecorder.start();
+        
+                // 마이크 아이콘에 클릭 이벤트 리스너 추가
+                const micIcon = document.getElementById('user_recording_circlein');
+                micIcon.addEventListener('click', () => {
+                    mediaRecorder.stop(); // 사용자가 마이크 아이콘을 클릭하면 녹음 중지
+                });
             })
             .catch(error => {
                 console.error("Microphone access was denied: ", error);
             });
     }
-
-    function getUserAnswer() {
-        // 녹음 중지
-        mediaRecorder.stop();
-    
-        // 녹음이 중지되면 호출되는 이벤트 핸들러
-        mediaRecorder.onstop = () => {
-            // 녹음이 완료되면 audioChunks 배열에 저장된 오디오 데이터를 하나의 Blob 객체로 결합
-            const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
-    
-            // 마이크 사용 중지
-            mediaRecorder.stream.getTracks().forEach(track => track.stop());
-            if (globalStream) {
-                globalStream.getTracks().forEach(track => track.stop()); // 스트림 중지
-            }
-    
-            // FormData 객체를 생성하고, 오디오 파일을 추가
-            const formData = new FormData();
-            formData.append('file', audioBlob, 'recorded_audio.mp3');
-    
-            // question_id 값을 동적으로 설정
-            const questionId = 1;
-    
-            // Fetch API를 사용하여 서버에 파일을 업로드
-            fetch(`/api/answer/user_answer/${questionId}`, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    // 필요한 경우 추가 헤더를 설정할 수 있습니다.
-                    // 예: 'Authorization': `Bearer ${token}`
-                },
-            }).then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            }).then(data => {
-                console.log(data);
-                const userAnswerTextbox = document.querySelector('.user-answer-textbox');
-                if (userAnswerTextbox) {
-                    userAnswerTextbox.textContent = data.content;
-                }
-            }).catch(error => {
-                console.error('Error uploading the audio: ', error);
-            });
-    
-            audioChunks = [];
-    
-            setTimeout(() => {
-                closeAnswerModal(playAIQuestion);
-            }, 5000); //5초 뒤 전환
-        };
-    }
     
 
     
-    function ChatPage() {
+    
+    function ChatPage(questionData) {
         fetch('api/common/interview_chat')
             .then(response => {
                 if (!response.ok) {
@@ -384,12 +362,8 @@ function closeQuestionModal(aiQuestionModal) {
                 document.querySelector('.main').innerHTML = html;
                 // 사용자의 오디오 입력 장치에 접근 권한을 요청
                 navigator.mediaDevices.getUserMedia({ audio: true })
-                .then(() => {  // 스트림 사용을 제외하고 권한 요청만 처리
-                    // 권한이 수락되면 AI 질문 모달을 활성화하고 오디오를 재생
-                    playAIQuestion();
-                    // 권한 요청이 수락되면 녹음 준비 완료, `getUserAnswer`에서 녹음 시작
-                    const micIcon = document.getElementById('user_recording_circlein');
-                    micIcon.addEventListener('click', getUserAnswer);
+                .then(() => { 
+                    playAIQuestion(questionData);
                 })
                 .catch(error => {
                     console.error("Microphone access was denied: ", error);

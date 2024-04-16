@@ -1087,7 +1087,7 @@ input:checked + .slider:before {
 /*ai 재생 모달*/
 /* 모달 스타일 */
 .ai-question-modal {
-    display: flex;
+    display: none;
     position: absolute;
     z-index: 1;
     left: 0;

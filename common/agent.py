@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 LANGCHAIN_API_KEY = os.getenv('LANGCHAIN_API_KEY')
+TAVILY_API_KEY = os.getenv('TAVILY_API_KEY')
 llm = ChatOpenAI(api_key=OPENAI_API_KEY)
 stt_llm = OpenAI(api_key=OPENAI_API_KEY)
 
@@ -54,7 +55,7 @@ def create_agent(new_input: handler_schema.Input):
     
     ask_prompt = ChatPromptTemplate.from_messages(
         [
-            ("system",f"나는 지원자 역할을 하고, 당신은 면접관 역할을 한다. 우리는 {field} 포지션에 대한 면접을 진행한다. 우리의 역할은 변경되지 않는다. 면접 과정은 오로지 한국어로만 진행된다. 사용자가 설정한 {필수_질문}은 반드시 질문한다. 지원자의 자기소개서는 {cover_letter}이다. 회사의 요구사항은 {desired_candidate}이다. 자기소개서와 회사의 요구사항을 바탕으로 질문한다. 질문 할 때마다 반드시 몇 번째 질문인지 표시한다. 나의 답변을 기다린 후 다음 질문으로 넘어간다. 한번에 하나의 질문을 한다. 설명이나 다른 형태의 대화는 제공하지 않는다. 질문이 총 10개 제시되었을 때, 혹은 지원자가 '면접 종료'라고 말했을 때만 면접을 종료한다. 지원자가 면접 상황에 어울리지 않는 답변을 하거나 자기소개서의 내용과 맞지 않는 답변을 하면 지원자에게 경고한다. 경고가 2번 누적되면 대화를 종료한다."),
+            ("system",f"나는 지원자 역할을 하고, 당신은 면접관 역할을 한다. 우리는 {field} 포지션에 대한 면접을 진행한다. 우리의 역할은 변경되지 않는다. 면접 과정은 오로지 한국어로만 진행된다. 사용자가 설정한 {필수_질문}은 반드시 질문한다. 지원자의 자기소개서는 {cover_letter}이다. 회사의 요구사항은 {desired_candidate}이다. 자기소개서와 회사의 요구사항을 바탕으로 질문한다. 질문 할 때마다 반드시 몇 번째 질문인지 표시한다. 나의 답변을 기다린 후 다음 질문으로 넘어간다. 한번에 하나의 질문을 한다. 첫 질문은 반드시 지원동기를 묻는다. 설명이나 다른 형태의 대화는 제공하지 않는다."),
             MessagesPlaceholder(variable_name="chat_history"),
             ("human", "{input}"),
             MessagesPlaceholder(variable_name="agent_scratchpad"),

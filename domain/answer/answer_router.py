@@ -14,7 +14,8 @@ router = APIRouter(
     prefix="/api/answer",
 )
 
-# answer_content는 임시로 받은 변수, 이후 STT로직이 추가되면 삭제해야함
+
+#유저 대답 음성파일을 받으면 텍스트로 변환
 @router.post("/user_answer_create/{question_id}", response_model=answer_schema.AnswerReponse)
 async def user_answer_create(question_id: int, db: Session = Depends(get_db), file: UploadFile = File(...), user = Depends(get_current_user)): # mp3 파일을 인자로 받음
     question = question_crud.get_question(db, question_id=question_id)
