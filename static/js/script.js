@@ -95,71 +95,71 @@ function closeQuestionModal(aiQuestionModal) {
         openModal(modal);
     };
 
-    if (loginFormButton) {
-        loginFormButton.addEventListener('click', function(event) {
+    var loginForm = document.getElementById('login-form'); // 로그인 폼 ID
+    var loginFormButton = document.getElementById('loginFormButton'); // 로그인 버튼 ID
+
+    if (loginForm) {
+        // 로그인 처리 공통 함수
+        function handleLogin(event) {
             event.preventDefault(); // 폼의 기본 제출 동작을 방지
-    
+
             var userIdElement = document.getElementsByName('user-id')[0];
             var passwordElement = document.getElementsByName('user-password')[0];
             if (userIdElement && passwordElement) {
                 var userId = userIdElement.value;
                 var password = passwordElement.value;
-                // 이후 로직 처리
             } else {
-                // 요소가 없는 경우의 처리 로직
                 console.error('Form elements not found');
+                return;
             }
 
             // 로그인 요청을 위한 URL
             const url = '/api/user/login';
-    
-            // XMLHttpRequest 객체를 생성합니다.
+
+            // XMLHttpRequest 객체 생성
             var xhr = new XMLHttpRequest();
-            xhr.open('POST', url, true); // 비동기 방식으로 요청을 초기화합니다.
-    
-            // 요청 헤더를 설정합니다.
+            xhr.open('POST', url, true);
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    
-            // 요청의 상태 변경을 처리하기 위한 이벤트 핸들러를 설정합니다.
+
             xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4) { // 요청이 완료되었을 때
+                if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
                         var data = JSON.parse(xhr.responseText);
-                        localStorage.setItem('access_token', data.access_token); // 받은 액세스 토큰 저장
+                        localStorage.setItem('access_token', data.access_token);
                         localStorage.setItem('userid', data.userid);
-                        // localStorage.setItem('user_profile', data.user_profile);
-                        // user_profile 객체를 올바르게 문자열로 변환하여 저장
                         localStorage.setItem('user_profile', JSON.stringify(data.user_profile));
-
-                        // 사용자 이름(또는 ID)를 페이지에 표시합니다.
                         document.getElementById('user-name').textContent = data.userid + '님';
-                        
+
                         closeModal(); // 모달 창 닫기
                         toggleUIBasedOnLoginStatus(); // UI 상태 업데이트
-                        
+
                         setTimeout(function() {
-                            window.location.href = '/'; // 홈 페이지 URL로 변경
-                        }, 500); // 모달 닫힘 애니메이션의 지속 시간에 맞춰 조절하세요.
+                            window.location.href = '/'; // 홈 페이지로 리디렉션
+                        }, 500);
                     } else {
                         var errorMessageDiv = document.getElementById('login-error-message');
                         var errorResponse = JSON.parse(xhr.responseText);
-                        // 에러 메시지 줄바꿈 처리 및 표시
-                        errorMessageDiv.innerHTML  = errorResponse.detail.replace(/\n/g, '<br>');
-                        errorMessageDiv.style.display = 'block'; // 에러 메시지 보이기
+                        errorMessageDiv.innerHTML = errorResponse.detail.replace(/\n/g, '<br>');
+                        errorMessageDiv.style.display = 'block';
                         console.error('Login failed:', errorResponse.detail);
                     }
                 }
             };
-            // URLSearchParams 객체를 사용하여 요청 본문을 구성합니다.
+
             var formData = new URLSearchParams();
             formData.append('username', userId);
             formData.append('password', password);
             console.log('Sending request with body:', formData.toString());
-            // 요청을 전송합니다.
             xhr.send(formData.toString());
-             // 비밀번호 입력 필드 초기화
-             document.getElementById('user-password').value = '';
-        });
+
+            document.getElementById('user-password').value = ''; // 비밀번호 필드 초기화
+        }
+
+        // 이벤트 리스너 등록
+        loginForm.addEventListener('submit', handleLogin);
+        if (loginFormButton) {
+            loginFormButton.addEventListener('click', handleLogin);
+        }
     }
     
     
@@ -180,6 +180,7 @@ function closeQuestionModal(aiQuestionModal) {
                     return response.text();
                 })
                 .then(html => {
+                    localStorage.clear();
                     window.location.href = '/';
                     // document.querySelector('.main').innerHTML = html;
                     // home.html 로딩 후 필요한 추가적인 초기화 로직이 있다면 여기에 구현
