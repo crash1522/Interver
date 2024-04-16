@@ -33,3 +33,4 @@ class AnswerReponse(BaseModel):
     content: str
     question_id: int
     record_id: int
+    last_question_flag: bool = False

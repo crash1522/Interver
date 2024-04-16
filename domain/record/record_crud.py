@@ -31,9 +31,9 @@ def get_all_data_by_record_id(db: Session, record_id: int):
 # nth_round 검증하기
 def create_record(db: Session, user: User):
     db_record= Record(
-        user_id=user_crud.get_id(db=db,userid=user.userid),
+        user_id=user.id,
         create_date=datetime.now(),
-        nth_round=len(db.query(Record.user_id==User.id).all()) + 1)
+        nth_round=len(db.query(Record).where(Record.user_id == user.id).all()) + 1)
     db.add(db_record)
     db.commit()
     db.refresh(db_record)  # 생성된 질문 인스턴스를 최신 상태로 업데이트
