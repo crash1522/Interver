@@ -10,12 +10,13 @@ from langchain_community.vectorstores import FAISS
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.tools.retriever import create_retriever_tool
 from langchain_community.tools.tavily_search import TavilySearchResults
-from langchain.agents import AgentExecutor
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler 
-from langchain.agents import AgentExecutor, create_openai_tools_agent
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.runnables import ConfigurableFieldSpec
+from langchain.chat_models import ChatOpenAI
+from langchain_core.output_parsers import StrOutputParser
+
 
 from common.handler import handler_schema
 from typing import Dict
@@ -120,4 +121,3 @@ def create_agent(new_input: handler_schema.Input):
     )
     
     return conversational_agent_executor
-

@@ -244,13 +244,13 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data => {
             console.log('Success:', data);
             //첫 질문 생성(텍스트)
-            return fetch(`/api/question/question_create/${data}`, {
+            return fetch(`/api/question/question_create/${data}?before_answer_id=0`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${accessToken}` // 인증 토큰 헤더에 추가
                 },
-                body: JSON.stringify({ before_answer_id: null })  // 필요한 경우 수정
+               // 필요한 경우 수정
             });
         })
         .then(questionResponse => {

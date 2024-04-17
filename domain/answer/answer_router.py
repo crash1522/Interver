@@ -1,13 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, BackgroundTasks
 from sqlalchemy.orm import Session
 from starlette import status
 import io
 import json
+from asyncio import create_task
 
 from database import get_db
 from domain.answer import answer_schema, answer_crud
 from domain.question import question_crud
 from domain.user.user_router import get_current_user
+from domain.feedback import feedback_crud, feedback_schema
 from common.handler.handler_router import q_cnt_dict
 from common.agent import agent_dict, stt_llm
 
@@ -18,7 +20,11 @@ router = APIRouter(
 
 #유저 대답 음성파일을 받으면 텍스트로 변환
 @router.post("/user_answer_create/{question_id}", response_model=answer_schema.AnswerReponse)
-async def user_answer_create(question_id: int, db: Session = Depends(get_db), file: UploadFile = File(...), user = Depends(get_current_user)): # mp3 파일을 인자로 받음
+async def user_answer_create(question_id: int,
+                             background_tasks: BackgroundTasks,
+                             db: Session = Depends(get_db), 
+                             file: UploadFile = File(...), 
+                             user = Depends(get_current_user)):
     global q_cnt_dict, agent_dict
     question = question_crud.get_question(db, question_id=question_id)
     if not question:
@@ -46,6 +52,11 @@ async def user_answer_create(question_id: int, db: Session = Depends(get_db), fi
                               )
     if not answer:
         raise HTTPException(status_code = 500, detail="Failed to create answer. answer_router.py line 47")
+    
+    # 답변에 대한 피드백 생성 백그라운드 작업
+    create_task(feedback_crud.get_feedback_from_LLM(question=question, answer=answer, db=db))
+    
+    #  client 쪽에서 작업하기 쉬운 형태로 변환
     question_id = answer.question_id
     record_id = answer.question.record.id
     answer_response = answer_schema.AnswerReponse(
@@ -54,11 +65,13 @@ async def user_answer_create(question_id: int, db: Session = Depends(get_db), fi
          question_id = question_id,
          record_id = record_id,
     )
+
+    # 마지막 질문일 경우 처리
     if q_cnt_dict[record_id].required_question_num == q_cnt_dict[record_id].cur_question_num:
         answer_response.last_question_flag = True
         del agent_dict[record_id]   
         del q_cnt_dict[record_id]
-
+    print(f"\nanswer_response: {answer_response}\n")
     return answer_response
 
 

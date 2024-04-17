@@ -6,29 +6,44 @@ from database import get_db
 from domain.answer import answer_crud
 from domain.user.user_router import get_current_user
 from domain.feedback import feedback_schema, feedback_crud
+from domain.record import record_crud
 from models import User
 
 router = APIRouter(
     prefix="/api/feedback",
 )
 
-"""
- feedback codes from LLM
-"""
 
-@router.post("/create/{answer_id}", response_model=feedback_schema.Feedback)
-def feedback_create(answer_id: int,
-                  _feedback_create: feedback_schema.FeedbackCreate,
+@router.post("/create/{record_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def feedback_create(record_id,
                   db: Session = Depends(get_db),
                   current_user: User = Depends(get_current_user)):
+    global chain
+    feedback_request = []
 
-    # create answer
-    answer = answer_crud.get_answer(db, answer_id=answer_id)
-    if not answer:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Answer not found.")
-    feedback = feedback_crud.create_feedback(db, answer=answer,
-                              feedback_create=_feedback_create)
-    return feedback
+    data = record_crud.get_all_data_by_record_id(db, record_id=record_id)
+    if not data:
+        raise HTTPException(status_code=404, detail="No data found for this record.")
+
+    questions, answers, feedbacks = data
+    
+    # 피드백 요청 데이터 생성
+    for question, answer in zip(questions, answers):
+        if answer and question:
+            feedback_request.append({'question': question.content, 'answer': answer.content})
+
+    # 비동기 피드백 생성
+    if feedback_request:
+        feedback_responses = await chain.abatch(feedback_request)
+    else:
+        feedback_responses = []
+
+    print(feedback_responses)
+    for answer, response in zip(answers, feedback_responses):
+        if response:  # 피드백 내용이 있는 경우에만 생성
+            feedback = feedback_crud.create_feedback(db, answer=answer, feedback_create=feedback_schema.FeedbackCreate(content=response))
+            print(feedback)  # 로그 출력
+
 
 @router.get("/detail/{feedback_id}", response_model=feedback_schema.Feedback)
 def feedback_detail(feedback_id: int, db: Session = Depends(get_db)):

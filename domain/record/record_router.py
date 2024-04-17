@@ -37,11 +37,13 @@ def record_detail(record_id: int, db: Session = Depends(get_db), current_user: U
         raise HTTPException(status_code=404, detail=f"Record is not found.")
     
     questions, answers, feedbacks = record_crud.get_all_data_by_record_id(db, record_id=record_id)
+    if not questions:
+        raise HTTPException(status_code=404, detail=f"No questions found for this record.")
     return {
-        "record": record,
-        "questions": questions,
-        "answers": answers,
-        "feedbacks": feedbacks
+            "record": record,
+            "questions": questions,
+            "answers": answers,
+            "feedbacks": feedbacks
         }
 
 

@@ -314,15 +314,14 @@ function closeQuestionModal(aiQuestionModal) {
                         if (userAnswerTextbox) {
                             userAnswerTextbox.textContent = data.content;
                         }
-                    
+                
                         // answer_id를 사용하여 새 질문을 요청
-                        fetch(`/api/question/question_create/${data.record_id}`, { 
+                        fetch(`/api/question/question_create/${data.record_id}?before_answer_id=${data.id}`, { 
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
                                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`  
                             },
-                            body: JSON.stringify({ before_answer_id: data.id })  // data.id는 answer_id
                         })
                         .then(response => response.json())
                         .then(questionData => {
