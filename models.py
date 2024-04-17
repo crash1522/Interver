@@ -41,6 +41,7 @@ class Record(Base):
     create_date = Column(DateTime, nullable=False)
     rating = Column(Integer, nullable = True)
     nth_round = Column(Integer)
+    company_name = Column(String, nullable = True)
 
     user = relationship("User", back_populates="records")
     questions = relationship('Question', back_populates = "record")

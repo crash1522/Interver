@@ -9,6 +9,7 @@ class Record(BaseModel):
     create_date: datetime.datetime
     rating: Optional[int] = None
     nth_round: int
+    company_name: Optional[str] = None
 
     class Config:
         orm_mode = True

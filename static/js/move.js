@@ -277,7 +277,7 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(html => {
                 document.querySelector('.main').innerHTML = html;
-                fetchFeedbackData();
+                fetchFeedbackData(1);
                 repositorybuttonclick();
             })
             .catch(error => {

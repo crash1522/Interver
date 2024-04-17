@@ -12,7 +12,7 @@ from domain.question import question_schema
 from common import agent
 from common.agent import agent_dict
 from database import get_db
-from common.agent import stt_llm #tts,stt 공통
+from common.agent import stt_llm
 from io import BytesIO
 
 router = APIRouter(
@@ -45,8 +45,10 @@ async def interview_start(
     if not new_record:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                        detail="record를 생성하는데 실패했습니다.")
-        # 새로운 agent 생성 후, 메모리에 저장
+    if company_info.name:
+        new_record.company_name = company_info.name
 
+    # 새로운 agent 생성 후, 메모리에 저장
     new_agent = agent.create_agent(new_input)
     if not new_agent:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -71,7 +73,6 @@ async def text_to_speech(question: question_schema.QuestionCreate):
                 input=question.content,  # 클라이언트로부터 받은 텍스트
             )
         audio_stream = BytesIO(response.content)
-
 
         # 클라이언트에게 음성 데이터 전송
         return StreamingResponse(audio_stream, media_type='audio/mpeg')

@@ -30,6 +30,10 @@ def record_create(db: Session = Depends(get_db), current_user: User = Depends(ge
     return record.id
 
 
+"""
+    현재 백그라운드에서 실행 중인 feedback 생성이 모두 실행되기 전에 요청을 날려서 feedback에 None이 담김
+    feedback이라서 js에서 랜더링 안하는 것으로 보임
+"""
 @router.get("/detail/{record_id}")
 def record_detail(record_id: int, db: Session = Depends(get_db)):
     record = record_crud.get_record(db, record_id=record_id)
@@ -37,6 +41,7 @@ def record_detail(record_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail=f"Record is not found.")
     
     questions, answers, feedbacks = record_crud.get_all_data_by_record_id(db, record_id=record_id)
+    
     if not questions:
         raise HTTPException(status_code=404, detail=f"No questions found for this record.")
     return {

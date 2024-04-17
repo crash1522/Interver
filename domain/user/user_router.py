@@ -134,7 +134,7 @@ def user_profile(current_user: User = Depends(get_current_user), db: Session = D
     return user_profile
 
 # nth round, created_date, company_name, record_id
-@router.get("/get_records")
+@router.get("/get_records", response_model=user_schema.UserRecordsList)
 async def get_user_records(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     records = user_crud.get_records_by_userid(db=db, userid=User.userid)
     if not records:
@@ -145,9 +145,11 @@ async def get_user_records(current_user: User = Depends(get_current_user), db: S
             record_id = record.id,
             nth_round = record.nth_round,
             create_date = record.create_date,
-            
+            company_name = record.company_name
         )
-    return records
+        records_list.append(user_record)
+    user_record_list = user_schema.UserRecordsList(records_list=records_list)
+    return user_record_list
     
 
 """
