@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('go-help').addEventListener('click', function(event) {
         event.preventDefault(); // 기본 이벤트 방지
 
-        fetch('api/common/help') // 경로 확인 필요
+        fetch('api/common/feedback') // 경로 확인 필요
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');

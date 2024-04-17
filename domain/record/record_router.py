@@ -15,6 +15,7 @@ from common.handler import handler_router, handler_schema
 from common import agent
 from common.agent import agent_dict
 from models import User
+from database import get_db
 
 router = APIRouter(
     prefix="/api/record",
@@ -30,7 +31,7 @@ def record_create(db: Session = Depends(get_db), current_user: User = Depends(ge
 
 
 @router.get("/detail/{record_id}")
-def record_detail(record_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def record_detail(record_id: int, db: Session = Depends(get_db)):
     record = record_crud.get_record(db, record_id=record_id)
     if not record:
         raise HTTPException(status_code=404, detail=f"Record is not found.")
@@ -117,3 +118,4 @@ def record_delete(_record_delete: record_schema.RecordDelete,
     record_crud.delete_record(db=db, db_record=db_record)
     
 add_pagination(router)
+"""

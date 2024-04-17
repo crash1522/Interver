@@ -878,7 +878,7 @@ input:checked + .slider:before {
 
 
 
-<<<<<<< HEAD
+
 /*#start-interview-btn {
 
 }*/
@@ -1086,7 +1086,6 @@ input:checked + .slider:before {
     cursor: pointer;
 }
 /* feedback 페이지 끝-----------------------------------------*/
-=======
 /*chat.html관련 코드 시작*/
 .modal-background {
     display: flex; /* 기본적으로 숨김, JavaScript로 제어 */
@@ -1541,8 +1540,3 @@ input:checked + .slider:before {
 
   
 
-  
-
-  
-  /*chat.html관련 코드 끝*/
->>>>>>> feature/test

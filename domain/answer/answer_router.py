@@ -21,7 +21,6 @@ router = APIRouter(
 #유저 대답 음성파일을 받으면 텍스트로 변환
 @router.post("/user_answer_create/{question_id}", response_model=answer_schema.AnswerReponse)
 async def user_answer_create(question_id: int,
-                             background_tasks: BackgroundTasks,
                              db: Session = Depends(get_db), 
                              file: UploadFile = File(...), 
                              user = Depends(get_current_user)):
@@ -47,8 +46,8 @@ async def user_answer_create(question_id: int,
     user_text_answer_json = json.loads(user_text_answer.model_dump_json())
     converted_text = user_text_answer_json['text']
     answer = answer_crud.create_answer(db=db, #db,question 임시값
-                              question=question,
-                              answer_create=answer_schema.AnswerCreate(content = converted_text)
+                                question=question,
+                                answer_create=answer_schema.AnswerCreate(content = converted_text)
                               )
     if not answer:
         raise HTTPException(status_code = 500, detail="Failed to create answer. answer_router.py line 47")

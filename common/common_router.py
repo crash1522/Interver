@@ -39,3 +39,7 @@ async def get_interview_all_repo(request: Request):
 @router.get("/interview_chat", response_class=HTMLResponse)
 async def get_interview_chat(request: Request):
     return templates.TemplateResponse("interview_chat.html", {"request": request})
+
+@router.get("/feedback", response_class=HTMLResponse)
+async def get_feedback(request: Request):
+    return templates.TemplateResponse("feedback.html", {"request": request})

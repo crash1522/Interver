@@ -1,6 +1,5 @@
-function fetchFeedbackData() {
+function fetchFeedbackData(recordId) {
     // 여기서 record_id는 필요에 따라 설정해야 합니다.
-    const recordId = 1;
     fetch(`/api/record/detail/${recordId}`)
         .then(response => response.json())
         .then(data => {

@@ -133,6 +133,23 @@ def user_profile(current_user: User = Depends(get_current_user), db: Session = D
             detail = "유저 프로필을 찾을 수 없습니다.")
     return user_profile
 
+# nth round, created_date, company_name, record_id
+@router.get("/get_records")
+async def get_user_records(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    records = user_crud.get_records_by_userid(db=db, userid=User.userid)
+    if not records:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail = "No such records matching userid.")
+    records_list = []
+    for record in records:
+        user_record = user_schema.UserRecords(
+            record_id = record.id,
+            nth_round = record.nth_round,
+            create_date = record.create_date,
+            
+        )
+    return records
+    
+
 """
 # 유저를 삭제합니다. (회원탈퇴)
 @router.post("/withdrawal", status_code=status.HTTP_204_NO_CONTENT)

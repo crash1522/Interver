@@ -68,6 +68,24 @@ function closeAnswerModal(userAnswerModal) {
         }, 500);
     }
 }
+function fetchNewQuestion(data) {
+    var userAnswerModal = document.getElementById('user-answer-modal'); // 사용자 답변 모달 요소 선택
+    fetch(`/api/question/question_create/${data.record_id}?before_answer_id=${data.id}`, { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`  
+        },
+    })
+    .then(response => response.json())
+    .then(questionData => {
+        console.log('New question received:', questionData);
+        closeAnswerModal(userAnswerModal);
+        playAIQuestion(questionData);
+    })
+    .catch(error => console.error('Error fetching new question:', error));
+}
+
 function openQuestionModal(aiQuestionModal) {
             if (aiQuestionModal) {
             aiQuestionModal.style.display = 'flex';  
@@ -298,6 +316,7 @@ function closeQuestionModal(aiQuestionModal) {
                     formData.append('file', audioBlob, 'recorded_audio.mp3');
                     const accessToken = localStorage.getItem('access_token');
         
+                    
                     fetch(`/api/answer/user_answer_create/${questionData.id}`, {
                         method: 'POST',
                         body: formData,
@@ -315,24 +334,34 @@ function closeQuestionModal(aiQuestionModal) {
                         if (userAnswerTextbox) {
                             userAnswerTextbox.textContent = data.content;
                         }
-                
-                        // answer_id를 사용하여 새 질문을 요청
-                        fetch(`/api/question/question_create/${data.record_id}?before_answer_id=${data.id}`, { 
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${localStorage.getItem('access_token')}`  
-                            },
-                        })
-                        .then(response => response.json())
-                        .then(questionData => {
-                            console.log('New question received:', questionData);
-                            closeAnswerModal(userAnswerModal);
-                            playAIQuestion(questionData);
-                        })
-        
-                    audioChunks = [];
-                })};
+                    
+                        // 마지막 질문에 도달했을 때의 처리 로직
+                        if (data.last_question_flag) {
+                            // API 경로로부터 피드백 페이지의 HTML을 가져온다
+                            fetch('/api/common/feedback', {
+                                method: 'GET'
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.text();
+                            })
+                            .then(html => {
+                                // 현재 페이지의 메인 컨텐츠를 새로운 HTML로 교체
+                                document.querySelector('.main').innerHTML = html;
+                                fetchFeedbackData(data.record_id); // 피드백 페이지에 필요한 데이터를 가져오는 함수
+                                initializeFeedbackPage(); // 피드백 페이지 초기화 함수
+                            })
+                            .catch(error => {
+                                console.error('Error loading feedback page:', error);
+                            });
+                        } else {
+                            // 새 질문 요청 로직
+                            fetchNewQuestion(data);
+                        }
+
+                    }).catch(error => console.error('Error in user answer submission:', error));};
         
                 // 녹음 시작
                 mediaRecorder.start();

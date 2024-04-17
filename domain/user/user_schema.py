@@ -1,5 +1,6 @@
 from pydantic import BaseModel, validator,  Field
-from typing import List
+from typing import List, Optional
+import datetime
 
 class UserCreate(BaseModel):
     userid: str
@@ -46,3 +47,13 @@ class Token(BaseModel):
 
 class UserIdRequest(BaseModel):
     userid: str
+
+
+class UserRecords(BaseModel):
+    nth_round: int
+    created_date: datetime.datetime
+    company_name: Optional[str] = None
+    record_id: int
+
+class UserRecordsList(BaseModel):
+    records_list: List[UserRecords]

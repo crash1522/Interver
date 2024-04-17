@@ -49,6 +49,16 @@ get_username(db: Session, userid: str) -> str
 get_skills(db: Session, userid: str) -> list
 get_field(db: Session, userid: str) -> str
  """
+
+
+# userid에 해당하는 id (primary key)를 반환합니다.
+def get_id(db: Session, userid: str):
+    user = db.query(User).filter(User.userid == userid).first()
+    if not user:
+        return -1
+    return user.id
+
+
 # 회원가입 창에서 사용자가 입력한 id가 이미 존재하는 회원인지 확인합니다.
 def get_existing_user(db: Session, user_create: user_schema.UserCreate):
     return db.query(User).filter(
@@ -99,7 +109,7 @@ def get_records_by_userid(db: Session, userid: str):
     
     if not user:
         return []
-    records = db.query(Record).filter(Record.userid == userid).all()
+    records = db.query(Record).filter(Record.user_id == get_id(db=db,userid=userid)).order_by(Record.create_date).all()
     return records
 
 

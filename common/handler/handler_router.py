@@ -30,7 +30,7 @@ async def interview_start(
                     user: user_schema.User = Depends(user_router.get_current_user),
                     company_info: handler_schema.CompanyInfo = handler_schema.CompanyInfo(),
                     cover_letter: handler_schema.CoverLetter = handler_schema.CoverLetter(),
-                    q_num: int = 10,):
+                    q_num: int = 2,):
     global agent_dict, q_cnt_dict
     user_info = handler_schema.UserInfo(username = user.username,
                                     skills = user_crud.get_skills(db, user.userid),
@@ -66,9 +66,9 @@ async def text_to_speech(question: question_schema.QuestionCreate):
     try:
         # TTS API 호출
         response = stt_llm.audio.speech.create(
-            model="tts-1-hd",  # 고화질의 음성 품질 모델 선택
-            voice="shimmer",  # 선택된 목소리 유형
-            input=question.content,  # 클라이언트로부터 받은 텍스트
+                model="tts-1-hd",  # 고화질의 음성 품질 모델 선택
+                voice="shimmer",  # 선택된 목소리 유형
+                input=question.content,  # 클라이언트로부터 받은 텍스트
             )
         audio_stream = BytesIO(response.content)
 

@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 
 from domain.record.record_schema import Record
+from domain.user import user_crud 
 from models import User, Record, Question, Answer, Feedback
 
 
@@ -34,8 +35,10 @@ def create_record(db: Session, user: User):
 
     # 새로운 레코드 생성
     db_record = Record(
-        userid=user.userid,
-        create_date=datetime.now())
+        user_id=user.id,  # User 객체에서 바로 ID를 참조
+        create_date=datetime.now(),
+        nth_round=nth_round
+    )
     db.add(db_record)
     db.commit()
     db.refresh(db_record)  # 생성된 레코드 인스턴스를 최신 상태로 업데이트
