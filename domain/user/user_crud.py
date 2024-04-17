@@ -126,10 +126,6 @@ def set_username(db: Session, userid: str, new_username: str):
     # 주어진 ID를 가진 사용자를 찾습니다.
     user = db.query(User).filter(User.userid == userid).first()
     
-    # 사용자가 데이터베이스에 존재하지 않으면, HTTPException을 발생시킵니다.
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    
     # 사용자명을 업데이트하고 데이터베이스 세션을 커밋합니다.
     user.username = new_username
     db.commit()
@@ -154,9 +150,6 @@ delete_skill_from_user(db: Session, userid: str, skill_name: str) -> None
 def delete_user(db: Session, userid: str):
     user = db.query(User).filter(User.id==get_id(db=db,userid=userid)).first()
     
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-
     db.delete(user)
     db.commit()
 

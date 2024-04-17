@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     var modal = document.getElementById('login-modal');
+
+
     var loginBtn = document.getElementById('go-sign-in'); // 로그인 버튼
     var loginFormButton = document.querySelector('.login-button'); // 로그인 폼 내의 로그인 버튼
     var authLinks = document.querySelector('.auth-links'); // 로그인/회원가입 링크를 담고 있는 div
@@ -30,98 +32,152 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // 모달 창 열기 함수
-    function openModal() {
+// 모달 열기 함수 (범용)
+function openModal(modal) {
+    if (modal) {
         modal.style.display = 'block';  
-        modal.classList.remove('modal-close-animation');
         modal.classList.add('modal-open-animation');
+        modal.classList.remove('modal-close-animation');
     }
-
-    // 모달 창 닫기 함수
-    function closeModal() {
+}
+function closeModal(modal) {
+    if (modal) {
         modal.classList.remove('modal-open-animation');
         modal.classList.add('modal-close-animation');
         setTimeout(() => {
             modal.style.display = 'none';
         }, 500);
     }
+}
 
+function openAnswerModal(userAnswerModal) {
+    if (userAnswerModal) {
+        userAnswerModal.style.display = 'flex';  
+        userAnswerModal.classList.add('chat-modal-open-animation2');
+        userAnswerModal.classList.remove('chat-modal-close-animation2');
+    }
+}
+
+
+function closeAnswerModal(userAnswerModal) {
+    if (userAnswerModal) {
+        userAnswerModal.classList.remove('chat-modal-open-animation');
+        userAnswerModal.classList.add('chat-modal-close-animation');
+        setTimeout(() => {
+            userAnswerModal.style.display = 'none';
+        }, 500);
+    }
+}
+function fetchNewQuestion(data) {
+    var userAnswerModal = document.getElementById('user-answer-modal'); // 사용자 답변 모달 요소 선택
+    fetch(`/api/question/question_create/${data.record_id}?before_answer_id=${data.id}`, { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`  
+        },
+    })
+    .then(response => response.json())
+    .then(questionData => {
+        console.log('New question received:', questionData);
+        closeAnswerModal(userAnswerModal);
+        playAIQuestion(questionData);
+    })
+    .catch(error => console.error('Error fetching new question:', error));
+}
+
+function openQuestionModal(aiQuestionModal) {
+            if (aiQuestionModal) {
+            aiQuestionModal.style.display = 'flex';  
+            aiQuestionModal.classList.remove('chat-modal-close-animation');
+            aiQuestionModal.classList.add('chat-modal-open-animation');
+            }
+        }
+function closeQuestionModal(aiQuestionModal) {
+    if (aiQuestionModal) {
+        aiQuestionModal.classList.remove('chat-modal-open-animation');
+        aiQuestionModal.classList.add('chat-modal-close-animation');
+        setTimeout(() => {
+            aiQuestionModal.style.display = 'none';
+        }, 500);
+    }
+}
     // 모달 외부 클릭 시 모달 창 닫기
     window.onclick = function(event) {
         if (event.target === modal) {
-            closeModal();
+            closeModal(modal);
         }
     };
 
     loginBtn.onclick = function() {
-        openModal();
+        openModal(modal);
     };
 
-    if (loginFormButton) {
-        loginFormButton.addEventListener('click', function(event) {
+    var loginForm = document.getElementById('login-form'); // 로그인 폼 ID
+    var loginFormButton = document.getElementById('loginFormButton'); // 로그인 버튼 ID
+
+    if (loginForm) {
+        // 로그인 처리 공통 함수
+        function handleLogin(event) {
             event.preventDefault(); // 폼의 기본 제출 동작을 방지
-    
+
             var userIdElement = document.getElementsByName('user-id')[0];
             var passwordElement = document.getElementsByName('user-password')[0];
             if (userIdElement && passwordElement) {
                 var userId = userIdElement.value;
                 var password = passwordElement.value;
-                // 이후 로직 처리
             } else {
-                // 요소가 없는 경우의 처리 로직
                 console.error('Form elements not found');
+                return;
             }
 
             // 로그인 요청을 위한 URL
             const url = '/api/user/login';
-    
-            // XMLHttpRequest 객체를 생성합니다.
+
+            // XMLHttpRequest 객체 생성
             var xhr = new XMLHttpRequest();
-            xhr.open('POST', url, true); // 비동기 방식으로 요청을 초기화합니다.
-    
-            // 요청 헤더를 설정합니다.
+            xhr.open('POST', url, true);
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    
-            // 요청의 상태 변경을 처리하기 위한 이벤트 핸들러를 설정합니다.
+
             xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4) { // 요청이 완료되었을 때
+                if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
                         var data = JSON.parse(xhr.responseText);
-                        localStorage.setItem('access_token', data.access_token); // 받은 액세스 토큰 저장
+                        localStorage.setItem('access_token', data.access_token);
                         localStorage.setItem('userid', data.userid);
-                        // localStorage.setItem('user_profile', data.user_profile);
-                        // user_profile 객체를 올바르게 문자열로 변환하여 저장
                         localStorage.setItem('user_profile', JSON.stringify(data.user_profile));
-
-                        // 사용자 이름(또는 ID)를 페이지에 표시합니다.
                         document.getElementById('user-name').textContent = data.userid + '님';
-                        
+
                         closeModal(); // 모달 창 닫기
                         toggleUIBasedOnLoginStatus(); // UI 상태 업데이트
-                        
+
                         setTimeout(function() {
-                            window.location.href = '/'; // 홈 페이지 URL로 변경
-                        }, 500); // 모달 닫힘 애니메이션의 지속 시간에 맞춰 조절하세요.
+                            window.location.href = '/'; // 홈 페이지로 리디렉션
+                        }, 500);
                     } else {
                         var errorMessageDiv = document.getElementById('login-error-message');
                         var errorResponse = JSON.parse(xhr.responseText);
-                        // 에러 메시지 줄바꿈 처리 및 표시
-                        errorMessageDiv.innerHTML  = errorResponse.detail.replace(/\n/g, '<br>');
-                        errorMessageDiv.style.display = 'block'; // 에러 메시지 보이기
+                        errorMessageDiv.innerHTML = errorResponse.detail.replace(/\n/g, '<br>');
+                        errorMessageDiv.style.display = 'block';
                         console.error('Login failed:', errorResponse.detail);
                     }
                 }
             };
-            // URLSearchParams 객체를 사용하여 요청 본문을 구성합니다.
+
             var formData = new URLSearchParams();
             formData.append('username', userId);
             formData.append('password', password);
             console.log('Sending request with body:', formData.toString());
-            // 요청을 전송합니다.
             xhr.send(formData.toString());
-             // 비밀번호 입력 필드 초기화
-             document.getElementById('user-password').value = '';
-        });
+
+            document.getElementById('user-password').value = ''; // 비밀번호 필드 초기화
+        }
+
+        // 이벤트 리스너 등록
+        loginForm.addEventListener('submit', handleLogin);
+        if (loginFormButton) {
+            loginFormButton.addEventListener('click', handleLogin);
+        }
     }
     
     
@@ -142,6 +198,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     return response.text();
                 })
                 .then(html => {
+                    localStorage.clear();
                     window.location.href = '/';
                     // document.querySelector('.main').innerHTML = html;
                     // home.html 로딩 후 필요한 추가적인 초기화 로직이 있다면 여기에 구현
@@ -159,7 +216,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // 이벤트가 발생한 요소가 "시작하기" 버튼인지 확인
         if (event.target.classList.contains('start-btn')) {
             if (!isLoggedIn()) {  //로그인 상태로 바꿀려면 !표 빼야함
-                openModal(); // 비로그인 상태에서 모달 창 열기
+                openModal(modal); // 비로그인 상태에서 모달 창 열기
             } else {
                 loadServicePage(); // 로그인 상태일 때 service.html 내용 가져오기
             }
@@ -173,6 +230,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
+                console.log(response)
                 return response.text();
             })
             .then(html => {
@@ -190,7 +248,162 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Error loading the page: ', error);
             });
     }
+    
+    // move.js 와 script.js 연결
+    document.addEventListener('pageLoaded', function(event) {
+        if (event.detail.page === 'interview_chat') {
+            const questionData = event.detail.data; // Here you access the passed questionData
+            console.log('Received question data:', questionData);
+            ChatPage(questionData); // Pass the questionData to ChatPage
+        }
+    });
+    
 
+
+
+    // AI 질문 모달에서 MP3 재생 시작 및 이벤트 핸들링
+    async function playAIQuestion(questionData) {
+        document.getElementById("loadingModal").style.display = "block";
+        var aiQuestionModal = document.getElementById('ai-question-modal'); // AI 질문 모달 요소 선택
+        const response = await fetch('/api/handler/text_to_speech', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ content: questionData.content }) //content: text
+        });
+        document.getElementById("loadingModal").style.display = "none";
+        // AI 질문 모달 열기
+        openQuestionModal(aiQuestionModal);
+    
+        if (response.ok) {
+            const blob = await response.blob(); // 음성 데이터를 blob으로 받기
+            const url = URL.createObjectURL(blob); // Blob 객체로부터 URL 생성
+            const audio = new Audio(url);
+            audio.play(); // 오디오 재생
+            audio.onended = function() {
+                // AI 질문 모달 닫기
+                closeQuestionModal(aiQuestionModal);
+                // 사용자 답변 모달 열기
+                handleUserAnswer(questionData);
+            };
+        } else {
+            console.error('Failed to convert text to speech');
+        }
+    }
+    
+
+    function handleUserAnswer(questionData) {
+        var userAnswerModal = document.getElementById('user-answer-modal'); // 사용자 답변 모달 요소 선택
+        document.getElementById('ai-question-textbox').textContent = questionData.content;
+        openAnswerModal(userAnswerModal);
+        
+        // 사용자의 오디오 입력 장치에 접근 권한을 요청
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(stream => {
+                let mediaRecorder = new MediaRecorder(stream);
+                let audioChunks = [];
+        
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+        
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+                    mediaRecorder.stream.getTracks().forEach(track => track.stop()); // 마이크 사용 중지
+        
+                    const formData = new FormData();
+                    formData.append('file', audioBlob, 'recorded_audio.mp3');
+                    const accessToken = localStorage.getItem('access_token');
+        
+                    
+                    fetch(`/api/answer/user_answer_create/${questionData.id}`, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}` // 인증 토큰 헤더에 추가
+                        },
+                    }).then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    }).then(data => {
+                        console.log(data);
+                        const userAnswerTextbox = document.querySelector('.user-answer-textbox');
+                        if (userAnswerTextbox) {
+                            userAnswerTextbox.textContent = data.content;
+                        }
+                    
+                        // 마지막 질문에 도달했을 때의 처리 로직
+                        if (data.last_question_flag) {
+                            // API 경로로부터 피드백 페이지의 HTML을 가져온다
+                            fetch('/api/common/feedback', {
+                                method: 'GET'
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.text();
+                            })
+                            .then(html => {
+                                // 현재 페이지의 메인 컨텐츠를 새로운 HTML로 교체
+                                document.querySelector('.main').innerHTML = html;
+                                fetchFeedbackData(data.record_id); // 피드백 페이지에 필요한 데이터를 가져오는 함수
+                                initializeFeedbackPage(); // 피드백 페이지 초기화 함수
+                            })
+                            .catch(error => {
+                                console.error('Error loading feedback page:', error);
+                            });
+                        } else {
+                            // 새 질문 요청 로직
+                            fetchNewQuestion(data);
+                        }
+
+                    }).catch(error => console.error('Error in user answer submission:', error));};
+        
+                // 녹음 시작
+                mediaRecorder.start();
+        
+                // 마이크 아이콘에 클릭 이벤트 리스너 추가
+                const micIcon = document.getElementById('user_recording_circlein');
+                micIcon.addEventListener('click', () => {
+                    mediaRecorder.stop(); // 사용자가 마이크 아이콘을 클릭하면 녹음 중지
+                });
+            })
+            .catch(error => {
+                console.error("Microphone access was denied: ", error);
+            });
+    }
+    
+
+    
+    
+    function ChatPage(questionData) {
+        fetch('api/common/interview_chat')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(html => {
+                document.querySelector('.main').innerHTML = html;
+                // 사용자의 오디오 입력 장치에 접근 권한을 요청
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(() => { 
+                    playAIQuestion(questionData);
+                })
+                .catch(error => {
+                    console.error("Microphone access was denied: ", error);
+                });
+        })
+        .catch(error => {
+            console.error('Error loading the page: ', error);
+        });
+}
+    
 });
 
 
@@ -320,6 +533,8 @@ function initializeSignUpForm() {
     
         xhr.send(data);
     });
+
+
 }
 
 

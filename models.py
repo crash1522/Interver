@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Table
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 
 from database import Base
@@ -13,7 +13,6 @@ class Feedback(Base):
 
     answer = relationship("Answer", back_populates="feedback", uselist=False)
 
-    
 class Answer(Base):
     __tablename__ = "answer"
 
@@ -42,6 +41,7 @@ class Record(Base):
     create_date = Column(DateTime, nullable=False)
     rating = Column(Integer, nullable = True)
     nth_round = Column(Integer)
+    company_name = Column(String, nullable = True)
 
     user = relationship("User", back_populates="records")
     questions = relationship('Question', back_populates = "record")

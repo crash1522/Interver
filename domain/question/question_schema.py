@@ -32,3 +32,8 @@ class QuestionUpdate(QuestionCreate):
 
 class QuestionDelete(BaseModel):
     question_id: int
+
+
+class QuestionCount(BaseModel):
+    required_question_num: int
+    cur_question_num: int

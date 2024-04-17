@@ -1,3 +1,9 @@
+# Todo: 
+# 1. on push 트리거 main 브랜치로 바꾸기
+# 2. argocd가 모니터링할 브랜치 생성
+# 3. push origin argocd가 모니터링할 브랜치로 설정
+
+
 name: Push to ECR
 on:
   push:

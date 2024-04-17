@@ -13,6 +13,8 @@ def get_record(db: Session, record_id: int):
 
 def get_all_data_by_record_id(db: Session, record_id: int):
     questions = db.query(Question).filter(Question.record_id == record_id).all()
+    if not questions:
+        return None
     answers = []
     feedbacks = []
     for question in questions:
@@ -23,20 +25,24 @@ def get_all_data_by_record_id(db: Session, record_id: int):
             feedbacks.append(feedback)
         else:
             feedbacks.append(None)
-
+    
     return questions, answers, feedbacks
 
 # nth_round 검증하기
 def create_record(db: Session, user: User):
-    db_record= Record(
-        user_id=user_crud.get_id(db=db,userid=user.userid),
+    # 특정 사용자의 기존 레코드 수 계산
+    nth_round = db.query(Record).filter(Record.user_id == user.id).count() + 1
+
+    # 새로운 레코드 생성
+    db_record = Record(
+        user_id=user.id,  # User 객체에서 바로 ID를 참조
         create_date=datetime.now(),
-        nth_round=len(db.query(Record.user_id==User.id).all())) + 1
+        nth_round=nth_round
+    )
     db.add(db_record)
     db.commit()
-    db.refresh(db_record)  # 생성된 질문 인스턴스를 최신 상태로 업데이트
+    db.refresh(db_record)  # 생성된 레코드 인스턴스를 최신 상태로 업데이트
     return db_record
-
 
 def delete_record(db: Session, db_record: Record):
     db.delete(db_record)

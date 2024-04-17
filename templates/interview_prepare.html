@@ -1,4 +1,15 @@
 <main class="main" id="sign-up-main">
+        <!-- 로딩 모달 -->
+<div id="loadingModal" class="modal">
+    <div class="loading-container">
+        <div class="loading"></div>
+        <div id="loading-text">loading...</div>
+    </div>
+    <div class="loading-text-container">
+        <div id="loading-word-text">면접 준비 중...</div>
+    </div>
+</div>
+
     <div class="sign-up-content">
         <h1 class="sign-up-logo">면접 사전준비</h1>
         <form id="signupForm"> <!-- 폼 태그 추가 -->
@@ -68,6 +79,28 @@
                     </label>
                     <label id="toggleStatus">Off</label> <!-- 상태 표시 -->
                 </div>
+
+                <hr class="sign-up-hr">
+
+                <!-- 기능 강화 섹션 아래에 질문 개수 설정 옵션 추가 -->
+                <label class="sign-up-big-label">질문 개수 설정</label>
+                <label class="sign-up-small-label">질문 개수를 선택하세요 (5~15개)</label>
+                <div class="sign-up-input-group">    
+                    <select id="question-count" class="sign-up-input-normal">
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                    </select>
+                </div>
+
 
 
                 <button class="sign-up-btn" type="button" id="start-interview-btn">면접시작</button>
