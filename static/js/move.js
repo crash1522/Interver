@@ -157,8 +157,36 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
     // 모의면접 사전입력, 모의 면접 기록 페이지 이동 시작 --------------------------
+    document.getElementById('go-help').addEventListener('click', function(event) {
+        event.preventDefault(); // 기본 이벤트 방지
 
+        fetch('api/common/help') // 경로 확인 필요
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(html => {
+                document.querySelector('.main').innerHTML = html;
+                fetchFeedbackData();
+                repositorybuttonclick();
+            })
+            .catch(error => {
+                console.error('Error loading the page: ', error);
+            });
+    });
 });
+
+function repositorybuttonclick() {
+    var repositoryButton = document.querySelector('.repository-button');
+    if (repositoryButton) {
+        repositoryButton.addEventListener('click', function(event) {
+            event.preventDefault(); // 기본 이벤트 방지
+            loadPage('interview_all_repo')
+        });
+    }
+}
 
 // 페이지 내용을 AJAX로 가져와 메인 섹션에 삽입하는 함수
 function loadPage(page) {
@@ -236,8 +264,4 @@ function loadPage(page) {
             skillsContainer.appendChild(skillDiv);
         });
     }
-    
-    
-    
-    
     
