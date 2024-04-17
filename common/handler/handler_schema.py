@@ -22,3 +22,4 @@ class Input(BaseModel):
     company_info: CompanyInfo
     cover_letter: CoverLetter
     user_info: UserInfo
+    q_num: int = 10

@@ -62,7 +62,7 @@ async def is_loggined(request: Request) -> Optional[str]:
         return ""
 
 
-# 유저를 생성합니다. (회원가입)
+# 유저를 생성합니다. (회원가입) 
 @router.post("/create", status_code=status.HTTP_204_NO_CONTENT)
 def user_create(_user_create: user_schema.UserCreate, db: Session = Depends(get_db)):
     user = user_crud.get_existing_user(db, user_create=_user_create)
@@ -121,11 +121,16 @@ async def logout(request: Request):
 
 @router.get("/profile", response_model = user_schema.User)
 def user_profile(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    user_profile = user_schema.User(id=current_user.id,
-                                userid=current_user.userid,
-                                field=current_user.field,
-                                username=current_user.username,
-                                skills=user_crud.get_skills(db=db, userid= current_user.userid))
+    user_profile = user_schema.User(
+        id=current_user.id,
+        userid=current_user.userid,
+        field=current_user.field,
+        username=current_user.username,
+        skills=user_crud.get_skills(db=db, userid= current_user.userid))
+    if not user_profile:
+        raise HTTPException(
+            status_code = status.HTTP_404_NOT_FOUND,
+            detail = "유저 프로필을 찾을 수 없습니다.")
     return user_profile
 
 """

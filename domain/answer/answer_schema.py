@@ -19,9 +19,18 @@ class Answer(BaseModel):
         orm_mode = True
         arbitrary_types_allowed = True
 
+
 class AnswerUpdate(AnswerCreate):
     answer_id: int
 
 
 class AnswerDelete(BaseModel):
     answer_id: int
+
+
+class AnswerReponse(BaseModel):
+    id: int
+    content: str
+    question_id: int
+    record_id: int
+    last_question_flag: bool = False
