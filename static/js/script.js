@@ -183,6 +183,15 @@ function closeQuestionModal(aiQuestionModal) {
     
     
     var logoutButton = document.getElementById('logout');
+        // 면접 채팅 페이지일 경우에만 조건 확인
+        const isInterviewChat = document.querySelector('.main').querySelector('.modal-background') !== null;
+
+        // 면접 채팅 페이지일 경우에만 조건 확인
+        if (isInterviewChat) {
+            if (!confirm('면접을 종료하고 홈 페이지로 이동하시겠습니까?')) {
+                return; // 사용자가 취소를 선택한 경우, 이벤트 처리 중지
+            }
+        }
     if (logoutButton) {
         logoutButton.addEventListener('click', function() {
             localStorage.removeItem('access_token'); // 액세스 토큰 삭제
