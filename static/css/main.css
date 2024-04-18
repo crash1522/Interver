@@ -915,6 +915,7 @@ input:checked + .slider:before {
 }
 /*feedback 항목*/
 .feedback-item {
+    z-index: 1;
     border-top: 1px white;
     border-left: 1px white;
     border-right: 1px white;
@@ -1067,6 +1068,8 @@ input:checked + .slider:before {
 
 /* repository button*/
 .repository-button-container {
+    position: relative;
+    z-index: 2;
     text-align: center; 
     margin-top: 30px;
     margin-bottom: 60px; 
