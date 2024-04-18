@@ -21,8 +21,8 @@ function updateFeedbackContent(data) {
 
 function createElementFromTemplate(question, response, feedback) {
     const formattedQuestion = question.replace(/\\n/g, '\n').replace(/\n/g, '<br>');
-    const formattedResponse = response.replace(/\\n/g, '\n').replace(/\n/g, '<br>');
-    const formattedFeedback = feedback.replace(/\\n/g, '\n').replace(/\n/g, '<br>');
+    const formattedResponse = response ? response.replace(/\\n/g, '\n').replace(/\n/g, '<br>') : '';
+    const formattedFeedback = feedback ? feedback.replace(/\\n/g, '\n').replace(/\n/g, '<br>') : '';
 
     const template = `
         <div class="feedback-item">
@@ -45,6 +45,7 @@ function createElementFromTemplate(question, response, feedback) {
     const newItem = container.lastElementChild;
     addFeedbackItemEvent(newItem);
 }
+
 
 // 글자수 제한 함수
 function limitText(text, limit) {

@@ -350,8 +350,7 @@ function loadPage(page, data=null) {
                 preloadUserInfo();
                 updateToggleStatus();
             } else if (page === 'interview_all_repo') {
-                displayRecords(currentPage);
-                setupPagination(records.length, recordsPerPage);
+                fetchRecords();
             } else if (page === 'interview_chat') {
                 const aiQuestionTextBox = document.getElementById('ai-question-textbox');
                 const questionText = data.content;

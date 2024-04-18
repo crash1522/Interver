@@ -360,7 +360,7 @@ function closeQuestionModal(aiQuestionModal) {
                                 // 현재 페이지의 메인 컨텐츠를 새로운 HTML로 교체
                                 document.querySelector('.main').innerHTML = html;
                                 fetchFeedbackData(data.record_id); // 피드백 페이지에 필요한 데이터를 가져오는 함수
-                                initializeFeedbackPage(); // 피드백 페이지 초기화 함수
+                                // initializeFeedbackPage(); // 피드백 페이지 초기화 함수
                             })
                             .catch(error => {
                                 console.error('Error loading feedback page:', error);
