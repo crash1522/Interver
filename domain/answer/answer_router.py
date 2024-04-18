@@ -70,7 +70,6 @@ async def user_answer_create(question_id: int,
         answer_response.last_question_flag = True
         del agent_dict[record_id]   
         del q_cnt_dict[record_id]
-    print(f"\nanswer_response: {answer_response}\n")
     return answer_response
 
 

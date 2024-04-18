@@ -46,8 +46,8 @@ async def interview_start(
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                        detail="record를 생성하는데 실패했습니다.")
     if company_info.name:
-        new_record.company_name = company_info.name
-
+        record_crud.set_record_company_name(db=db, db_record=new_record, new_company_name=company_info.name)
+        
     # 새로운 agent 생성 후, 메모리에 저장
     new_agent = agent.create_agent(new_input)
     if not new_agent:
