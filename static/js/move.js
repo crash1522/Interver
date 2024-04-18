@@ -3,6 +3,17 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector('.logo-name').addEventListener('click', function (e) {
         e.preventDefault(); // 기본 이벤트 차단
 
+                // 임시로 prepare에서 들어가면 경고창 뜨도록
+        const isInterviewChat = document.querySelector('.main').querySelector('.sign-up-content') !== null;
+        //const isInterviewChat = document.querySelector('.main').querySelector('.ai-question-modal') !== null; //이게 진짜임
+
+        // 면접 채팅 페이지일 경우에만 조건 확인
+        if (isInterviewChat) {
+            if (!confirm('면접 채팅을 종료하고 홈 페이지로 이동하시겠습니까?')) {
+                return; // 사용자가 취소를 선택한 경우, 이벤트 처리 중지
+            }
+        }
+
         // AJAX 요청 설정
         var xhr = new XMLHttpRequest();
         xhr.open('GET', '/', true); // 여기서 'home.html'은 서버상의 경로에 맞게 조정해야 합니다.
@@ -89,11 +100,23 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 // 로그인 모달에서 회원가입 이동 끝 ----------------------
 
+let currentPage = null; // 현재 페이지를 추적하는 전역 변수
 
 // 서비스페이지로 이동 시작 --------------------------
     // 'go-service' 링크 클릭 이벤트 처리
     document.getElementById('go-service').addEventListener('click', function(event) {
         event.preventDefault(); // 기본 이벤트 방지
+
+        // 임시로 prepare에서 들어가면 경고창 뜨도록
+        const isInterviewChat = document.querySelector('.main').querySelector('.sign-up-content') !== null;
+        //const isInterviewChat = document.querySelector('.main').querySelector('.ai-question-modal') !== null; //이게 진짜임
+
+        // 면접 채팅 페이지일 경우에만 조건 확인
+        if (isInterviewChat) {
+            if (!confirm('면접 채팅을 종료하고 서비스 페이지로 이동하시겠습니까?')) {
+                return; // 사용자가 취소를 선택한 경우, 이벤트 처리 중지
+            }
+        }
 
         // 'service.html' 내용을 AJAX로 가져와 메인 섹션에 삽입
         fetch('api/common/service') // 경로 확인 필요
@@ -123,6 +146,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('go-my-page').addEventListener('click', function(event) {
         event.preventDefault(); // 기본 이벤트 방지
+
+
+        // 임시로 prepare에서 들어가면 경고창 뜨도록
+        const isInterviewChat = document.querySelector('.main').querySelector('.sign-up-content') !== null;
+        //const isInterviewChat = document.querySelector('.main').querySelector('.ai-question-modal') !== null; //이게 진짜임
+
+        // 면접 채팅 페이지일 경우에만 조건 확인
+        if (isInterviewChat) {
+            if (!confirm('면접 채팅을 종료하고 마이 페이지로 이동하시겠습니까?')) {
+                return; // 사용자가 취소를 선택한 경우, 이벤트 처리 중지
+            }
+        }
     
         // 'api/common/mypage'로부터 마이페이지 내용을 AJAX로 가져옴
         fetch('api/common/mypage')
@@ -244,13 +279,13 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data => {
             console.log('Success:', data);
             //첫 질문 생성(텍스트)
-            return fetch(`/api/question/question_create/${data}?before_answer_id=0`, {
+            return fetch(`/api/question/question_create/${data}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${accessToken}` // 인증 토큰 헤더에 추가
                 },
-               // 필요한 경우 수정
+                body: JSON.stringify({ before_answer_id: null })  // 필요한 경우 수정
             });
         })
         .then(questionResponse => {
@@ -298,6 +333,8 @@ function playAudio(blob) {
 
 // 페이지 내용을 AJAX로 가져와 메인 섹션에 삽입하는 함수
 function loadPage(page, data=null) {
+    currentPage = page; // 페이지 로드 시 현재 페이지 업데이트
+    console.log(currentPage)
     fetch(`api/common/${page}`)
         .then(response => {
             if (!response.ok) {
