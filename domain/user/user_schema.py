@@ -51,7 +51,7 @@ class UserIdRequest(BaseModel):
 
 class UserRecords(BaseModel):
     nth_round: int
-    created_date: datetime.datetime
+    create_date: datetime.datetime
     company_name: Optional[str] = None
     record_id: int
 

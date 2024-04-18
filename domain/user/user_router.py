@@ -140,6 +140,7 @@ async def get_user_records(current_user: User = Depends(get_current_user), db: S
     if not records:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail = "No such records matching userid.")
     records_list = []
+    
     for record in records:
         user_record = user_schema.UserRecords(
             record_id = record.id,
