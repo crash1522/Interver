@@ -1524,7 +1524,7 @@ input:checked + .slider:before {
     content: '';
     position: relative;
     display: block;
-    background-color: #e4efff;
+    background-color: white !important;
     border-radius: 20px;
     padding: 20px;
     margin: 100px; /* 상하 마진을 30px, 좌측 마진을 100px, 우측 마진을 50px로 조정 */

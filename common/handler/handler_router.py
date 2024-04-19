@@ -69,7 +69,7 @@ async def text_to_speech(question: question_schema.QuestionCreate):
         # TTS API 호출
         response = stt_llm.audio.speech.create(
                 model="tts-1-hd",  # 고화질의 음성 품질 모델 선택
-                voice="shimmer",  # 선택된 목소리 유형
+                voice="onyx",  # 선택된 목소리 유형
                 input=question.content,  # 클라이언트로부터 받은 텍스트
             )
         audio_stream = BytesIO(response.content)
