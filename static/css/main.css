@@ -1179,26 +1179,12 @@ input:checked + .slider:before {
 	position: absolute;
 }
 
-/* .user_recording_outline {
-	width: 60px;
-	height: 60px;
-	border-radius: 50%;
-	border: 8px solid #B5A4A4;
-    animation: pulse 3s;
-	animation-timing-function: ease-out;
-	animation-iteration-count: infinite;
-	position: absolute;
-} */
-
-/* .user_recording_button {
-	width: 120px;
-	height: 120px;
-	border-radius: 50%;
-	background: #50CDDD;
-	box-shadow: 0px 0px 80px #0084F9;
-	position: absolute;
-} */
-
+/* 애니메이션 비활성화 클래스 */
+.no-animation {
+    animation: none !important;
+    background: #6be18e !important;
+    box-shadow: none !important;
+}
 @keyframes pulse {
   0% {
     transform: scale(0);
@@ -1223,18 +1209,10 @@ input:checked + .slider:before {
 }
 
 #user_recording_delayed {
-	animation-delay: 1.5s;
-}
+	/* animation-delay: 1.5s; */
+    animation: none !important;
 
-/* #user_recording_circlein {
-    
-	width: 100px;
-	height: 100px;
-	border-radius: 50%;
-	background: #6BD6E1;
-	box-shadow: 0px -2px 15px #E0FF94;
-	position: absolute;
-} */
+}
 
 /* 추가적인 모달 내용 스타일링 */
 .user-answer-content p {
@@ -1267,21 +1245,22 @@ input:checked + .slider:before {
     transition: transform 0.3s ease; /* 크기 변경 애니메이션 효과 */
     cursor: pointer; /* 마우스 오버 시 커서 변경 */
     transform: scale(0.75); /* 아이콘 크기를 75%로 조정 */
+    fill: #1E2D70 !important;
 }
 
 .mic-icon:hover {
-    transform: scale(1.1); /* 마우스 오버 시 아이콘 크기 증가 */
+    transform: scale(1); /* 마우스 오버 시 아이콘 크기 증가 */
 }
 
 .mic-icon.recording-complete {
     /* 녹음 완료 상태 시 시각적 스타일 */
     /* 예: 색상 변경 */
-    color: green; /* 녹음 완료 상태를 나타내는 색상으로 변경 */
+    fill: green !important;
     cursor: default; /* 마우스 오버 시 커서 변경 없음 */
 }
 
 .mic-icon.recording-complete:hover {
-    transform: scale(1); /* 마우스 오버 시 아이콘 크기 변경 없음 */
+    transform: scale(0.75); /* 마우스 오버 시 아이콘 크기 변경 없음 */
 }
 @keyframes fadeInAnimation {
     from {opacity: 0;}
@@ -1498,7 +1477,7 @@ input:checked + .slider:before {
 
 
 
-.user-answer-textbox:before, .ai-question-textbox:before {
+.user-answer-textbox:before, .ai-question-textbox:before{
     content: '';
     display: block;
     width: 50px; /* 아이콘의 너비를 조정 */
@@ -1541,5 +1520,19 @@ input:checked + .slider:before {
     font-size: 20px;
 }
 
-  
-
+.chat-system-message {
+    content: '';
+    position: relative;
+    display: block;
+    background-color: #e4efff;
+    border-radius: 20px;
+    padding: 20px;
+    margin: 100px; /* 상하 마진을 30px, 좌측 마진을 100px, 우측 마진을 50px로 조정 */
+    max-width: 50%;
+    color: green;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    text-align: center;
+    align-items: center; /* 중앙 정렬 */
+    right: -125px; /* 아이콘을 오른쪽 바깥으로 60픽셀 이동 */
+}

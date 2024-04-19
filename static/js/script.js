@@ -304,12 +304,21 @@ function closeQuestionModal(aiQuestionModal) {
 
     function handleUserAnswer(questionData) {
         var userAnswerModal = document.getElementById('user-answer-modal'); // 사용자 답변 모달 요소 선택
+        const micIcon = document.getElementById('mic-icon');
+        const outlines = document.querySelectorAll('.user_recording_outline'); // 모든 outline 요소 선택
+        const recordOutlines = document.querySelectorAll('.user_recording_button'); // 모든 outline 요소 선택
         document.getElementById('ai-question-textbox').textContent = questionData.content;
+
         openAnswerModal(userAnswerModal);
-        
+        // 마이크 아이콘 및 기타 요소들의 클래스를 제거하여 스타일 초기화
+        if (micIcon) {micIcon.classList.remove('recording-complete');}
+        outlines.forEach(outline => {outline.classList.remove('no-animation');});
+        recordOutlines.forEach(recordOutlines => {recordOutlines.classList.remove('no-animation');});
+
         // 사용자의 오디오 입력 장치에 접근 권한을 요청
         navigator.mediaDevices.getUserMedia({ audio: true })
             .then(stream => {
+                document.querySelector('.chat-system-message').textContent = "녹음 중 입니다... 마이크를 클릭하면 녹음이 종료됩니다.";
                 let mediaRecorder = new MediaRecorder(stream);
                 let audioChunks = [];
         
@@ -347,6 +356,7 @@ function closeQuestionModal(aiQuestionModal) {
                         // 마지막 질문에 도달했을 때의 처리 로직
                         if (data.last_question_flag) {
                             // API 경로로부터 피드백 페이지의 HTML을 가져온다
+                            document.getElementById("loadingModal").style.display = "block"; //로딩창 추가, 단 로딩이 짧아 거의 보이지 않음
                             fetch('/api/common/feedback', {
                                 method: 'GET'
                             })
@@ -376,10 +386,27 @@ function closeQuestionModal(aiQuestionModal) {
                 mediaRecorder.start();
         
                 // 마이크 아이콘에 클릭 이벤트 리스너 추가
-                const micIcon = document.getElementById('user_recording_circlein');
+                const micIcon = document.getElementById('mic-icon');
+                const outlines = document.querySelectorAll('.user_recording_outline'); // 모든 outline 요소 선택
+                const recordOutlines = document.querySelectorAll('.user_recording_button'); // 모든 outline 요소 선택
+                
                 micIcon.addEventListener('click', () => {
                     mediaRecorder.stop(); // 사용자가 마이크 아이콘을 클릭하면 녹음 중지
+                    micIcon.classList.add('recording-complete'); // 마이크 아이콘 스타일 변경
+                
+                    // 모든 outline 요소에 대해 반복 실행
+                    outlines.forEach(outline => {outline.classList.add('no-animation');});
+                    recordOutlines.forEach(recordOutlines => {recordOutlines.classList.add('no-animation');});
+
+                        // 녹음 완료 메시지를 표시
+                    document.querySelector('.chat-system-message').textContent = "녹음이 완료되었습니다.";
+
+                    // if (chatSystemMessage ) {
+                    //     chatSystemMessage.classList.remove('recording');
+                    //     chatSystemMessage.classList.add('complete');
+                    //     }
                 });
+                
             })
             .catch(error => {
                 console.error("Microphone access was denied: ", error);
