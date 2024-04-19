@@ -357,9 +357,7 @@ function loadPage(page, data=null) {
                 recordsListContainer.addEventListener('click', function(event) {
                     const recordElement = event.target.closest('.record');
                     if (recordElement) {
-                        // const recordId = 1;
                         const recordId = recordElement.getAttribute('data-record-id');
-                        console.log('Record ID:', recordId); // 콘솔에 recordId 로그 출력
                         loadFeedbackPage(recordId);
                     }
                 });

@@ -150,7 +150,6 @@ async def get_user_records(current_user: User = Depends(get_current_user), db: S
         )
         records_list.append(user_record)
     user_record_list = user_schema.UserRecordsList(records_list=records_list)
-    print(user_record_list)
     return user_record_list
     
 
