@@ -136,9 +136,9 @@ def user_profile(current_user: User = Depends(get_current_user), db: Session = D
 # nth round, created_date, company_name, record_id
 @router.get("/get_records", response_model=user_schema.UserRecordsList)
 async def get_user_records(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    records = user_crud.get_records_by_userid(db=db, userid=User.userid)
+    records = user_crud.get_records_by_userid(db=db, userid=current_user.userid)
     if not records:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail = "No such records matching userid.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail = "No records matching userid.")
     records_list = []
     
     for record in records:
