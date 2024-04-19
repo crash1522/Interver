@@ -351,6 +351,18 @@ function loadPage(page, data=null) {
                 updateToggleStatus();
             } else if (page === 'interview_all_repo') {
                 fetchRecords();
+                const recordsListContainer = document.querySelector('.records-list');
+
+                // 면접 기록 클릭 이벤트 리스너 추가
+                recordsListContainer.addEventListener('click', function(event) {
+                    const recordElement = event.target.closest('.record');
+                    if (recordElement) {
+                        // const recordId = 1;
+                        const recordId = recordElement.getAttribute('data-record-id');
+                        console.log('Record ID:', recordId); // 콘솔에 recordId 로그 출력
+                        loadFeedbackPage(recordId);
+                    }
+                });
             } else if (page === 'interview_chat') {
                 const aiQuestionTextBox = document.getElementById('ai-question-textbox');
                 const questionText = data.content;
@@ -428,4 +440,23 @@ function repositorybuttonclick() {
             loadPage('interview_all_repo')
         });
     }
+}
+
+function loadFeedbackPage(recordId) {
+    fetch('api/common/feedback') // 경로 확인 필요
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(html => {
+                document.querySelector('.main').innerHTML = html;
+                fetchFeedbackData(recordId);
+                repositorybuttonclick();
+                
+            })
+            .catch(error => {
+                console.error('Error loading the page: ', error);
+            });
 }

@@ -35,6 +35,7 @@ function displayRecords(page) {
 
         const recordElement = document.createElement('div');
         recordElement.classList.add('record');
+        recordElement.setAttribute('data-record-id', record.record_id); // 각 기록에 대한 record_id 설정
         recordElement.textContent = `${record.nth_round}번째 ${formattedDate} ${companyName} 모의면접`;
 
         listElement.appendChild(recordElement);
