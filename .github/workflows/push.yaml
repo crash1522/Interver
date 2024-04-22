@@ -112,11 +112,11 @@ jobs:
           chmod +x $DESTINATION
           ls
                   
-          - name: Checkout prod/argocd-monitoring branch
-          uses: actions/checkout@v3
-          with:
-            ref: prod/argocd-monitoring
-            token: ${{ secrets.GIT_ACCESS_TOKEN }}
+      - name: Checkout prod/argocd-monitoring branch
+        uses: actions/checkout@v3
+        with:
+          ref: prod/argocd-monitoring
+          token: ${{ secrets.GIT_ACCESS_TOKEN }}
         
       - name: Merge changes from main branch
         run: |
