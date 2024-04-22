@@ -112,12 +112,12 @@ jobs:
           chmod +x $DESTINATION
           ls
                   
-        
-      - name: Merge changes from main branch
+      - name: Force merge using theirs strategy
         run: |
           git fetch origin main
-          git merge origin/main  # 이 부분은 충돌이 발생할 수 있으므로 스크립트에서 처리 로직이 필요할 수 있습니다.
+          git merge -X theirs origin/main
           git push
+          
       
       - name: Update image tag in interver.yaml
         run: |
