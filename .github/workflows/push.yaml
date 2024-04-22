@@ -112,7 +112,7 @@ jobs:
           chmod +x $DESTINATION
           ls
                   
-      - name: git push image tag to prod/argocd-monitoring branch 
+      - name: git push image tag to prod/argocd-monitoring branch.
         env:
           GITHUB_REPO: ${{ github.repository.name }}
           GITHUB_SHA: ${{ github.sha }}
