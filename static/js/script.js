@@ -583,7 +583,6 @@ function initializeSignUpForm() {
             if (xhr.readyState === 4) {
                 var errorMessageDiv = document.getElementById('duplicate-message');
                 var response = JSON.parse(xhr.responseText);
-                console.log(response)
                 errorMessageDiv.textContent = response.message; // 에러 메시지 표시
                 if (response.message == "사용 가능한 아이디입니다.") {
                     errorMessageDiv.style.color = '#4c80f0';   

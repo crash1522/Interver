@@ -268,7 +268,6 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(response => response.json())
         .then(data => {
-            console.log('Success:', data);
             //첫 질문 생성(텍스트)
             return fetch(`/api/question/question_create/${data}?before_answer_id=0`, {
                 method: 'POST',
@@ -286,8 +285,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return questionResponse.json();
         })
         .then(questionData => {
-            console.log('New question received:', questionData);
-
             loadPage('interview_chat', questionData);
         })
         .catch((error) => {
