@@ -116,6 +116,7 @@ jobs:
           GITHUB_REPO: ${{ github.repository.name }}
           GITHUB_SHA: ${{ github.sha }}
         run: |
+          git config pull.rebase false
           git pull origin main
           sed -i -e 's@${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:.*@${{ steps.build-image.outputs.image }}@g' $DESTINATION/interver.yaml
           git add .
