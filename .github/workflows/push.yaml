@@ -98,13 +98,13 @@ jobs:
         run: |
           echo "COMMIT_MSG=Push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
           echo $COMMIT_MSG  
-      
-      - name: Checkout main branch
-        uses: actions/checkout@v3
-        with:
-          ref: main
-          token: ${{ secrets.GIT_ACCESS_TOKEN }}
-      
+
+
+      - name: Copy main to prod/argocd-monitoring
+        run: |
+          git checkout -B prod/argocd-monitoring
+
+
       - name: Get Access Permission
         uses: actions/checkout@v3
         with:
@@ -116,11 +116,6 @@ jobs:
         run: |
           chmod +x $DESTINATION
           ls
-
-          
-      - name: Copy main to prod/argocd-monitoring
-        run: |
-          git checkout -B prod/argocd-monitoring
 
 
       - name: Update image tag in interver.yaml
