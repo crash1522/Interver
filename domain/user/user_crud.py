@@ -105,10 +105,6 @@ def get_field(db: Session, userid: str):
 
 
 def get_records_by_userid(db: Session, userid: str):
-    user = db.query(User).filter(User.id == get_id(db=db,userid=userid)).first()
-    
-    if not user:
-        return []
     records = db.query(Record).filter(Record.user_id == get_id(db=db,userid=userid)).order_by(Record.create_date).all()
     return records
 

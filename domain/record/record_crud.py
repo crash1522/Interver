@@ -44,6 +44,18 @@ def create_record(db: Session, user: User):
     db.refresh(db_record)  # 생성된 레코드 인스턴스를 최신 상태로 업데이트
     return db_record
 
+def set_record_company_name(db: Session, db_record: Record, new_company_name: str):
+
+    record = db.query(Record).filter(Record.id == db_record.id).first()
+    
+    # 사용자명을 업데이트하고 데이터베이스 세션을 커밋합니다.
+    record.company_name = new_company_name
+    db.commit()
+    db.refresh(record)
+    # 업데이트된 사용자 정보를 반환합니다. 실제 반환 타입이나 내용은 요구 사항에 따라 달라질 수 있습니다.
+    return record
+
+
 def delete_record(db: Session, db_record: Record):
     db.delete(db_record)
     db.commit()

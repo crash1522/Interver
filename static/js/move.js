@@ -3,6 +3,16 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector('.logo-name').addEventListener('click', function (e) {
         e.preventDefault(); // 기본 이벤트 차단
 
+        // 면접 채팅 페이지일 경우에만 조건 확인
+        const isInterviewChat = document.querySelector('.main').querySelector('.modal-background') !== null;
+
+        // 면접 채팅 페이지일 경우에만 조건 확인
+        if (isInterviewChat) {
+            if (!confirm('면접을 종료하고 홈 페이지로 이동하시겠습니까?')) {
+                return; // 사용자가 취소를 선택한 경우, 이벤트 처리 중지
+            }
+        }
+
         // AJAX 요청 설정
         var xhr = new XMLHttpRequest();
         xhr.open('GET', '/', true); // 여기서 'home.html'은 서버상의 경로에 맞게 조정해야 합니다.
@@ -95,6 +105,16 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('go-service').addEventListener('click', function(event) {
         event.preventDefault(); // 기본 이벤트 방지
 
+        // 면접 채팅 페이지일 경우에만 조건 확인
+        const isInterviewChat = document.querySelector('.main').querySelector('.modal-background') !== null;
+
+        // 면접 채팅 페이지일 경우에만 조건 확인
+        if (isInterviewChat) {
+            if (!confirm('면접을 종료하고 서비스 페이지로 이동하시겠습니까?')) {
+                return; // 사용자가 취소를 선택한 경우, 이벤트 처리 중지
+            }
+        }
+
         // 'service.html' 내용을 AJAX로 가져와 메인 섹션에 삽입
         fetch('api/common/service') // 경로 확인 필요
             .then(response => {
@@ -123,6 +143,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('go-my-page').addEventListener('click', function(event) {
         event.preventDefault(); // 기본 이벤트 방지
+
+        // 면접 채팅 페이지일 경우에만 조건 확인
+        const isInterviewChat = document.querySelector('.main').querySelector('.modal-background') !== null;
+
+        // 면접 채팅 페이지일 경우에만 조건 확인
+        if (isInterviewChat) {
+            if (!confirm('면접을 종료하고 마이 페이지로 이동하시겠습니까?')) {
+                return; // 사용자가 취소를 선택한 경우, 이벤트 처리 중지
+            }
+        }
     
         // 'api/common/mypage'로부터 마이페이지 내용을 AJAX로 가져옴
         fetch('api/common/mypage')
@@ -268,6 +298,16 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('go-help').addEventListener('click', function(event) {
         event.preventDefault(); // 기본 이벤트 방지
 
+        // 면접 채팅 페이지일 경우에만 조건 확인
+        const isInterviewChat = document.querySelector('.main').querySelector('.modal-background') !== null;
+
+        // 면접 채팅 페이지일 경우에만 조건 확인
+        if (isInterviewChat) {
+            if (!confirm('면접을 종료하고 help 페이지로 이동하시겠습니까?')) {
+                return; // 사용자가 취소를 선택한 경우, 이벤트 처리 중지
+            }
+        }
+
         fetch('api/common/feedback') // 경로 확인 필요
             .then(response => {
                 if (!response.ok) {
@@ -310,8 +350,17 @@ function loadPage(page, data=null) {
                 preloadUserInfo();
                 updateToggleStatus();
             } else if (page === 'interview_all_repo') {
-                displayRecords(currentPage);
-                setupPagination(records.length, recordsPerPage);
+                fetchRecords();
+                const recordsListContainer = document.querySelector('.records-list');
+
+                // 면접 기록 클릭 이벤트 리스너 추가
+                recordsListContainer.addEventListener('click', function(event) {
+                    const recordElement = event.target.closest('.record');
+                    if (recordElement) {
+                        const recordId = recordElement.getAttribute('data-record-id');
+                        loadFeedbackPage(recordId);
+                    }
+                });
             } else if (page === 'interview_chat') {
                 const aiQuestionTextBox = document.getElementById('ai-question-textbox');
                 const questionText = data.content;
@@ -389,4 +438,23 @@ function repositorybuttonclick() {
             loadPage('interview_all_repo')
         });
     }
+}
+
+function loadFeedbackPage(recordId) {
+    fetch('api/common/feedback') // 경로 확인 필요
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(html => {
+                document.querySelector('.main').innerHTML = html;
+                fetchFeedbackData(recordId);
+                repositorybuttonclick();
+                
+            })
+            .catch(error => {
+                console.error('Error loading the page: ', error);
+            });
 }

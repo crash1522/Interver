@@ -183,6 +183,15 @@ function closeQuestionModal(aiQuestionModal) {
     
     
     var logoutButton = document.getElementById('logout');
+        // 면접 채팅 페이지일 경우에만 조건 확인
+        const isInterviewChat = document.querySelector('.main').querySelector('.modal-background') !== null;
+
+        // 면접 채팅 페이지일 경우에만 조건 확인
+        if (isInterviewChat) {
+            if (!confirm('면접을 종료하고 홈 페이지로 이동하시겠습니까?')) {
+                return; // 사용자가 취소를 선택한 경우, 이벤트 처리 중지
+            }
+        }
     if (logoutButton) {
         logoutButton.addEventListener('click', function() {
             localStorage.removeItem('access_token'); // 액세스 토큰 삭제
@@ -295,28 +304,92 @@ function closeQuestionModal(aiQuestionModal) {
 
     function handleUserAnswer(questionData) {
         var userAnswerModal = document.getElementById('user-answer-modal'); // 사용자 답변 모달 요소 선택
+        const micIcon = document.getElementById('mic-icon');
+        const outlines = document.querySelectorAll('.user_recording_outline'); // 모든 outline 요소 선택
+        const recordOutlines = document.querySelectorAll('.user_recording_button'); // 모든 outline 요소 선택
+        const chatSystemMessage = document.querySelector('.chat-system-message');
+
+        chatSystemMessage.textContent = "녹음 중 입니다... 40초 남았습니다. 마이크를 클릭하면 녹음이 종료됩니다.";
         document.getElementById('ai-question-textbox').textContent = questionData.content;
+
         openAnswerModal(userAnswerModal);
-        
+        // 마이크 아이콘 및 기타 요소들의 클래스를 제거하여 스타일 초기화
+        if (micIcon) {micIcon.classList.remove('recording-complete');}
+        outlines.forEach(outline => {outline.classList.remove('no-animation');});
+        recordOutlines.forEach(recordOutlines => {recordOutlines.classList.remove('no-animation');});
+
+
         // 사용자의 오디오 입력 장치에 접근 권한을 요청
         navigator.mediaDevices.getUserMedia({ audio: true })
             .then(stream => {
+                
+                const chatSystemMessage = document.querySelector('.chat-system-message');
+                chatSystemMessage.textContent = "녹음 중 입니다... 마이크를 클릭하면 녹음이 종료됩니다.";
+                let remainingTime = 40; // 녹음 시간을 40초로 설정
                 let mediaRecorder = new MediaRecorder(stream);
                 let audioChunks = [];
-        
+            
+                // 타이머 로직 추가
+                const timerInterval = setInterval(() => {
+                    remainingTime -= 1;
+                    chatSystemMessage.textContent = `녹음 중 입니다... ${remainingTime}초 남았습니다. 마이크를 클릭하면 녹음이 종료됩니다.`;
+            
+                    if (remainingTime <= 0) {
+                        clearInterval(timerInterval);
+                        mediaRecorder.stop(); // 타이머에 의해 녹음 종료
+                    }
+                }, 1000);
+            
                 mediaRecorder.ondataavailable = event => {
                     audioChunks.push(event.data);
                 };
-        
+
                 mediaRecorder.onstop = () => {
+                    clearInterval(timerInterval); // 타이머 종료
                     const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
                     mediaRecorder.stream.getTracks().forEach(track => track.stop()); // 마이크 사용 중지
+
+                    micIcon.classList.add('recording-complete'); // 마이크 아이콘 스타일 변경
+                
+                    // 모든 outline 요소에 대해 반복 실행
+                    outlines.forEach(outline => {outline.classList.add('no-animation');});
+                    recordOutlines.forEach(recordOutlines => {recordOutlines.classList.add('no-animation');});
+
+                    const chatSystemMessage = document.querySelector('.chat-system-message');
+
+                    if (chatSystemMessage) {
+                        chatSystemMessage.textContent = "녹음이 완료되었습니다.";
+                    }
+                
+                        // 2초 후에 질문 준비 메시지 시작
+                        setTimeout(() => {
+                            if (chatSystemMessage) {
+                                chatSystemMessage.textContent = "질문 준비 중";
+                            }
+                            
+                            // "..."를 동적으로 업데이트하는 로직
+                            let dots = 0;
+                            const dotInterval = setInterval(() => {
+                                dots = (dots + 1) % 4;
+                                const dotsString = '.'.repeat(dots);
+                                if (chatSystemMessage) {
+                                    chatSystemMessage.textContent = `질문 준비 중${dotsString}`;
+                                }
+                                    // 5초 후 점 추가를 종료하고, 최종 메시지 설정
+                                setTimeout(() => {
+                                    clearInterval(dotInterval);  // 점 추가 중지
+                                    chatSystemMessage.textContent = "질문 준비가 완료되었습니다.";  // 최종 상태 메시지
+                                }, 5000);  // 5초 후 점 업데이트 종료
+                            }, 500); // 반초마다 실행
+                            
+                            // 필요한 경우 이후에 clearInterval(dotInterval);을 호출하여 정지
+                        }, 2000); // 2초 후에 실행
         
                     const formData = new FormData();
                     formData.append('file', audioBlob, 'recorded_audio.mp3');
                     const accessToken = localStorage.getItem('access_token');
         
-                    
+                    document.getElementById("loadingModal").style.display = "block"; //로딩창 추가, 단 로딩이 짧아 거의 보이지 않음
                     fetch(`/api/answer/user_answer_create/${questionData.id}`, {
                         method: 'POST',
                         body: formData,
@@ -351,7 +424,8 @@ function closeQuestionModal(aiQuestionModal) {
                                 // 현재 페이지의 메인 컨텐츠를 새로운 HTML로 교체
                                 document.querySelector('.main').innerHTML = html;
                                 fetchFeedbackData(data.record_id); // 피드백 페이지에 필요한 데이터를 가져오는 함수
-                                initializeFeedbackPage(); // 피드백 페이지 초기화 함수
+                                repositorybuttonclick();
+                                // initializeFeedbackPage(); // 피드백 페이지 초기화 함수
                             })
                             .catch(error => {
                                 console.error('Error loading feedback page:', error);
@@ -367,10 +441,50 @@ function closeQuestionModal(aiQuestionModal) {
                 mediaRecorder.start();
         
                 // 마이크 아이콘에 클릭 이벤트 리스너 추가
-                const micIcon = document.getElementById('user_recording_circlein');
+                const micIcon = document.getElementById('mic-icon');
+                const outlines = document.querySelectorAll('.user_recording_outline'); // 모든 outline 요소 선택
+                const recordOutlines = document.querySelectorAll('.user_recording_button'); // 모든 outline 요소 선택
+                
                 micIcon.addEventListener('click', () => {
                     mediaRecorder.stop(); // 사용자가 마이크 아이콘을 클릭하면 녹음 중지
+                    clearInterval(timerInterval); // 타이머 종료
+                    micIcon.classList.add('recording-complete'); // 마이크 아이콘 스타일 변경
+                
+                    // 모든 outline 요소에 대해 반복 실행
+                    outlines.forEach(outline => {outline.classList.add('no-animation');});
+                    recordOutlines.forEach(recordOutlines => {recordOutlines.classList.add('no-animation');});
+
+                    const chatSystemMessage = document.querySelector('.chat-system-message');
+                    if (chatSystemMessage) {
+                        chatSystemMessage.textContent = "녹음이 완료되었습니다.";
+                    }
+                
+                        // 2초 후에 질문 준비 메시지 시작
+                    setTimeout(() => {
+                        if (chatSystemMessage) {
+                            chatSystemMessage.textContent = "질문 준비 중";
+                        }
+                        
+                        // "..."를 동적으로 업데이트하는 로직
+                        let dots = 0;
+                        const dotInterval = setInterval(() => {
+                            dots = (dots + 1) % 4;
+                            const dotsString = '.'.repeat(dots);
+                            if (chatSystemMessage) {
+                                chatSystemMessage.textContent = `질문 준비 중${dotsString}`;
+                            }
+                                // 5초 후 점 추가를 종료하고, 최종 메시지 설정
+                            setTimeout(() => {
+                                clearInterval(dotInterval);  // 점 추가 중지
+                                chatSystemMessage.textContent = "질문 준비가 완료되었습니다.";  // 최종 상태 메시지
+                            }, 5000);  // 5초 후 점 업데이트 종료
+                        }, 500); // 반초마다 실행
+                        
+                        // 필요한 경우 이후에 clearInterval(dotInterval);을 호출하여 정지
+                    }, 2000); // 2초 후에 실행
+
                 });
+                
             })
             .catch(error => {
                 console.error("Microphone access was denied: ", error);

@@ -884,203 +884,142 @@ input:checked + .slider:before {
 }*/
 
 /* feedback 페이지 시작-----------------------------------------*/
+/* 기본 스타일 및 레이아웃 설정 */
 .feedback-content {
     display: flex;
     width: 80%;
     flex-direction: column;
-    height: 100%;
+    height: 100vh; /* 높이를 화면에 맞춤 */
 }
 
-/*feedback 로고*/
 .feedback-logo {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    padding-top: 30px;
-    font-size: 40px;
-    margin-bottom: 5px;
+    margin: 30px auto 5px;
+    font-size: 2.5rem; /* 상대적 폰트 크기 */
     color: #A885F2;
 }
+
 .feedback-intro {
     text-align: center;
-    font-size: 18px;
+    font-size: 1.125rem;
     margin-bottom: 50px;
     color: #b295f0;
 }
 
 .feedback-container {
-    margin-bottom: 15px;
-    width: 80%;
-    margin: 0 auto;
+    margin: 0 auto 15px;
+    width: 100%; /* 항상 부모의 전체 너비를 사용 */
 }
-/*feedback 항목*/
+
 .feedback-item {
-    border-top: 1px white;
-    border-left: 1px white;
-    border-right: 1px white;
-    border-bottom: 1px #e5e5e5; 
+    z-index: 1;
+    border-top: 1px solid white;
+    border-left: 1px solid white;
+    border-right: 1px solid white;
+    border-bottom: 1px solid #e5e5e5;
     transition: all 0.1s ease;
     border-style: solid;
     position: relative;
     box-sizing: border-box;
 }
+
 .feedback-line {
     width: 100%;
     height: 1px;
-    background-color: #e5e5e5; /* 실선의 색상을 검은색으로 설정 */
+    background-color: #e5e5e5;
     box-sizing: border-box;
     position: relative;
 }
+
 .feedback-item p {
     color: #949494;
-    white-space: nowrap; 
-    font-weight:600;
-    padding:15px; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
-    width: 90%; 
+    font-weight: 600;
+    padding: 15px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 90%;
     display: block;
     box-sizing: border-box;
 }
-.feedback-list{
-    display: flex; /* Flexbox를 활성화 */
-    align-items: center; /* 수직 중앙 정렬 */
-    justify-content: center; /* 수평 중앙 정렬 */
-    height: 100px; /* 원하는 높이로 설정 */
-    overflow: hidden; /* 내용이 넘칠 경우 숨김 */
-    width:100%;
-    border: 3px solid transparent; /* 기본 상태에서 투명 테두리 설정 */
-    box-sizing: border-box; /* 패딩과 테두리를 너비 계산에 포함 */
-}
-.feedback-list p{
-    padding-left: 30px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    width: 100%; /* 너비를 100%로 설정하여 부모 컨테이너 내에서 한 줄만 표시 */
-    box-sizing: border-box;
-}
-/* 활성화된 feedback-item 내의 feedback-list에 마우스를 올렸을 때 */
-.feedback-item.active .feedback-list{
-    background-color: rgba(168, 133, 242, 0.2); /* 반투명 보라색으로 배경 설정 */
-    border-color: #A885F2; /* 테두리 색 변경 */
-    cursor: default; /* 마우스 포인터 변경 */
-    height: 100%; /* 질문 부분의 높이 제한을 해제합니다. */
-    min-height: 100px;
-}
 
-/* 활성화되지 않은 상태에서 마우스 오버 효과 */
-.feedback-item:not(.active) .feedback-list:hover {
-    background-color: rgba(168, 133, 242, 0.2); /* 반투명 보라색으로 배경 설정 */
-    border-color: #A885F2; /* 테두리 색 변경 */
-    cursor: pointer; /* 마우스 포인터 변경 */
-    box-sizing: border-box;
-}
-
-.feedback-item.active .feedback-list p {
-    font-weight:500;
-    overflow: visible; /* 오버플로우를 보이게 설정 */
-    text-overflow: clip; /* 텍스트 말줄임 해제 */
+.feedback-list {
+    display: flex;
+    align-items: center;
     justify-content: center;
-    align-items: center;  
+    height: 100px;
+    overflow: hidden;
+    width: 100%;
+    border: 3px solid transparent;
+    box-sizing: border-box;
 }
 
 .feedback-item.active .feedback-list {
-    justify-content: center;
-    align-items: center;  
+    background-color: rgba(168, 133, 242, 0.2);
+    border-color: #A885F2;
+    height: 100%;
+    min-height: 100px;
 }
 
-.feedback-item:after {
-    content: "+";
-    position: absolute; 
-    top: 50%;
-    right: 10px;
-    transform: translateY(-50%);
-    font-size: 20px;
-    color: #e5e5e5;
-    font-weight: bold;
+.feedback-item:not(.active) .feedback-list:hover {
+    background-color: rgba(168, 133, 242, 0.2);
+    border-color: #A885F2;
+    cursor: pointer;
 }
 
-/*feedback-item을 눌렀을 때*/
+.feedback-item.active .feedback-list p {
+    overflow: visible;
+    text-overflow: clip;
+}
+
 .feedback-item.active {
     border-color: #e5e5e5;
-    transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out; 
-    border-style: solid;
-    border-width: 2px; 
+    transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
     position: relative;
     box-sizing: border-box;
-}
-/* 활성화 상태일 때 마우스 오버 효과 제거 */
-.feedback-item.active, .feedback-item.active:hover {
-    background-color: transparent; /* 기본 배경색으로 설정 */
-    color: inherit; /* 상속받은 기본 텍스트 색상 사용 */
-    cursor: default; /* 기본 커서 사용 */
-    box-sizing: border-box;
-}
-.feedback-item.active p {
-    width: 100%; /* 부모의 패딩을 고려하여 계산, 여기서 30px는 좌우 패딩의 합 */
-    margin: 0; /* 마진 제거 */
-    box-sizing: border-box; /* width 계산에 패딩과 테두리를 포함 */
-    white-space: normal; /* 공백 처리 변경 */
-    overflow: visible; /* 오버플로우 처리 변경 */
-    text-overflow: clip; /* 텍스트 오버플로우 처리 변경 */
-    border: none; /* p 태그의 테두리 제거 */
 }
 
 .feedback-item.active:after {
     content: "";
 }
 
-/* feedback 세부정보*/
 .feedback-detail {
-    max-height: 0; 
+    max-height: 0;
     transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
     opacity: 0;
 }
+
 .feedback-detail.active {
     opacity: 1;
-    max-height: 1000px; /* 추정 최대 높이 값으로 변경 */
+    max-height: 1000px; /* Maximum estimated height */
 }
-.feedback-item.active .feedback-detail {
-    opacity: 1; /* 보이게 함 */
-    transition: max-height 0.5s ease, opacity 0.5s ease;
-}
+
 .feedback-response {
-    padding: 20px;
-    padding-left: 120px;
-    padding-right: 120px;
-}
-.feedback-response p{
-    font-weight: 500;
+    padding: 20px 120px;
 }
 
 .feedback-feedback {
-    padding-top: 0px;
-    padding-left: 70px;
-    padding-right: 70px;
-    padding-bottom: 50px;
-}
-.feedback-feedback p{
-    font-weight:600;
-    color: #5b5b5b;
+    padding: 0 70px 50px;
 }
 
-/* repository button*/
+/* Repository 버튼 스타일 */
 .repository-button-container {
-    text-align: center; 
+    position: relative;
+    z-index: 2;
+    text-align: center;
     margin-top: 30px;
-    margin-bottom: 60px; 
+    margin-bottom: 60px;
 }
+
 .repository-button {
     background-color: #b295f0;
-    color: white; 
-    padding: 20px 30px; 
+    color: white;
+    padding: 20px 30px;
     font-size: 15px;
     border-radius: 3px;
-    transition: background-color 0.1s;
     border: none;
     outline: none;
+    transition: background-color 0.1s;
 }
+
 .repository-button:hover {
     background-color: #9e7cc1;
     cursor: pointer;
@@ -1176,26 +1115,12 @@ input:checked + .slider:before {
 	position: absolute;
 }
 
-/* .user_recording_outline {
-	width: 60px;
-	height: 60px;
-	border-radius: 50%;
-	border: 8px solid #B5A4A4;
-    animation: pulse 3s;
-	animation-timing-function: ease-out;
-	animation-iteration-count: infinite;
-	position: absolute;
-} */
-
-/* .user_recording_button {
-	width: 120px;
-	height: 120px;
-	border-radius: 50%;
-	background: #50CDDD;
-	box-shadow: 0px 0px 80px #0084F9;
-	position: absolute;
-} */
-
+/* 애니메이션 비활성화 클래스 */
+.no-animation {
+    animation: none !important;
+    background: #6be18e !important;
+    box-shadow: none !important;
+}
 @keyframes pulse {
   0% {
     transform: scale(0);
@@ -1220,18 +1145,10 @@ input:checked + .slider:before {
 }
 
 #user_recording_delayed {
-	animation-delay: 1.5s;
-}
+	/* animation-delay: 1.5s; */
+    animation: none !important;
 
-/* #user_recording_circlein {
-    
-	width: 100px;
-	height: 100px;
-	border-radius: 50%;
-	background: #6BD6E1;
-	box-shadow: 0px -2px 15px #E0FF94;
-	position: absolute;
-} */
+}
 
 /* 추가적인 모달 내용 스타일링 */
 .user-answer-content p {
@@ -1264,21 +1181,22 @@ input:checked + .slider:before {
     transition: transform 0.3s ease; /* 크기 변경 애니메이션 효과 */
     cursor: pointer; /* 마우스 오버 시 커서 변경 */
     transform: scale(0.75); /* 아이콘 크기를 75%로 조정 */
+    fill: #1E2D70 !important;
 }
 
 .mic-icon:hover {
-    transform: scale(1.1); /* 마우스 오버 시 아이콘 크기 증가 */
+    transform: scale(1); /* 마우스 오버 시 아이콘 크기 증가 */
 }
 
 .mic-icon.recording-complete {
     /* 녹음 완료 상태 시 시각적 스타일 */
     /* 예: 색상 변경 */
-    color: green; /* 녹음 완료 상태를 나타내는 색상으로 변경 */
+    fill: green !important;
     cursor: default; /* 마우스 오버 시 커서 변경 없음 */
 }
 
 .mic-icon.recording-complete:hover {
-    transform: scale(1); /* 마우스 오버 시 아이콘 크기 변경 없음 */
+    transform: scale(0.75); /* 마우스 오버 시 아이콘 크기 변경 없음 */
 }
 @keyframes fadeInAnimation {
     from {opacity: 0;}
@@ -1495,7 +1413,7 @@ input:checked + .slider:before {
 
 
 
-.user-answer-textbox:before, .ai-question-textbox:before {
+.user-answer-textbox:before, .ai-question-textbox:before{
     content: '';
     display: block;
     width: 50px; /* 아이콘의 너비를 조정 */
@@ -1538,5 +1456,19 @@ input:checked + .slider:before {
     font-size: 20px;
 }
 
-  
-
+.chat-system-message {
+    content: '';
+    position: relative;
+    display: block;
+    background-color: white !important;
+    border-radius: 20px;
+    padding: 20px;
+    margin: 100px; /* 상하 마진을 30px, 좌측 마진을 100px, 우측 마진을 50px로 조정 */
+    max-width: 50%;
+    color: green;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    text-align: center;
+    align-items: center; /* 중앙 정렬 */
+    right: -125px; /* 아이콘을 오른쪽 바깥으로 60픽셀 이동 */
+}

@@ -46,8 +46,8 @@ async def interview_start(
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                        detail="record를 생성하는데 실패했습니다.")
     if company_info.name:
-        new_record.company_name = company_info.name
-
+        record_crud.set_record_company_name(db=db, db_record=new_record, new_company_name=company_info.name)
+        
     # 새로운 agent 생성 후, 메모리에 저장
     new_agent = agent.create_agent(new_input)
     if not new_agent:
@@ -69,7 +69,7 @@ async def text_to_speech(question: question_schema.QuestionCreate):
         # TTS API 호출
         response = stt_llm.audio.speech.create(
                 model="tts-1-hd",  # 고화질의 음성 품질 모델 선택
-                voice="shimmer",  # 선택된 목소리 유형
+                voice="onyx",  # 선택된 목소리 유형
                 input=question.content,  # 클라이언트로부터 받은 텍스트
             )
         audio_stream = BytesIO(response.content)
