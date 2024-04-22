@@ -112,12 +112,12 @@ jobs:
           chmod +x $DESTINATION
           ls
                   
-      - name: Force merge using theirs strategy
+      - name: Force merge using theirs strategy with unrelated histories
         run: |
           git fetch origin main
-          git merge -X theirs origin/main
+          git merge origin/main --allow-unrelated-histories -X theirs
           git push
-          
+  
       
       - name: Update image tag in interver.yaml
         run: |
