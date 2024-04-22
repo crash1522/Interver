@@ -9,15 +9,15 @@ from sqlalchemy.orm import Session
 from starlette import status
 from starlette.config import Config
 from typing import Optional
+import os
 
 from database import get_db
 from domain.user import user_crud, user_schema
 from domain.user.user_crud import pwd_context
 from models import User
 
-config = Config('.env')
-ACCESS_TOKEN_EXPIRE_MINUTES = int(config('ACCESS_TOKEN_EXPIRE_MINUTES'))
-SECRET_KEY = config('SECRET_KEY')
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv('ACCESS_TOKEN_EXPIRE_MINUTES'))
+SECRET_KEY = os.getenv('SECRET_KEY')
 ALGORITHM = "HS256"
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/user/login")
 templates = Jinja2Templates(directory="templates")
