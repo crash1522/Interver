@@ -98,7 +98,13 @@ jobs:
         run: |
           echo "COMMIT_MSG=Push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
           echo $COMMIT_MSG  
-
+      
+      - name: Checkout main branch
+        uses: actions/checkout@v3
+        with:
+          ref: main
+          token: ${{ secrets.GIT_ACCESS_TOKEN }}
+      
       - name: Get Access Permission
         uses: actions/checkout@v3
         with:
