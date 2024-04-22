@@ -118,17 +118,17 @@ jobs:
             ref: prod/argocd-monitoring
             token: ${{ secrets.GIT_ACCESS_TOKEN }}
         
-        - name: Merge changes from main branch
-          run: |
-            git fetch origin main
-            git merge origin/main  # 이 부분은 충돌이 발생할 수 있으므로 스크립트에서 처리 로직이 필요할 수 있습니다.
-            git push
-        
-        - name: Update image tag in interver.yaml
-          run: |
-            new_tag="${{ steps.build-image.outputs.image }}"
-            sed -i "s@image:.*@image: $new_tag@g" $DESTINATION/interver.yaml
-            git add $DESTINATION/interver.yaml
-            git commit -m "Update image tag to $new_tag"
-            git push origin prod/argocd-monitoring
-        
+      - name: Merge changes from main branch
+        run: |
+          git fetch origin main
+          git merge origin/main  # 이 부분은 충돌이 발생할 수 있으므로 스크립트에서 처리 로직이 필요할 수 있습니다.
+          git push
+      
+      - name: Update image tag in interver.yaml
+        run: |
+          new_tag="${{ steps.build-image.outputs.image }}"
+          sed -i "s@image:.*@image: $new_tag@g" $DESTINATION/interver.yaml
+          git add $DESTINATION/interver.yaml
+          git commit -m "Update image tag to $new_tag"
+          git push origin prod/argocd-monitoring
+      
