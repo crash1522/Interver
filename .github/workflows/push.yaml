@@ -112,14 +112,18 @@ jobs:
           chmod +x $DESTINATION
           ls
                   
-      - name: git push image tag to prod/argocd-monitoring branch 
-        env:
-          GITHUB_REPO: ${{ github.repository.name }}
-          GITHUB_SHA: ${{ github.sha }}
+      - name: Force merge using theirs strategy with unrelated histories
         run: |
-          git config pull.rebase false
-          git pull origin main --allow-unrelated-histories
-          sed -i -e 's@${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:.*@${{ steps.build-image.outputs.image }}@g' $DESTINATION/interver.yaml
-          git add .
-          git commit -m "$COMMIT_MSG"
-          git push -f --set-upstream origin prod/argocd-monitoring
+          git fetch origin main
+          git merge origin/main --allow-unrelated-histories -X theirs
+          git push
+  
+      
+      - name: Update image tag in interver.yaml
+        run: |
+          new_tag="${{ steps.build-image.outputs.image }}"
+          sed -i "s@image:.*@image: $new_tag@g" $DESTINATION/interver.yaml
+          git add $DESTINATION/interver.yaml
+          git commit -m "Update image tag to $new_tag"
+          git push origin prod/argocd-monitoring
+      
