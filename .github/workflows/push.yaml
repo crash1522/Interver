@@ -92,18 +92,13 @@ jobs:
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
+
       - name: Set commit msg 
         env:
           GITHUB_SHA: ${{ github.sha }}
         run: |
           echo "COMMIT_MSG=Push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
           echo $COMMIT_MSG  
-
-
-      - name: Copy main to prod/argocd-monitoring
-        run: |
-          git checkout -B prod/argocd-monitoring
-
 
       - name: Get Access Permission
         uses: actions/checkout@v3
@@ -116,11 +111,15 @@ jobs:
         run: |
           chmod +x $DESTINATION
           ls
-
-
-      - name: Update image tag in interver.yaml
+                  
+      - name: git push image tag to prod/argocd-monitoring branch 
+        env:
+          GITHUB_REPO: ${{ github.repository.name }}
+          GITHUB_SHA: ${{ github.sha }}
         run: |
+          git config pull.rebase false
+          git pull origin main --allow-unrelated-histories
           sed -i -e 's@${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:.*@${{ steps.build-image.outputs.image }}@g' $DESTINATION/interver.yaml
-          git add $DESTINATION/interver.yaml
-          git commit -m "Update image tag to ${{ steps.build-image.outputs.image }}"
-          git push --force origin prod/argocd-monitoring
+          git add .
+          git commit -m "$COMMIT_MSG"
+          git push -f --set-upstream origin prod/argocd-monitoring
