@@ -158,7 +158,7 @@ function closeQuestionModal(aiQuestionModal) {
                 }, 500);
                 var userId = localStorage.getItem('userid');
                 if (userId) {
-                    document.getElementById('user-name').textContent = userId + '2님';
+                    document.getElementById('user-name').textContent = userId + '님';
                 }
                 toggleUIBasedOnLoginStatus(); // UI 상태 업데이트
                 // document.getElementById('user-name').textContent = localStorage.getItem('userid') + '님';
