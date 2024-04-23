@@ -1,6 +1,5 @@
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
-from fastapi import HTTPException
 
 from domain.user import user_schema
 from models import User, Skill, Record

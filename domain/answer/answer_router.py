@@ -1,6 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
 from sqlalchemy.orm import Session
-from starlette import status
 import io
 import json
 from asyncio import create_task
@@ -9,7 +8,7 @@ from database import get_db
 from domain.answer import answer_schema, answer_crud
 from domain.question import question_crud
 from domain.user.user_router import get_current_user
-from domain.feedback import feedback_crud, feedback_schema
+from domain.feedback import feedback_crud
 from common.handler.handler_router import q_cnt_dict
 from common.agent import agent_dict, stt_llm
 

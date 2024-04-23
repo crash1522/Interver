@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 from starlette import status
 
 from database import get_db
-from domain.answer import answer_crud
 from domain.user.user_router import get_current_user
 from domain.feedback import feedback_schema, feedback_crud
 from domain.record import record_crud

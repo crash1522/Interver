@@ -7,7 +7,6 @@ from fastapi.templating import Jinja2Templates
 from jose import jwt, JWTError
 from sqlalchemy.orm import Session
 from starlette import status
-from starlette.config import Config
 from typing import Optional
 import os
 

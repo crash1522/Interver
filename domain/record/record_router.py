@@ -1,19 +1,9 @@
 from fastapi import APIRouter, HTTPException
 from fastapi import Depends
-from fastapi_pagination.ext.sqlalchemy import paginate
-from fastapi_pagination import Page, add_pagination, paginate
 from sqlalchemy.orm import Session
-from starlette import status
 
-from domain.record import record_crud, record_schema
-from domain.user import user_crud, user_schema
+from domain.record import record_crud
 from domain.user.user_router import get_current_user
-from domain.question import question_crud, question_schema
-from domain.answer.answer_crud import delete_answer
-from domain.feedback.feedback_crud import delete_feedback
-from common.handler import handler_router, handler_schema
-from common import agent
-from common.agent import agent_dict
 from models import User
 from database import get_db
 

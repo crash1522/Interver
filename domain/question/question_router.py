@@ -1,11 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import Optional
 
 from domain.question import question_schema, question_crud
 from domain.answer import answer_crud
-from domain.user import user_router, user_schema
-from domain.record import record_crud
+from domain.user import user_router
 from common.agent import agent_dict
 from common.handler.handler_router import q_cnt_dict
 from models import User
