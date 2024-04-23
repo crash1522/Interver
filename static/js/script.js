@@ -152,15 +152,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 closeModal(); // 모달 창 닫기
                 
                 setTimeout(() => {
-                    console.log(data.userid);
-                    console.log(localStorage.getItem('userid'));
                     window.location.href = '/'; // 홈 페이지로 리디렉션
                 }, 500);
                 const userProfileString = localStorage.getItem('user_profile');
                 // 문자열을 객체로 변환
                 const userProfile = JSON.parse(userProfileString);
                 if (userProfile) {
-                    document.querySelector('span[name="name"]').textContent = userProfile?.username ?? 'Guest';
+                    document.querySelector('span[name="user-name"]').textContent = userProfile?.username ?? 'Guest';
                 }
                 toggleUIBasedOnLoginStatus(); // UI 상태 업데이트
                 // document.getElementById('user-name').textContent = localStorage.getItem('userid') + '님';
