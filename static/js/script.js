@@ -120,59 +120,50 @@ function closeQuestionModal(aiQuestionModal) {
         // 로그인 처리 공통 함수
         function handleLogin(event) {
             event.preventDefault(); // 폼의 기본 제출 동작을 방지
-
+        
             var userIdElement = document.getElementsByName('user-id')[0];
             var passwordElement = document.getElementsByName('user-password')[0];
-            if (userIdElement && passwordElement) {
-                var userId = userIdElement.value;
-                var password = passwordElement.value;
-            } else {
+            if (!userIdElement || !passwordElement) {
                 console.error('Form elements not found');
                 return;
             }
-
+            const userId = userIdElement.value;
+            const password = passwordElement.value;
+        
             // 로그인 요청을 위한 URL
             const url = '/api/user/login';
-
-            // XMLHttpRequest 객체 생성
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', url, true);
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        var data = JSON.parse(xhr.responseText);
-                        localStorage.setItem('access_token', data.access_token);
-                        localStorage.setItem('userid', data.userid);
-                        localStorage.setItem('user_profile', JSON.stringify(data.user_profile));
-                        document.getElementById('user-name').textContent = localStorage.getItem('userid') + '님';
-
-                        closeModal(); // 모달 창 닫기
-                        toggleUIBasedOnLoginStatus(); // UI 상태 업데이트
-
-                        setTimeout(function() {
-                            console.log(data.userid)
-                            console.log(localStorage.getItem('userid'))
-                            
-                            window.location.href = '/'; // 홈 페이지로 리디렉션
-                        }, 1000);
-                    } else {
-                        var errorMessageDiv = document.getElementById('login-error-message');
-                        var errorResponse = JSON.parse(xhr.responseText);
-                        errorMessageDiv.innerHTML = errorResponse.detail.replace(/\n/g, '<br>');
-                        errorMessageDiv.style.display = 'block';
-                        console.error('Login failed:', errorResponse.detail);
-                    }
-                }
-            };
-
-            var formData = new URLSearchParams();
+            const formData = new URLSearchParams();
             formData.append('username', userId);
             formData.append('password', password);
-            console.log('Sending request with body:', formData.toString());
-            xhr.send(formData.toString());
-
+        
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                localStorage.setItem('access_token', data.access_token);
+                localStorage.setItem('userid', data.userid);
+                localStorage.setItem('user_profile', JSON.stringify(data.user_profile));
+                document.getElementById('user-name').textContent = localStorage.getItem('userid') + '님';
+                closeModal(); // 모달 창 닫기
+                toggleUIBasedOnLoginStatus(); // UI 상태 업데이트
+                setTimeout(() => {
+                    console.log(data.userid);
+                    console.log(localStorage.getItem('userid'));
+                    window.location.href = '/'; // 홈 페이지로 리디렉션
+                }, 1000);
+            })
+            .catch(error => {
+                const errorMessageDiv = document.getElementById('login-error-message');
+                errorMessageDiv.textContent = 'Login failed: ' + error;
+                errorMessageDiv.style.display = 'block';
+                console.error('Login failed:', error);
+            });
+        
             document.getElementById('user-password').value = ''; // 비밀번호 필드 초기화
         }
 
