@@ -109,6 +109,17 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 
+    toggleUIBasedOnLoginStatus();
+
+    // 사용자 이름 업데이트 코드
+    const userid = localStorage.getItem('userid');
+    if (userid) {
+        const usernameSpan = document.getElementById('user-name');
+        if (usernameSpan) {
+            usernameSpan.textContent = userid + '님';
+        }
+    }
+
     loginBtn.onclick = function() {
         openModal(modal);
     };
@@ -146,10 +157,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         localStorage.setItem('access_token', data.access_token);
                         localStorage.setItem('userid', data.userid);
                         localStorage.setItem('user_profile', JSON.stringify(data.user_profile));
-                        document.getElementById('user-name').textContent = data.userid + '님';
+                        // document.getElementById('user-name').textContent = data.userid + '님';
 
                         closeModal(); // 모달 창 닫기
-                        toggleUIBasedOnLoginStatus(); // UI 상태 업데이트
+                        // toggleUIBasedOnLoginStatus(); // UI 상태 업데이트
 
                         setTimeout(function() {
                             window.location.href = '/'; // 홈 페이지로 리디렉션
