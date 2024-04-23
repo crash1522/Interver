@@ -156,7 +156,11 @@ function closeQuestionModal(aiQuestionModal) {
                     console.log(localStorage.getItem('userid'));
                     window.location.href = '/'; // 홈 페이지로 리디렉션
                 }, 500);
-                document.getElementById('user-name').textContent = localStorage.getItem('userid') + '님';
+                var userId = localStorage.getItem('userid');
+                if (userId) {
+                    document.getElementById('user-name').textContent = userId + '님';
+                }
+                // document.getElementById('user-name').textContent = localStorage.getItem('userid') + '님';
             })
             .catch(error => {
                 const errorMessageDiv = document.getElementById('login-error-message');
