@@ -146,14 +146,17 @@ function closeQuestionModal(aiQuestionModal) {
                         localStorage.setItem('access_token', data.access_token);
                         localStorage.setItem('userid', data.userid);
                         localStorage.setItem('user_profile', JSON.stringify(data.user_profile));
-                        document.getElementById('user-name').textContent = data.userid + '님';
+                        document.getElementById('user-name').textContent = localStorage.getItem('userid') + '님';
 
                         closeModal(); // 모달 창 닫기
                         toggleUIBasedOnLoginStatus(); // UI 상태 업데이트
 
                         setTimeout(function() {
+                            console.log(data.userid)
+                            console.log(localStorage.getItem('userid'))
+                            
                             window.location.href = '/'; // 홈 페이지로 리디렉션
-                        }, 500);
+                        }, 1000);
                     } else {
                         var errorMessageDiv = document.getElementById('login-error-message');
                         var errorResponse = JSON.parse(xhr.responseText);
