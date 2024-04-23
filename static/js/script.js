@@ -32,76 +32,76 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-// 모달 열기 함수 (범용)
-function openModal(modal) {
-    if (modal) {
-        modal.style.display = 'block';  
-        modal.classList.add('modal-open-animation');
-        modal.classList.remove('modal-close-animation');
-    }
-}
-function closeModal(modal) {
-    if (modal) {
-        modal.classList.remove('modal-open-animation');
-        modal.classList.add('modal-close-animation');
-        setTimeout(() => {
-            modal.style.display = 'none';
-        }, 500);
-    }
-}
-
-function openAnswerModal(userAnswerModal) {
-    if (userAnswerModal) {
-        userAnswerModal.style.display = 'flex';  
-        userAnswerModal.classList.add('chat-modal-open-animation2');
-        userAnswerModal.classList.remove('chat-modal-close-animation2');
-    }
-}
-
-
-function closeAnswerModal(userAnswerModal) {
-    if (userAnswerModal) {
-        userAnswerModal.classList.remove('chat-modal-open-animation');
-        userAnswerModal.classList.add('chat-modal-close-animation');
-        setTimeout(() => {
-            userAnswerModal.style.display = 'none';
-        }, 500);
-    }
-}
-function fetchNewQuestion(data) {
-    var userAnswerModal = document.getElementById('user-answer-modal'); // 사용자 답변 모달 요소 선택
-    fetch(`/api/question/question_create/${data.record_id}?before_answer_id=${data.id}`, { 
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`  
-        },
-    })
-    .then(response => response.json())
-    .then(questionData => {
-        console.log('New question received:', questionData);
-        closeAnswerModal(userAnswerModal);
-        playAIQuestion(questionData);
-    })
-    .catch(error => console.error('Error fetching new question:', error));
-}
-
-function openQuestionModal(aiQuestionModal) {
-            if (aiQuestionModal) {
-            aiQuestionModal.style.display = 'flex';  
-            aiQuestionModal.classList.remove('chat-modal-close-animation');
-            aiQuestionModal.classList.add('chat-modal-open-animation');
-            }
+    // 모달 열기 함수 (범용)
+    function openModal(modal) {
+        if (modal) {
+            modal.style.display = 'block';  
+            modal.classList.add('modal-open-animation');
+            modal.classList.remove('modal-close-animation');
         }
-function closeQuestionModal(aiQuestionModal) {
-    if (aiQuestionModal) {
-        aiQuestionModal.classList.remove('chat-modal-open-animation');
-        aiQuestionModal.classList.add('chat-modal-close-animation');
-        setTimeout(() => {
-            aiQuestionModal.style.display = 'none';
-        }, 500);
     }
-}
+    function closeModal(modal) {
+        if (modal) {
+            modal.classList.remove('modal-open-animation');
+            modal.classList.add('modal-close-animation');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 500);
+        }
+    }
+
+    function openAnswerModal(userAnswerModal) {
+        if (userAnswerModal) {
+            userAnswerModal.style.display = 'flex';  
+            userAnswerModal.classList.add('chat-modal-open-animation2');
+            userAnswerModal.classList.remove('chat-modal-close-animation2');
+        }
+    }
+
+
+    function closeAnswerModal(userAnswerModal) {
+        if (userAnswerModal) {
+            userAnswerModal.classList.remove('chat-modal-open-animation');
+            userAnswerModal.classList.add('chat-modal-close-animation');
+            setTimeout(() => {
+                userAnswerModal.style.display = 'none';
+            }, 500);
+        }
+    }
+    function fetchNewQuestion(data) {
+        var userAnswerModal = document.getElementById('user-answer-modal'); // 사용자 답변 모달 요소 선택
+        fetch(`/api/question/question_create/${data.record_id}?before_answer_id=${data.id}`, { 
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`  
+            },
+        })
+        .then(response => response.json())
+        .then(questionData => {
+            console.log('New question received:', questionData);
+            closeAnswerModal(userAnswerModal);
+            playAIQuestion(questionData);
+        })
+        .catch(error => console.error('Error fetching new question:', error));
+    }
+
+    function openQuestionModal(aiQuestionModal) {
+                if (aiQuestionModal) {
+                aiQuestionModal.style.display = 'flex';  
+                aiQuestionModal.classList.remove('chat-modal-close-animation');
+                aiQuestionModal.classList.add('chat-modal-open-animation');
+                }
+            }
+    function closeQuestionModal(aiQuestionModal) {
+        if (aiQuestionModal) {
+            aiQuestionModal.classList.remove('chat-modal-open-animation');
+            aiQuestionModal.classList.add('chat-modal-close-animation');
+            setTimeout(() => {
+                aiQuestionModal.style.display = 'none';
+            }, 500);
+        }
+    }
     // 모달 외부 클릭 시 모달 창 닫기
     window.onclick = function(event) {
         if (event.target === modal) {
@@ -161,7 +161,7 @@ function closeQuestionModal(aiQuestionModal) {
                     document.getElementById('user-name').textContent = userId + '님';
                 }
                 toggleUIBasedOnLoginStatus(); // UI 상태 업데이트
-                // document.getElementById('user-name').textContent = localStorage.getItem('userid') + '님';
+                document.getElementById('user-name').textContent = localStorage.getItem('userid') + '님';
             })
             .catch(error => {
                 const errorMessageDiv = document.getElementById('login-error-message');
