@@ -148,20 +148,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 localStorage.setItem('access_token', data.access_token);
                 localStorage.setItem('userid', data.userid);
                 localStorage.setItem('user_profile', JSON.stringify(data.user_profile));
-                
+                document.getElementById('user-name').textContent = localStorage.getItem('userid') + '님';
                 closeModal(); // 모달 창 닫기
-                
-                setTimeout(() => {
-                    window.location.href = '/'; // 홈 페이지로 리디렉션
-                }, 500);
-                const userProfileString = localStorage.getItem('user_profile');
-                // 문자열을 객체로 변환
-                const userProfile = JSON.parse(userProfileString);
-                if (userProfile) {
-                    document.querySelector('span[name="user-name"]').textContent = userProfile?.username ?? 'Guest';
-                }
                 toggleUIBasedOnLoginStatus(); // UI 상태 업데이트
-                // document.getElementById('user-name').textContent = localStorage.getItem('userid') + '님';
+                setTimeout(() => {
+                    console.log(data.userid);
+                    console.log(localStorage.getItem('userid'));
+                    window.location.href = '/'; // 홈 페이지로 리디렉션
+                }, 1000);
             })
             .catch(error => {
                 const errorMessageDiv = document.getElementById('login-error-message');
@@ -171,12 +165,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         
             document.getElementById('user-password').value = ''; // 비밀번호 필드 초기화
-        }
-
-        // 이벤트 리스너 등록
-        loginForm.addEventListener('submit', handleLogin);
-        if (loginFormButton) {
-            loginFormButton.addEventListener('click', handleLogin);
         }
     }
     
