@@ -14,12 +14,19 @@ async function fetchRecords() {
         const data = await response.json();
 
         allRecords = data.records_list; // API에서 받은 데이터를 전역 변수에 저장
+        
+        // nth_round 기준으로 내림차순 정렬
+        allRecords.sort((a, b) => {
+            return b.nth_round - a.nth_round;  // b의 nth_round가 a의 nth_round보다 크면 앞으로 오도록 정렬
+        });
+
         displayRecords(currentPage);
         setupPagination(allRecords.length, recordsPerPage);
     } catch (error) {
         console.error('Error:', error);
     }
 }
+
 
 function displayRecords(page) {
     const startIndex = (page - 1) * recordsPerPage;

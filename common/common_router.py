@@ -6,7 +6,7 @@ router = APIRouter(prefix="/api/common")
 templates = Jinja2Templates(directory="templates")
 
 # 도메인 설정
-DOMAIN = "localhost"
+DOMAIN = "mink-literate-grizzly.ngrok-free.app"
 
 @router.get("/service", response_class=HTMLResponse)
 async def get_service(request: Request):
