@@ -314,6 +314,8 @@ document.addEventListener('DOMContentLoaded', function () {
     
 
     function handleUserAnswer(questionData) {
+        const userAnswerTextbox = document.querySelector('.user-answer-textbox');
+        userAnswerTextbox.textContent = "답변이 여기에 표시됩니다.";
         var userAnswerModal = document.getElementById('user-answer-modal'); // 사용자 답변 모달 요소 선택
         const micIcon = document.getElementById('mic-icon');
         const outlines = document.querySelectorAll('.user_recording_outline'); // 모든 outline 요소 선택
