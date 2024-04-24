@@ -5,7 +5,7 @@ metadata:
   labels:
     app: app
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: app
@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: 900478210705.dkr.ecr.ap-northeast-2.amazonaws.com/interver:a2d39302f4598c197f1703923fa3c84a84433dd5
+          image: 900478210705.dkr.ecr.ap-northeast-2.amazonaws.com/interver:7f47ab0cf90215dc5e8237272429b03541e38953
           imagePullPolicy: Always
 
 
