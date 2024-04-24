@@ -54,18 +54,21 @@ def create_agent(new_input: handler_schema.Input):
     ask_output_parser= StrOutputParser()
     essential_question = " 귀사에 지원하게 된 동기가 무엇인가요 ?"
     
-        # JSON으로 직접 직렬화할 수 없는 복잡한 개체
+ 
     ask_prompt = ChatPromptTemplate.from_messages(
-        [
-            # 조건 요구
-            ("system",f""" 너는 채용 면접관으로써 오직 질문만 한다. 나는 지원자이고 너의 질문에 대답을 할 것이다. 너는 {user_info.field} 직무에 관련한 질문을 할 것이다.
-                            대화의 방식은 실제 면접과 동일하다. 너의 질문에 내가 대답을 하면 다음 질문으로 넘어간다.
-                            지원자의 자기소개서는 {cover_letter.content}이다. 회사의 요구사항은 {company_info.prefered_qualification}이다. 사용자가 설정한 {essential_question}은 반드시 질문한다. 
-                            {user_info.field} 분야의 5개의 기술 질문을 한다. 여기서 기술 질문이란 해당 분야하여 면접에서 자주 묻는 개념 관련 질문이다.
-                            모든 질문은 자기소개서와 회사의 요구사항을 바탕으로 질문한다. 설명이나 다른 형태의 대화는 제공하지 않는다"""),
-            MessagesPlaceholder(variable_name="history"),
-            ("human","{input}"),
-        ]
+    [
+        # 조건 요구
+        ("system",f""" 너는 채용 면접관으로써 오직 질문만 한다. 나는 지원자로써 너의 질문에 대답을 할 것이다. 너는 {user_info.field} 직무에 대해 면접 질문을 할 것이다. 
+                        지원자의 자기소개서는 {cover_letter.content}이다. 회사의 요구사항은 {company_info.prefered_qualification}이다. 사용자가 설정한 {essential_question}은 반드시 한 번 질문한다. 자기소개서와 회사의 요구사항을 바탕으로 질문한다.
+                        좀 더 구체적으로 너는 3명의 면접관 역할을 수행한다. 첫 째는 인사 담당자의 관점에서 자기소개서 바탕으로 {company_info.prefered_qualification}과 같은 돌발 질문을 한다.
+                        둘 째는 자기소개서를 바탕으로 실무자의 관점에서 {user_info.field} 분야의 개발자가 면접에서 받을 수 있는 기본적인 cs 질문은 총 3개, 기술 질문 2개를 한다.
+                        마지막은 내가 쓴 자기소개서를 읽고 임원진의 관점에서 인성 평가 질문을 한다. 설명이나 다른 형태의 대화는 제공하지 않는다.
+                        대화의 방식은 실제 면접과 동일하다. 너의 질문에 내가 대답을 하면 다음 질문으로 넘어간다. 질문을 중복되게 생성 금지.
+                        나의 답변에 대한 '추가' 질문을 3개를 한다. 그 후엔 다시 자소서 기반의 '새로운' 질문을 한다. 면접관의 역할은 절대 거론하지 않고, 질문만 제공한다.
+                        너가 할 질문은 총 10개이며, 이 개수를 채우기 전에는 절대 면접을 종료하지 않는다."""),
+        MessagesPlaceholder(variable_name="history"),
+        ("human","{input}"),
+    ]
     )
     ## llm 객체 생성
     ask_llm = ChatOpenAI(temperature=1.0, # 창의성(0.0 ~ 2.0)
