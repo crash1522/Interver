@@ -233,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function () {
     
         // 자기소개서 내용
         const coverLetterContent = document.querySelector('.cover-letter').value;
-    
+        var q_num = document.getElementById('question-count').value;
         // 모든 데이터를 하나의 객체로 구성
         const formData = {
             company_info: {
@@ -251,7 +251,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 username: userProfile.username,  
                 field: userProfile.field,  
                 skills: userProfile.skills  
-            }
+            },
+            q_num: q_num
         };
     
         // 액세스 토큰 가져오기

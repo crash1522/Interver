@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Body
 from fastapi import Depends
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
@@ -30,8 +30,9 @@ async def interview_start(
                     user: user_schema.User = Depends(user_router.get_current_user),
                     company_info: handler_schema.CompanyInfo = handler_schema.CompanyInfo(),
                     cover_letter: handler_schema.CoverLetter = handler_schema.CoverLetter(),
-                    q_num: int = 2,):
+                    q_num: str = Body(...)):
     global agent_dict, q_cnt_dict
+    q_num = int(q_num)
     user_info = handler_schema.UserInfo(username = user.username,
                                     skills = user_crud.get_skills(db, user.userid),
                                     field = user.field,
