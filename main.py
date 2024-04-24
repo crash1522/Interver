@@ -46,4 +46,5 @@ app.include_router(handler_router.router)
 async def home(request: Request, userid: Optional[str] = Depends(user_router.is_loggined)):
     return templates.TemplateResponse("home.html", {
         "request": request,
+        "domain": "mink-literate-grizzly.ngrok-free.app"
     })
