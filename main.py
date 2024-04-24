@@ -42,9 +42,11 @@ app.include_router(feedback_router.router)
 app.include_router(common_router.router)
 app.include_router(handler_router.router)
 
+DOMAIN = "https://mink-literate-grizzly.ngrok-free.app"
+
 @app.get("/")
 async def home(request: Request, userid: Optional[str] = Depends(user_router.is_loggined)):
     return templates.TemplateResponse("home.html", {
         "request": request,
-        "domain": "mink-literate-grizzly.ngrok-free.app"
+        "domain": DOMAIN
     })
