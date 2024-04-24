@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: 900478210705.dkr.ecr.ap-northeast-2.amazonaws.com/interver:0a7d9480619aa273ddc5364682e4069287c7ecc8
+          image: 900478210705.dkr.ecr.ap-northeast-2.amazonaws.com/interver:7f47ab0cf90215dc5e8237272429b03541e38953
           imagePullPolicy: Always
 
 
@@ -39,3 +39,25 @@ spec:
     - port: 80
       targetPort: 8000
       protocol: TCP
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: interver-app-ingress
+  namespace: default  # 여기서는 interver-app-service가 위치한 네임스페이스를 사용합니다.
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: mink-literate-grizzly.ngrok-free.app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: interver-app-service
+                port:
+                  number: 80
+
