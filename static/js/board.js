@@ -1,4 +1,4 @@
-const recordsPerPage = 1;
+const recordsPerPage = 5;
 let currentPage = 1;
 let allRecords = []; // 전역 변수로 모든 레코드 저장
 
