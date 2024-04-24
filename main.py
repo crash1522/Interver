@@ -18,8 +18,9 @@ app = FastAPI()
 #app = FastAPI(docs_url="/documentation", redoc_url=None)
 
 origins = [
-     "http://localhost",
+    "http://localhost",
     "http://localhost:8000",
+    "https://mink-literate-grizzly.ngrok-free.app",
 ]
 
 app.add_middleware(
