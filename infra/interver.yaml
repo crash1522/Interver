@@ -39,3 +39,25 @@ spec:
     - port: 80
       targetPort: 8000
       protocol: TCP
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: interver-app-ingress
+  namespace: default  # 여기서는 interver-app-service가 위치한 네임스페이스를 사용합니다.
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: mink-literate-grizzly.ngrok-free.app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: interver-app-service
+                port:
+                  number: 80
+
